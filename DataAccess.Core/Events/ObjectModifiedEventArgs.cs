@@ -1,0 +1,35 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using DataAccess.Core.Data;
+
+namespace DataAccess.Core.Events
+{
+    /// <summary>
+    /// Event arguments for when a table is created
+    /// </summary>
+    public class ObjectModifiedEventArgs : EventArgs
+    {
+        /// <summary>
+        /// The action taken on the object
+        /// </summary>
+        public string Action { get; set; }
+
+        /// <summary>
+        /// The data that was used to create the table
+        /// </summary>
+        public TypeInfo Data { get; set; }
+
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        /// <param name="TableInfo">The type info that triggered the change</param>
+        /// <param name="Action">A short descritpion of what was done</param>
+        public ObjectModifiedEventArgs(TypeInfo TableInfo, string Action)
+        {
+            Data = TableInfo;
+            this.Action = Action;
+        }
+    }
+}

@@ -1,0 +1,211 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{563BA308-B3A8-43C7-BEE7-1914A12ACB44}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DataAccess.DatabaseTests</RootNamespace>
+    <AssemblyName>DataAccess.DatabaseTests</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MSNET</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;MSNET</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PublishWithSymbols|AnyCPU'">
+    <OutputPath>..\Tests\</OutputPath>
+    <DefineConstants>TRACE;MSNET</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PublishWithSymbolsWithoutTests|AnyCPU'">
+    <OutputPath>bin\PublishWithSymbolsWithoutTests\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PublishWithSymbolsNoTests|AnyCPU'">
+    <OutputPath>bin\PublishWithSymbolsNoTests\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PlublishWithSymbolsNoTestsNoAddin|AnyCPU'">
+    <OutputPath>bin\PlublishWithSymbolsNoTestsNoAddin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.SqlServer.Types, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\References\Microsoft.SqlServer.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Security, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Npgsql.2.0.11\lib\Net35\Mono.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.4.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MySql.Data.6.7.4\lib\net40\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql, Version=2.0.11.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Npgsql.2.0.12.1\lib\net40\Npgsql.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite, Version=1.0.77.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\System.Data.SqLite.1.0.88.0\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit, Version=1.9.1.1600, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\xunit.1.9.2\lib\net20\xunit.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
+      <Visible>False</Visible>
+    </CodeAnalysisDependentAssemblyPaths>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DataObjects\ClassNoPrimaryKey.cs" />
+    <Compile Include="DataObjects\TestItemSmallString.cs" />
+    <Compile Include="DataObjects\TestItemThreeFieldsPlusOneNullable.cs" />
+    <Compile Include="DataObjects\TestItemNullable.cs" />
+    <Compile Include="DataObjects\TestItemPrivateInitMethod.cs" />
+    <Compile Include="DataObjects\TestItemWithEnum.cs" />
+    <Compile Include="DataObjects\TestItemWithGeography.cs" />
+    <Compile Include="DataObjects\TestItemWithPredicate.cs" />
+    <Compile Include="DataObjects\TestObjectManyColumns.cs" />
+    <Compile Include="DataObjects\TestObjectMaxTextField.cs" />
+    <Compile Include="DataObjects\TestObjectSameFields.cs" />
+    <Compile Include="DataObjects\TestObjectWIthFieldAlias.cs" />
+    <Compile Include="DataObjects\ViewObjectNotDefined.cs" />
+    <Compile Include="DataObjects\DBTypeTestObject.cs" />
+    <Compile Include="DataObjects\TestItemAdditionalInit.cs" />
+    <Compile Include="DataObjects\TestItemAdditionalInitWithBadParm.cs" />
+    <Compile Include="DataObjects\TestItemAdditionalInitWithParm.cs" />
+    <Compile Include="DataObjects\TestItemBypassValidation.cs" />
+    <Compile Include="DataObjects\TestItemIgnoredField.cs" />
+    <Compile Include="DataObjects\TestItemNewSchema.cs" />
+    <Compile Include="DataObjects\TestItemNoKey.cs" />
+    <Compile Include="DataObjects\TestItemWithKeyAttribute.cs" />
+    <Compile Include="DataObjects\TestItemOnTableCreated.cs" />
+    <Compile Include="DataObjects\ViewObject.cs" />
+    <Compile Include="DataObjects\Group.cs" />
+    <Compile Include="DataObjects\ItemWithSchema.cs" />
+    <Compile Include="DataObjects\TestItem.cs" />
+    <Compile Include="DataObjects\TestItemDefaultValue.cs" />
+    <Compile Include="DataObjects\TestItemDefaultValueDifferntFieldType.cs" />
+    <Compile Include="DataObjects\TestItemForeignKeyWithString.cs" />
+    <Compile Include="DataObjects\TestItemNewTableName.cs" />
+    <Compile Include="DataObjects\TestItemPrimaryKey.cs" />
+    <Compile Include="DataObjects\TestItemThreeFields.cs" />
+    <Compile Include="DataObjects\TestItemThreeFieldsMinusOne.cs" />
+    <Compile Include="DataObjects\TestItemThreeFieldsPlusOne.cs" />
+    <Compile Include="DataObjects\TestItemThreeFieldsPlusOneForeign.cs" />
+    <Compile Include="DataObjects\TestItemThreeFieldsPlusOneWithDefault.cs" />
+    <Compile Include="DataObjects\TestItemTwoKeys.cs" />
+    <Compile Include="DataObjects\TestItemWithForeignKey.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqliteDatabaseCommandTests.cs" />
+    <Compile Include="Tests\DatabaseCommandTests.cs" />
+    <Compile Include="Tests\FunctionTests.cs" />
+    <Compile Include="Tests\InitHelper.cs" />
+    <Compile Include="Tests\LinqTests.cs" />
+    <Compile Include="Tests\SchemaValidatorTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataAccess.Advantage\DataAccess.Advantage.csproj">
+      <Project>{fee1249b-7a44-4728-af81-a27d82b480b3}</Project>
+      <Name>DataAccess.Advantage</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataAccess.Core\DataAccess.Core.csproj">
+      <Project>{816B0F31-AC67-4646-A26B-C0D519D65ED6}</Project>
+      <Name>DataAccess.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataAccess.Extensions\DataAccess.Extensions.csproj">
+      <Project>{560C7F80-EA72-4099-AF70-878E6AA9D76D}</Project>
+      <Name>DataAccess.Extensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataAccess.MySql\DataAccess.MySql.csproj">
+      <Project>{BC486641-E761-48CE-B9A4-F4DBB9E3C6CD}</Project>
+      <Name>DataAccess.MySql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataAccess.PostgreSQL\DataAccess.PostgreSQL.csproj">
+      <Project>{F39DD494-29EF-4F9C-BA62-8DBC5BF25A36}</Project>
+      <Name>DataAccess.PostgreSQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataAccess.SqlCompact\DataAccess.SqlCompact.csproj">
+      <Project>{33e33e37-e287-4aba-8a1b-77e330fbb272}</Project>
+      <Name>DataAccess.SqlCompact</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataAccess.SQLite\DataAccess.SQLite.csproj">
+      <Project>{b78c7fc2-857c-4049-9a08-e1ffc8e44e2f}</Project>
+      <Name>DataAccess.SQLite</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataAccess.SqlServer\DataAccess.SqlServer.csproj">
+      <Project>{A31F417E-791C-4374-B6D3-785B6C24A133}</Project>
+      <Name>DataAccess.SqlServer</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestData\TestCSV.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
