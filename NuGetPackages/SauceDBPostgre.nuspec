@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>SauceDBPostgre</id>
+    <version>$version$</version>
+    <title>SauceDB - Postgre</title>
+    <authors>iamkrillin</authors>
+    <owners />
+    <licenseUrl>https://github.com/iamkrillin/SauceDB</licenseUrl>
+    <projectUrl>https://github.com/iamkrillin/SauceDB/</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/iamkrillin/SauceDB/master/logo.ico</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Database access that just works - This package includes support for Postgre</description>
+    <summary />
+    <dependencies>
+      <dependency id="Npgsql" version="2.0.11" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="E:\BuildOutput\Sauce\DataAccess.Core.dll" target="lib" />
+    <file src="E:\BuildOutput\Sauce\DataAccess.Core.xml" target="lib" />
+    <file src="E:\BuildOutput\Sauce\DataAccess.PostgreSQL.dll" target="lib" />
+    <file src="E:\BuildOutput\Sauce\DataAccess.PostgreSQL.xml" target="lib" />
+  </files>
+</package>

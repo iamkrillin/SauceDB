@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>SauceDBExtensions</id>
+    <version>$version$</version>
+    <title>SauceDB - Extensions</title>
+    <authors>iamkrillin</authors>
+    <owners />
+    <licenseUrl>https://github.com/iamkrillin/SauceDB</licenseUrl>
+    <projectUrl>https://github.com/iamkrillin/SauceDB/</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/iamkrillin/SauceDB/master/logo.ico</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Database access that just works - This is a set of extension methods for SauceDB that are not a part of the main distribution</description>
+    <summary />
+    <dependencies>
+    </dependencies>
+  </metadata>
+
+  <files>
+    <file src="E:\BuildOutput\Sauce\DataAccess.Extensions.dll" target="lib" />
+    <file src="E:\BuildOutput\Sauce\DataAccess.Extensions.xml" target="lib" />
+
+    <file src="E:\BuildOutput\Sauce\DataAccess.DataBind.dll" target="lib" />
+    <file src="E:\BuildOutput\Sauce\DataAccess.DataBind.xml" target="lib" />
+  </files>
+</package>
