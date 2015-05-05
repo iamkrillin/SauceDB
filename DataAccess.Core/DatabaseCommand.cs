@@ -55,13 +55,19 @@ namespace DataAccess.Core
             {
                 IDictionary<string, object> items = (IDictionary<string, object>)parameters;
                 foreach (string s in items.Keys)
-                    Command.Parameters.Add(DataStore.Connection.GetParameter(s, items[s]));           
+                    AddCommandParameter(s, items[s]);
             }
             else
             {
                 foreach (var v in ti.DataFields)
-                    Command.Parameters.Add(DataStore.Connection.GetParameter(v.FieldName, v.Getter(parameters, null)));           
+                    AddCommandParameter(v.FieldName, v.Getter(parameters, null));
             }
+        }
+
+        private void AddCommandParameter(string key, object value)
+        {
+            if (value != null)
+                Command.Parameters.Add(DataStore.Connection.GetParameter(key, value));
         }
 
         /// <summary>
