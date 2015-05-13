@@ -16,9 +16,9 @@ namespace DataAccess.Core.Data
     public class QueryData : IDisposable, IEnumerable, IQueryData
     {
         public bool _recordLoaded = false;
-        private IDbConnection connection;
-        private IDbCommand command;
-        private IDataReader reader;
+        protected IDbConnection connection;
+        protected IDbCommand command;
+        protected IDataReader reader;
 
         private static Dictionary<string, Dictionary<string, int>> Mappings = new Dictionary<string, Dictionary<string, int>>();
         public Dictionary<string, int> QueryFields { get; set; }
@@ -39,7 +39,7 @@ namespace DataAccess.Core.Data
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        public void Dispose()
+        public virtual void Dispose()
         {
             CloseConnection();
         }
@@ -79,7 +79,7 @@ namespace DataAccess.Core.Data
             QueryFields = Mappings[command.CommandText];
         }
 
-        private void CloseConnection()
+        protected virtual void CloseConnection()
         {
             if (reader != null)
             {

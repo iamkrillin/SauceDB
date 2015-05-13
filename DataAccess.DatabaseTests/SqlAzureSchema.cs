@@ -2,7 +2,6 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Xunit;
 using DataAccess.DatabaseTests.Tests;
 using DataAccess.Core.Interfaces;
 using DataAccess.SqlServer;
@@ -10,9 +9,11 @@ using DataAccess.DatabaseTests.DataObjects;
 using DataAccess.Core.Data;
 using System.Data;
 using System.Data.SqlClient;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DataAccess.DatabaseTests
 {
+    [TestClass]
     public class SqlAzureSchema : SchemaValidatorTests
     {
         public override IDataStore GetDataStore()
@@ -34,26 +35,22 @@ namespace DataAccess.DatabaseTests
             return toReturn;
         }
 
-        [Fact]
+        [TestMethod, ExpectedException(typeof(SqlException))]
         public override void Test_Honors_Field_Length()
         {
             base.Test_Honors_Field_Length();
-
-            Assert.Throws(typeof(SqlException), () =>
-            {
-                dstore.InsertObject(new TestItemSmallString() { SmallString = "IAMHoweverToLongForTheFieldLength" });
-            });
+            dstore.InsertObject(new TestItemSmallString() { SmallString = "IAMHoweverToLongForTheFieldLength" });
         }
 
-        [Fact]
+        [TestMethod]
         public void Test_Sql_Changes_String_Max_To_varchar_max()
         {
             dstore.InsertObject(new TestObjectMaxTextField() { Text = "Hello" });
             var objects = dstore.SchemaValidator.TableValidator.GetObjects();
             var column = objects.ElementAt(0).Columns[1];
 
-            Assert.True(column.DataType.Equals("varchar"));
-            Assert.True(column.ColumnLength.Equals("MAX"));
+            Assert.IsTrue(column.DataType.Equals("varchar"));
+            Assert.IsTrue(column.ColumnLength.Equals("MAX"));
         }
     }
 }

@@ -1,19 +1,14 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Xunit;
-using DataAccess.Core;
-using DataAccess.SqlServer;
-using DataAccess.Core.Interfaces;
-using System.IO;
 using DataAccess.Core.Extensions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DataAccess.DatabaseTests
 {
+    [TestClass]
     public class ExtensionTests
     {
-        [Fact]
+        [TestMethod]
         public void TestCanPage()
         {
             List<string> foo = new List<string>()
@@ -22,9 +17,9 @@ namespace DataAccess.DatabaseTests
             };
 
             PageData<string> pagedata =  foo.AsQueryable().GetPage(1, 2);
-            Assert.True(pagedata != null);
-            Assert.True(pagedata.Data.Count() == 2);
-            Assert.True(pagedata.NumPages == 2);
+            Assert.IsTrue(pagedata != null);
+            Assert.IsTrue(pagedata.Data.Count() == 2);
+            Assert.IsTrue(pagedata.NumPages == 2);
         }
     }
 }

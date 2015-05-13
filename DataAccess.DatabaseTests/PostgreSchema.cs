@@ -2,16 +2,17 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Xunit;
 using DataAccess.DatabaseTests.Tests;
 using DataAccess.Core.Interfaces;
 using DataAccess.PostgreSQL;
 using DataAccess.Core.Data;
 using System.Data;
 using DataAccess.DatabaseTests.DataObjects;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DataAccess.DatabaseTests
 {
+    [TestClass]
     public class PostgreSchema : SchemaValidatorTests
     {
         public override IDataStore GetDataStore()
@@ -25,23 +26,23 @@ namespace DataAccess.DatabaseTests
             InitHelper.InitDataStore(dstore);
         }
 
-        [Fact]
+        [TestMethod]
         public override void Test_Can_Get_Tables()
         {
             TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemTwoKeys));
             IEnumerable<DBObject> tables = dstore.SchemaValidator.TableValidator.GetObjects();
-            Assert.True(tables.Count() > 0);
+            Assert.IsTrue(tables.Count() > 0);
             foreach (DBObject t in tables)
             {
-                Assert.True(t != null);
-                Assert.True(t.Name != "");
-                Assert.NotNull(t.Columns);
-                Assert.True(t.Columns.Count > 0);
+                Assert.IsTrue(t != null);
+                Assert.IsTrue(t.Name != "");
+                Assert.IsNotNull(t.Columns);
+                Assert.IsTrue(t.Columns.Count > 0);
 
                 foreach (Column c in t.Columns)
                 {
-                    Assert.True(c != null);
-                    Assert.True(c.Name != "");
+                    Assert.IsTrue(c != null);
+                    Assert.IsTrue(c.Name != "");
                 }
             }
         }
@@ -49,7 +50,7 @@ namespace DataAccess.DatabaseTests
         public override void Test_Can_Modify_Column_Type()
         {
             TypeInfo ti1 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemPrimaryKey));
-            Assert.True(ti1 != null);
+            Assert.IsTrue(ti1 != null);
 
             TestItemPrimaryKey tipk = new TestItemPrimaryKey();
             tipk.ID = Guid.NewGuid().ToString();
@@ -59,7 +60,7 @@ namespace DataAccess.DatabaseTests
 
 
             TypeInfo ti2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemPrimaryKeyDateFieldDifferentType));
-            Assert.True(ti2 != null);
+            Assert.IsTrue(ti2 != null);
         }
     }
 }

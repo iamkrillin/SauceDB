@@ -2,14 +2,15 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Xunit;
 using DataAccess.Core.Interfaces;
 using DataAccess.DatabaseTests.DataObjects;
 using DataAccess.Core;
 using DataAccess.Core.Data;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DataAccess.DatabaseTests.Tests
 {
+    [TestClass]
     public abstract class FunctionTests : IDisposable
     {
         protected IDataStore dstore;
@@ -31,7 +32,7 @@ namespace DataAccess.DatabaseTests.Tests
             dstore.InitDataStore();
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Insert_Many_Items()
         {
             int numItems = 20;
@@ -50,30 +51,30 @@ namespace DataAccess.DatabaseTests.Tests
             dstore.InsertObjects(items);
 
             List<TestBulkItem> loaded = dstore.LoadEntireTable<TestBulkItem>().ToList();
-            Assert.True(loaded.Count == numItems);
+            Assert.IsTrue(loaded.Count == numItems);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Load_Object_With_Enums()
         {
-            Assert.True(dstore.InsertObject(new TestItemWithEnum()
-                {
-                    ValueOne = Data.Var1,
-                    ValueTwo = Data.Var2,
-                    AnotherValue = 12
-                }));
+            Assert.IsTrue(dstore.InsertObject(new TestItemWithEnum()
+            {
+                ValueOne = Data.Var1,
+                ValueTwo = Data.Var2,
+                AnotherValue = 12
+            }));
 
             TestItemWithEnum loaded = dstore.LoadObject<TestItemWithEnum>(1);
-            Assert.NotNull(loaded);
-            Assert.True(loaded.ValueOne == Data.Var1);
-            Assert.True(loaded.ValueTwo.Value == Data.Var2);
-            Assert.True(loaded.ValueTwo.Value == Data.Var2);
-            Assert.True(loaded.AnotherValue.Value == 12);
-            Assert.False(loaded.AnotherValueTwo.HasValue);
+            Assert.IsNotNull(loaded);
+            Assert.IsTrue(loaded.ValueOne == Data.Var1);
+            Assert.IsTrue(loaded.ValueTwo.Value == Data.Var2);
+            Assert.IsTrue(loaded.ValueTwo.Value == Data.Var2);
+            Assert.IsTrue(loaded.AnotherValue.Value == 12);
+            Assert.IsFalse(loaded.AnotherValueTwo.HasValue);
         }
 
 #if(!DEBUG)
-        [Fact]
+        [TestMethod]
         public virtual void Test_Bulk_Insert()
         {
             int numItems = 300;
@@ -92,182 +93,173 @@ namespace DataAccess.DatabaseTests.Tests
             dstore.InsertObjects(items);
 
             List<TestBulkItem> loaded = dstore.LoadEntireTable<TestBulkItem>().ToList();
-            Assert.True(loaded.Count == numItems);
+            Assert.IsTrue(loaded.Count == numItems);
         }
 #endif
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Get_Data_Connection()
         {
-            Assert.NotNull(dstore.Connection.GetConnection());
+            Assert.IsNotNull(dstore.Connection.GetConnection());
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Get_Data_Command()
         {
-            Assert.NotNull(dstore.Connection.GetCommand());
+            Assert.IsNotNull(dstore.Connection.GetCommand());
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Get_Type_Converter()
         {
-            Assert.NotNull(dstore.Connection.CLRConverter);
+            Assert.IsNotNull(dstore.Connection.CLRConverter);
         }
 
-        [Fact]
+        [TestMethod]
         public abstract void Test_Can_Get_Escape_Sequences();
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Load_Object()
         {
             Test_Can_Insert_Object();
             TestItem ti = new TestItem();
             ti.id = 1;
 
-            Assert.True(dstore.LoadObject(ti));
-            Assert.True(!string.IsNullOrEmpty(ti.Something));
-            Assert.True(ti.Something.Equals("SomethingNew", StringComparison.InvariantCultureIgnoreCase));
+            Assert.IsTrue(dstore.LoadObject(ti));
+            Assert.IsTrue(!string.IsNullOrEmpty(ti.Something));
+            Assert.IsTrue(ti.Something.Equals("SomethingNew", StringComparison.InvariantCultureIgnoreCase));
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Load_Object_By_Key()
         {
             TestItem newObject = new TestItem();
             newObject.Something = "A Test String";
-            Assert.True(dstore.InsertObject(newObject));
+            Assert.IsTrue(dstore.InsertObject(newObject));
             TestItem ti = dstore.LoadObject(typeof(TestItem), newObject.id) as TestItem;
 
-            Assert.True(dstore.LoadObject(ti));
-            Assert.True(!string.IsNullOrEmpty(ti.Something));
-            Assert.True(ti.id == 1);
-            Assert.True(ti.Something.Equals("A Test String", StringComparison.InvariantCultureIgnoreCase));
+            Assert.IsTrue(dstore.LoadObject(ti));
+            Assert.IsTrue(!string.IsNullOrEmpty(ti.Something));
+            Assert.IsTrue(ti.id == 1);
+            Assert.IsTrue(ti.Something.Equals("A Test String", StringComparison.InvariantCultureIgnoreCase));
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Load_Object_By_Key_Templeted()
         {
             TestItem newObject = new TestItem();
             newObject.Something = "A Test String";
-            Assert.True(dstore.InsertObject(newObject));
+            Assert.IsTrue(dstore.InsertObject(newObject));
 
             TestItem ti = dstore.LoadObject<TestItem>(newObject.id);
 
-            Assert.True(dstore.LoadObject(ti));
-            Assert.True(!string.IsNullOrEmpty(ti.Something));
-            Assert.True(ti.id == 1);
-            Assert.True(ti.Something.Equals("A Test String", StringComparison.InvariantCultureIgnoreCase));
+            Assert.IsTrue(dstore.LoadObject(ti));
+            Assert.IsTrue(!string.IsNullOrEmpty(ti.Something));
+            Assert.IsTrue(ti.id == 1);
+            Assert.IsTrue(ti.Something.Equals("A Test String", StringComparison.InvariantCultureIgnoreCase));
 
             ti = dstore.LoadObject<TestItem>(1, false);
 
-            Assert.True(dstore.LoadObject(ti));
-            Assert.True(!string.IsNullOrEmpty(ti.Something));
-            Assert.True(ti.id == 1);
-            Assert.True(ti.Something.Equals("A Test String", StringComparison.InvariantCultureIgnoreCase));
+            Assert.IsTrue(dstore.LoadObject(ti));
+            Assert.IsTrue(!string.IsNullOrEmpty(ti.Something));
+            Assert.IsTrue(ti.id == 1);
+            Assert.IsTrue(ti.Something.Equals("A Test String", StringComparison.InvariantCultureIgnoreCase));
         }
 
-        [Fact]
+        [TestMethod, ExpectedException(typeof(DataStoreException))]
         public virtual void Test_Cannot_Load_By_Key_With_Multiple_Keys()
         {
-            Assert.Throws(typeof(DataStoreException), () =>
-            {
-                TestItem ti = dstore.LoadObject(typeof(TestItemTwoKeys), 1) as TestItem;
-            });
+            TestItem ti = dstore.LoadObject(typeof(TestItemTwoKeys), 1) as TestItem;
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Insert_Object()
         {
             TestItem ti = new TestItem();
             ti.Something = "SomethingNew";
-            Assert.True(dstore.InsertObject(ti));
+            Assert.IsTrue(dstore.InsertObject(ti));
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Get_Key_For_Item()
         {
             TestItem ti = new TestItem();
             ti.id = 1;
 
-            Assert.True(((int)dstore.GetKeyForItemType(typeof(TestItem), ti)) == 1);
+            Assert.IsTrue(((int)dstore.GetKeyForItemType(typeof(TestItem), ti)) == 1);
         }
 
-        [Fact]
+        [TestMethod, ExpectedException(typeof(DataStoreException))]
         public virtual void Test_Get_Key_Fails_For_Many_Keys()
         {
-            Assert.Throws(typeof(DataStoreException), () =>
-            {
-                dstore.GetKeyForItemType(typeof(TestItemTwoKeys), null);
-            });
+            dstore.GetKeyForItemType(typeof(TestItemTwoKeys), null);
         }
 
-        [Fact]
+        [TestMethod, ExpectedException(typeof(DataStoreException))]
         public virtual void Test_Get_Key_Fails_For_No_Keys()
         {
-            Assert.Throws(typeof(DataStoreException), () =>
-            {
-                dstore.GetKeyForItemType(typeof(TestItemNoKey), null);
-            });
+            dstore.GetKeyForItemType(typeof(TestItemNoKey), null);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Delete_Item()
         {
             Test_Can_Insert_Object();
             List<TestItem> items = dstore.LoadEntireTable<TestItem>().OrderBy(R => R.id).ToList();
-            Assert.True(dstore.DeleteObject((items.Last())));
-            Assert.Null(dstore.LoadObject<TestItem>(items.Last().id));
+            Assert.IsTrue(dstore.DeleteObject(items.Last()));
+            Assert.IsNull(dstore.LoadObject<TestItem>(items.Last().id));
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Delete_Item_By_Key()
         {
             Test_Can_Insert_Object();
             List<TestItem> items = dstore.LoadEntireTable<TestItem>().OrderBy(R => R.id).ToList();
-            Assert.True(dstore.DeleteObject(typeof(TestItem), items.Last().id));
-            Assert.Null(dstore.LoadObject<TestItem>(items.Last().id));
+            Assert.IsTrue(dstore.DeleteObject(typeof(TestItem), items.Last().id));
+            Assert.IsNull(dstore.LoadObject<TestItem>(items.Last().id));
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Delete_Item_Templeted()
         {
             Test_Can_Insert_Object();
             List<TestItem> items = dstore.LoadEntireTable<TestItem>().OrderBy(R => R.id).ToList();
-            Assert.True(dstore.DeleteObject<TestItem>((items.Last().id)));
-            Assert.Null(dstore.LoadObject<TestItem>(items.Last().id));
+            Assert.IsTrue(dstore.DeleteObject<TestItem>((items.Last().id)));
+            Assert.IsNull(dstore.LoadObject<TestItem>(items.Last().id));
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Load_Entire_Table()
         {
             IEnumerable<object> items = dstore.LoadEntireTable(typeof(TestItem));
-            Assert.True(items != null);
+            Assert.IsTrue(items != null);
             foreach (object o in items)
             {
-                Assert.True(o != null);
+                Assert.IsTrue(o != null);
             }
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Load_Entire_Table_Templeted()
         {
             IEnumerable<TestItem> items = dstore.LoadEntireTable<TestItem>();
-            Assert.True(items != null);
+            Assert.IsTrue(items != null);
             foreach (TestItem o in items)
             {
-                Assert.True(o != null);
-                Assert.True(o.id != 0);
-                Assert.True(!string.IsNullOrEmpty(o.Something));
+                Assert.IsTrue(o != null);
+                Assert.IsTrue(o.id != 0);
+                Assert.IsTrue(!string.IsNullOrEmpty(o.Something));
             }
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Is_new()
         {
             Test_Can_Insert_Object();
             IEnumerable<TestItem> items = dstore.LoadEntireTable<TestItem>();
-            Assert.True(!dstore.IsNew(items.ElementAt(0)));
+            Assert.IsTrue(!dstore.IsNew(items.ElementAt(0)));
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Insert_Multiple_Items()
         {
             List<TestItem> items = new List<TestItem>();
@@ -275,186 +267,183 @@ namespace DataAccess.DatabaseTests.Tests
             {
                 items.Add(new TestItem() { Something = Guid.NewGuid().ToString() });
             }
-            Assert.True(dstore.InsertObjects(items));
+            Assert.IsTrue(dstore.InsertObjects(items));
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Save_Object()
         {
             TestItemAdditionalInit newItem = new TestItemAdditionalInit();
             newItem.Something = "a";
             dstore.SaveObject(newItem);
 
-            Assert.True(newItem.id > 0);
-            Assert.NotNull(dstore.LoadObject<TestItemAdditionalInit>(1));
+            Assert.IsTrue(newItem.id > 0);
+            Assert.IsNotNull(dstore.LoadObject<TestItemAdditionalInit>(1));
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Additional_Init_Is_Called()
         {
             TestItemAdditionalInit newItem = new TestItemAdditionalInit();
             newItem.Something = "a";
             dstore.InsertObject(newItem);
 
-            Assert.True(dstore.LoadObject(newItem));
-            Assert.True(!string.IsNullOrEmpty(newItem.Something));
-            Assert.True(newItem.Something.Equals("a", StringComparison.InvariantCultureIgnoreCase));
-            Assert.True(newItem.Calculated == 15);
+            Assert.IsTrue(dstore.LoadObject(newItem));
+            Assert.IsTrue(!string.IsNullOrEmpty(newItem.Something));
+            Assert.IsTrue(newItem.Something.Equals("a", StringComparison.InvariantCultureIgnoreCase));
+            Assert.IsTrue(newItem.Calculated == 15);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Additional_Init_With_DataStore_Parm_Is_Called()
         {
             TestItemAdditionalInitWithParm newItem = new TestItemAdditionalInitWithParm();
             newItem.Something = "a";
             dstore.InsertObject(newItem);
 
-            Assert.True(dstore.LoadObject(newItem));
-            Assert.True(!string.IsNullOrEmpty(newItem.Something));
-            Assert.True(newItem.Something.Equals("a", StringComparison.InvariantCultureIgnoreCase));
-            Assert.True(newItem.Calculated > 0);
+            Assert.IsTrue(dstore.LoadObject(newItem));
+            Assert.IsTrue(!string.IsNullOrEmpty(newItem.Something));
+            Assert.IsTrue(newItem.Something.Equals("a", StringComparison.InvariantCultureIgnoreCase));
+            Assert.IsTrue(newItem.Calculated > 0);
         }
 
-        [Fact]
+        [TestMethod, ExpectedException(typeof(DataStoreException))]
         public virtual void Test_Additional_Init_With_Bad_Parm_Fails()
         {
-            Assert.Throws(typeof(DataStoreException), () =>
-            {
-                TestItemAdditionalInitWithBadParm newItem = new TestItemAdditionalInitWithBadParm();
-                newItem.Something = "a";
-                dstore.InsertObject(newItem);
+            TestItemAdditionalInitWithBadParm newItem = new TestItemAdditionalInitWithBadParm();
+            newItem.Something = "a";
+            dstore.InsertObject(newItem);
 
-                Assert.True(dstore.LoadObject(newItem));
-                Assert.True(!string.IsNullOrEmpty(newItem.Something));
-                Assert.True(newItem.Something.Equals("a", StringComparison.InvariantCultureIgnoreCase));
-                Assert.True(newItem.Calculated > 0);
-            });
+            Assert.IsTrue(dstore.LoadObject(newItem));
+            Assert.IsTrue(!string.IsNullOrEmpty(newItem.Something));
+            Assert.IsTrue(newItem.Something.Equals("a", StringComparison.InvariantCultureIgnoreCase));
+            Assert.IsTrue(newItem.Calculated > 0);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Update_Item()
         {
             Test_Can_Insert_Object();
             IList<TestItem> items = dstore.LoadEntireTable<TestItem>().OrderBy(R => R.id).ToList();
-            Assert.True(items.Count > 0);
+            Assert.IsTrue(items.Count > 0);
             TestItem ti = items.Last();
 
             string value = ti.Something;
             ti.Something = Guid.NewGuid().ToString();
 
-            Assert.True(dstore.UpdateObject(ti));
+            Assert.IsTrue(dstore.UpdateObject(ti));
 
             dstore.LoadObject(ti);
-            Assert.True(ti.Something != value);
+            Assert.IsTrue(ti.Something != value);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void QueryDataConstructorTest()
         {
             using (QueryData target = new QueryData())
             {
-                Assert.False(target.QuerySuccessful);
+                Assert.IsFalse(target.QuerySuccessful);
             }
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Parse_Object()
         {
             TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItem));
-            Assert.NotNull(ti);
+            Assert.IsNotNull(ti);
 
-            Assert.NotNull(ti.DataFields);
+            Assert.IsNotNull(ti.DataFields);
             foreach (DataFieldInfo dfi in ti.DataFields)
             {
-                Assert.True(dfi.LoadField);
-                if (dfi.PrimaryKey) Assert.False(dfi.SetOnInsert);
-                else Assert.True(dfi.SetOnInsert);
-                Assert.True(!string.IsNullOrEmpty(dfi.FieldName));
-                Assert.NotNull(dfi.Getter);
-                Assert.NotNull(dfi.Setter);
+                Assert.IsTrue(dfi.LoadField);
+                if (dfi.PrimaryKey) Assert.IsFalse(dfi.SetOnInsert);
+                else Assert.IsTrue(dfi.SetOnInsert);
+                Assert.IsTrue(!string.IsNullOrEmpty(dfi.FieldName));
+                Assert.IsNotNull(dfi.Getter);
+                Assert.IsNotNull(dfi.Setter);
             }
 
 
-            Assert.False(ti.BypassValidation);
-            Assert.NotNull(ti.AdditionalInit);
-            Assert.True(ti.AdditionalInit.Count == 0);
+            Assert.IsFalse(ti.BypassValidation);
+            Assert.IsNotNull(ti.AdditionalInit);
+            Assert.IsTrue(ti.AdditionalInit.Count == 0);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_parse_AdditionalInit()
         {
             TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemAdditionalInit));
-            Assert.NotNull(ti);
-            Assert.NotNull(ti.AdditionalInit);
-            Assert.True(ti.AdditionalInit.Count == 1);
+            Assert.IsNotNull(ti);
+            Assert.IsNotNull(ti.AdditionalInit);
+            Assert.IsTrue(ti.AdditionalInit.Count == 1);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_parse_ByPass()
         {
             TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemBypassValidation));
-            Assert.NotNull(ti);
-            Assert.True(ti.BypassValidation);
+            Assert.IsNotNull(ti);
+            Assert.IsTrue(ti.BypassValidation);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Parse_Foreign_Key()
         {
             TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemWithForeignKey));
-            Assert.NotNull(ti);
-            Assert.NotNull(ti.DataFields);
+            Assert.IsNotNull(ti);
+            Assert.IsNotNull(ti.DataFields);
             var target = ti.DataFields.Where(R => R.PrimaryKeyType != null).FirstOrDefault();
-            Assert.NotNull(target);
+            Assert.IsNotNull(target);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Parse_Key_Attribute()
         {
             TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemWithKeyAttribute));
-            Assert.NotNull(ti);
-            Assert.NotNull(ti.DataFields);
+            Assert.IsNotNull(ti);
+            Assert.IsNotNull(ti.DataFields);
             var target = ti.DataFields.Where(R => R.PrimaryKey).FirstOrDefault();
-            Assert.NotNull(target);
+            Assert.IsNotNull(target);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Parse_Table_Attribute()
         {
             TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemNewTableName));
-            Assert.NotNull(ti);
-            Assert.True(ti.TableName.Contains("SomeNewTable"));
+            Assert.IsNotNull(ti);
+            Assert.IsTrue(ti.TableName.Contains("SomeNewTable"));
 
             ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemNewSchema));
-            Assert.NotNull(ti);
-            Assert.True(ti.Schema.Contains("NewSchema"));
+            Assert.IsNotNull(ti);
+            Assert.IsTrue(ti.Schema.Contains("NewSchema"));
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_get_primary_Keys()
         {
-            var nonPrimary = dstore.TypeInformationParser.GetPrimaryKeys(typeof(TestItemWithKeyAttribute)).Where(R => !R.PrimaryKey).FirstOrDefault();
-            Assert.Null(nonPrimary);
+            var nonPrimary = dstore.TypeInformationParser.GetPrimaryKeys(typeof(TestItemWithKeyAttribute)).Where(R => R.PrimaryKey).FirstOrDefault();
+            Assert.IsNotNull(nonPrimary);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Get_Type_Fields()
         {
             IEnumerable<DataFieldInfo> items = dstore.TypeInformationParser.GetTypeFields(typeof(TestItem));
-            Assert.NotNull(items);
-            Assert.NotNull(items.Count() > 0);
+            Assert.IsNotNull(items);
+            Assert.IsNotNull(items.Count() > 0);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Ignored_Field_Is_Ignored()
         {
             IEnumerable<DataFieldInfo> fields = dstore.TypeInformationParser.GetTypeFields(typeof(TestItemIgnoredField));
-            Assert.True(fields != null);
-            Assert.True(fields.Count() == 2);
+            Assert.IsTrue(fields != null);
+            Assert.IsTrue(fields.Count() == 2);
             var ignored = fields.Where(R => R.PropertyName.Equals("Ignored", StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-            Assert.True(ignored == null);
+            Assert.IsTrue(ignored == null);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Parse_View_Attribute()
         {
             try
@@ -467,17 +456,17 @@ namespace DataAccess.DatabaseTests.Tests
             }
 
             IEnumerable<DataFieldInfo> fields = dstore.TypeInformationParser.GetTypeFields(typeof(ViewObject));
-            Assert.True(fields != null);
-            Assert.True(fields.Count() == 1);
+            Assert.IsTrue(fields != null);
+            Assert.IsTrue(fields.Count() == 1);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void CanStartTransaction()
         {
             dstore.StartTransaction();
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void CanCommitTransaction()
         {
             dstore.TypeInformationParser.GetTypeInfo(typeof(TestItem));
@@ -485,19 +474,19 @@ namespace DataAccess.DatabaseTests.Tests
             using (var context = dstore.StartTransaction())
             {
                 ti = new TestItem()
-                    {
-                        Something = "foo"
-                    };
+                {
+                    Something = "foo"
+                };
 
                 context.Instance.InsertObject(ti);
                 context.Commit();
             }
 
             IEnumerable<TestItem> items = dstore.LoadEntireTable<TestItem>();
-            Assert.True(items.Count() == 1);
+            Assert.IsTrue(items.Count() == 1);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void CanRollbackTransaction()
         {
             dstore.TypeInformationParser.GetTypeInfo(typeof(TestItem));
@@ -507,7 +496,7 @@ namespace DataAccess.DatabaseTests.Tests
             };
 
             dstore.InsertObject(ti);
-            Assert.True(dstore.LoadObject<TestItem>(ti.id).Something == ti.Something);
+            Assert.IsTrue(dstore.LoadObject<TestItem>(ti.id).Something == ti.Something);
 
             using (var context = dstore.StartTransaction())
             {
@@ -517,11 +506,11 @@ namespace DataAccess.DatabaseTests.Tests
             }
 
             IEnumerable<TestItem> items = dstore.LoadEntireTable<TestItem>().ToList();
-            Assert.True(items.Count() == 1);
-            Assert.True(items.First().Something == "foo");
+            Assert.IsTrue(items.Count() == 1);
+            Assert.IsTrue(items.First().Something == "foo");
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Can_Do_IN()
         {
             dstore.InsertObject(new TestItem() { Something = "foo" });
@@ -535,10 +524,10 @@ namespace DataAccess.DatabaseTests.Tests
             List<int> ids = items.Select(r => r.id).ToList();
             IEnumerable<TestItem> items2 = dstore.LoadObjects<TestItem>(ids).ToList();
 
-            Assert.True(items.Count() == items2.Count());
+            Assert.IsTrue(items.Count() == items2.Count());
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Can_Do_Command_With_Parameter_Object()
         {
             dstore.InsertObject(new TestItem() { Something = "foo" });
@@ -546,11 +535,11 @@ namespace DataAccess.DatabaseTests.Tests
             dstore.InsertObject(new TestItem() { Something = "foobar" });
 
             var items = dstore.GetCommand<TestItem>().ExecuteQuery("select * from TestItems where Something = @query", new { query = "foo" });
-            Assert.True(items != null);
-            Assert.True(items.Count() == 1);
+            Assert.IsTrue(items != null);
+            Assert.IsTrue(items.Count() == 1);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Can_Do_Command_Without_Parameter_Object()
         {
             dstore.InsertObject(new TestItem() { Something = "foo" });
@@ -558,11 +547,11 @@ namespace DataAccess.DatabaseTests.Tests
             dstore.InsertObject(new TestItem() { Something = "foobar" });
 
             var items = dstore.GetCommand<TestItem>().ExecuteQuery("select * from TestItems");
-            Assert.True(items != null);
-            Assert.True(items.Count() == 3);
+            Assert.IsTrue(items != null);
+            Assert.IsTrue(items.Count() == 3);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Can_Do_Command_And_Set_Markers()
         {
             dstore.InsertObject(new TestItem() { Something = "foo" });
@@ -573,25 +562,25 @@ namespace DataAccess.DatabaseTests.Tests
             command.SetParameters(new { query = "foo" });
 
             var items = command.ExecuteCommandGetList();
-            Assert.True(items != null);
-            Assert.True(items.Count() == 1);
+            Assert.IsTrue(items != null);
+            Assert.IsTrue(items.Count() == 1);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Private_Additional_Init_Is_Called()
         {
             dstore.InsertObject(new TestItemPrivateInitMethod() { Name = "foo" });
-            Assert.True(dstore.LoadObject<TestItemPrivateInitMethod>(1).Length == 3);
+            Assert.IsTrue(dstore.LoadObject<TestItemPrivateInitMethod>(1).Length == 3);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Additional_Init_Is_Called_When_On_Parent_Class()
         {
             dstore.InsertObject(new ChildClassWIithParentPrivateInitMethod() { Name = "foo" });
-            Assert.True(dstore.LoadObject<ChildClassWIithParentPrivateInitMethod>(1).Length == 3);
+            Assert.IsTrue(dstore.LoadObject<ChildClassWIithParentPrivateInitMethod>(1).Length == 3);
         }
 
-        [Fact]
+        [TestMethod]
         public void Test_Update_Is_Closing_Connections()
         {
             dstore.InsertObject(new ChildClassWIithParentPrivateInitMethod() { Name = "foo" });
@@ -601,7 +590,7 @@ namespace DataAccess.DatabaseTests.Tests
             }
         }
 
-        [Fact]
+        [TestMethod]
         public void Test_Insert_Is_Closing_Connections()
         {
             dstore.InsertObject(new ChildClassWIithParentPrivateInitMethod() { Name = "foo" });
@@ -611,7 +600,7 @@ namespace DataAccess.DatabaseTests.Tests
             }
         }
 
-        [Fact]
+        [TestMethod]
         public void Test_Transaction_Is_Closing_Connections()
         {
             dstore.InsertObject(new ChildClassWIithParentPrivateInitMethod() { Name = "foo" });

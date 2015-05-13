@@ -1,14 +1,15 @@
 ﻿using DataAccess.Core.Interfaces;
 using DataAccess.DatabaseTests.DataObjects;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Text;
-using Xunit;
 
 namespace DataAccess.DatabaseTests.Tests
 {
+    [TestClass]
     public abstract class DatabaseCommandTests
     {
         protected IDataStore dStore;
@@ -20,7 +21,7 @@ namespace DataAccess.DatabaseTests.Tests
             dStore.InitDataStore();
         }
 
-        [Fact]
+        [TestMethod]
         public void CanDoDatabaseCommandWithDynamicObject()
         {
             dStore.InsertObject(new TestItemPrimaryKey() { Name = "Hello", ID = Guid.NewGuid().ToString() });
@@ -35,10 +36,10 @@ namespace DataAccess.DatabaseTests.Tests
             search.Name = "Hello";
 
             IEnumerable<TestItemPrimaryKey> results = dStore.GetCommand<TestItemPrimaryKey>().ExecuteQuery("select * from TestItemPrimaryKeys where Name = @Name", search);
-            Assert.NotNull(results);
+            Assert.IsNotNull(results);
 
             var list = results.ToList();
-            Assert.True(list.Count() == 7);
+            Assert.IsTrue(list.Count() == 7);
 
         }
     }

@@ -5,11 +5,12 @@ using System.Text;
 using DataAccess.DatabaseTests.Tests;
 using DataAccess.Core.Interfaces;
 using DataAccess.MySql;
-using Xunit;
 using MySql.Data.Types;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DataAccess.DatabaseTests
 {
+    [TestClass]
     public class MySqlFunction : FunctionTests
     {
         public class TestItemWithGeography
@@ -25,30 +26,30 @@ namespace DataAccess.DatabaseTests
 
         public override void Test_Can_Get_Escape_Sequences()
         {
-            Assert.True(dstore.Connection.LeftEscapeCharacter.Equals("`"));
-            Assert.True(dstore.Connection.RightEscapeCharacter.Equals("`"));
+            Assert.IsTrue(dstore.Connection.LeftEscapeCharacter.Equals("`"));
+            Assert.IsTrue(dstore.Connection.RightEscapeCharacter.Equals("`"));
         }
 
-        [Fact]
+        [TestMethod]
         public void Test_Can_Insert_Spacial_Type()
         {
-            Assert.True(dstore.InsertObject(new TestItemWithGeography()
+            Assert.IsTrue(dstore.InsertObject(new TestItemWithGeography()
             {
                 Location = new MySqlGeometry(1, 1, 4326)
             }));
         }
 
-        [Fact]
+        [TestMethod]
         public void Test_Can_CRUD_Spacial_Type()
         {
-            Assert.True(dstore.InsertObject(new TestItemWithGeography()
+            Assert.IsTrue(dstore.InsertObject(new TestItemWithGeography()
             {
                 Location = new MySqlGeometry(1, 1, 4326)
             }));
 
             TestItemWithGeography loaded = dstore.LoadObject<TestItemWithGeography>(1);
-            Assert.NotNull(loaded);
-            Assert.NotNull(loaded.Location);
+            Assert.IsNotNull(loaded);
+            Assert.IsNotNull(loaded.Location);
         }
     }
 }

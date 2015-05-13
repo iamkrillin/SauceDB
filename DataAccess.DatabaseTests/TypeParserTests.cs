@@ -1,14 +1,15 @@
 ﻿using DataAccess.Core;
 using DataAccess.Core.Data;
 using DataAccess.DatabaseTests.DataObjects;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Xunit;
 
 namespace DataAccess.DatabaseTests
 {
+    [TestClass]
     public class TypeParserTests
     {
         private TypeParser _parser;
@@ -18,37 +19,37 @@ namespace DataAccess.DatabaseTests
             _parser = new TypeParser(new FakeDataStore());
         }
 
-        [Fact]
+        [TestMethod]
         public void Test_FieldType_IsParsed_User_String()
         {
             TypeInfo ti = _parser.GetTypeInfo(typeof(TestItemDefaultValueDifferntFieldType));
-            Assert.True(ti.DataFields[1].DataFieldType == Core.Attributes.FieldType.UserString);
-            Assert.True(ti.DataFields[1].DataFieldString == "varchar(1000)");
+            Assert.IsTrue(ti.DataFields[1].DataFieldType == Core.Attributes.FieldType.UserString);
+            Assert.IsTrue(ti.DataFields[1].DataFieldString == "varchar(1000)");
         }
 
-        [Fact]
+        [TestMethod]
         public void Test_Field_Lenth_Is_Parsed()
         {
             TypeInfo ti = _parser.GetTypeInfo(typeof(TestItemSmallString));
-            Assert.True(ti.DataFields[1].FieldLength == 5);
+            Assert.IsTrue(ti.DataFields[1].FieldLength == 5);
         }
 
-        [Fact]
+        [TestMethod]
         public void Test_Field_Length_Is_Null_When_Not_Specified()
         {
             TypeInfo ti = _parser.GetTypeInfo(typeof(TestItem));
             foreach (var v in ti.DataFields)
-                Assert.True(!v.FieldLength.HasValue);
+                Assert.IsTrue(!v.FieldLength.HasValue);
         }
 
-        [Fact]
+        [TestMethod]
         public void Test_FieldType_Is_Default_When_Not_Specified()
         {
             TypeInfo ti = _parser.GetTypeInfo(typeof(TestItem));
-            Assert.NotNull(ti);
-            Assert.True(ti.DataFields.Count == 3);
+            Assert.IsNotNull(ti);
+            Assert.IsTrue(ti.DataFields.Count == 3);
             foreach (var v in ti.DataFields)
-                Assert.True(v.DataFieldType == Core.Attributes.FieldType.Default);
+                Assert.IsTrue(v.DataFieldType == Core.Attributes.FieldType.Default);
         }
     }
 }

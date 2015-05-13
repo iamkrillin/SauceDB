@@ -5,13 +5,14 @@ using System.Text;
 using DataAccess.DatabaseTests.Tests;
 using DataAccess.Core.Interfaces;
 using DataAccess.SqlServer;
-using Xunit;
 using DataAccess.Core.Schema;
 using DataAccess.DatabaseTests.DataObjects;
 using Microsoft.SqlServer.Types;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DataAccess.DatabaseTests
 {
+    [TestClass]
     public class SqlServerFunctionTests : FunctionTests
     {
         public override IDataStore GetDataStore()
@@ -21,38 +22,38 @@ namespace DataAccess.DatabaseTests
 
         public override void Test_Can_Get_Escape_Sequences()
         {
-            Assert.True(dstore.Connection.LeftEscapeCharacter.Equals("["));
-            Assert.True(dstore.Connection.RightEscapeCharacter.Equals("]"));
+            Assert.IsTrue(dstore.Connection.LeftEscapeCharacter.Equals("["));
+            Assert.IsTrue(dstore.Connection.RightEscapeCharacter.Equals("]"));
         }
 
-        [Fact]
+        [TestMethod]
         public void Test_TSql_Lower_Than_Min_Date_Returns_Null()
         {
             SqlServerTypeConverter tConverter = new SqlServerTypeConverter();
             object result = tConverter.ConvertToType<DateTime?>(DateTime.MinValue);
-            Assert.Null(result);
+            Assert.IsNull(result);
         }
 
-        [Fact]
+        [TestMethod]
         public void Test_Can_Insert_Spacial_Type()
         {
-            Assert.True(dstore.InsertObject(new TestItemWithGeography() 
+            Assert.IsTrue(dstore.InsertObject(new TestItemWithGeography() 
             {
                 Location = SqlGeography.Point(1, 1, 4326)
             }));
         }
 
-        [Fact]
+        [TestMethod]
         public void Test_Can_CRUD_Spacial_Type()
         {
-            Assert.True(dstore.InsertObject(new TestItemWithGeography()
+            Assert.IsTrue(dstore.InsertObject(new TestItemWithGeography()
             {
                 Location = SqlGeography.Point(1, 1, 4326)
             }));
 
             TestItemWithGeography loaded = dstore.LoadObject<TestItemWithGeography>(1);
-            Assert.NotNull(loaded);
-            Assert.NotNull(loaded.Location);
+            Assert.IsNotNull(loaded);
+            Assert.IsNotNull(loaded.Location);
         }
     }
 }

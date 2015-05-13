@@ -5,15 +5,16 @@ using System.Text;
 using DataAccess.DatabaseTests.Tests;
 using DataAccess.Core.Interfaces;
 using DataAccess.SQLite;
-using Xunit;
 using DataAccess.Core.Data;
 using System.Data.SQLite;
 using DataAccess.DatabaseTests.DataObjects;
 using System.IO;
 using DataAccess.Core.Attributes;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DataAccess.DatabaseTests
 {
+    [TestClass]
     public class SqlLiteFunctionTests : FunctionTests
     {
         public override IDataStore GetDataStore()
@@ -57,8 +58,8 @@ namespace DataAccess.DatabaseTests
 
         public override void Test_Can_Get_Escape_Sequences()
         {
-            Assert.True(dstore.Connection.LeftEscapeCharacter.Equals("\""));
-            Assert.True(dstore.Connection.RightEscapeCharacter.Equals("\""));
+            Assert.IsTrue(dstore.Connection.LeftEscapeCharacter.Equals("\""));
+            Assert.IsTrue(dstore.Connection.RightEscapeCharacter.Equals("\""));
         }
 
 #if(!DEBUG)
@@ -78,7 +79,7 @@ namespace DataAccess.DatabaseTests
             dstore.InsertObjects(items);
 
             List<TestItem> loaded = dstore.LoadEntireTable<TestItem>().ToList();
-            Assert.True(loaded.Count == 100);
+            Assert.IsTrue(loaded.Count == 100);
         }
 #endif
 
@@ -95,15 +96,15 @@ namespace DataAccess.DatabaseTests
             public bool Default { get; set; }
         }
 
-        [Fact]
+        [TestMethod]
         public void Test_Can_Load_With_Keyword()
         {
             dstore.InsertObject(new Foo() { Default = true });
-            Assert.True(dstore.LoadObject<Foo>(1).Default);
+            Assert.IsTrue(dstore.LoadObject<Foo>(1).Default);
 
             dstore.GetCommand<int>().ExecuteDBCommand("create view foobar as select * from foos;");
 
-            Assert.True(dstore.LoadObject<FooBar>(1).Default);
+            Assert.IsTrue(dstore.LoadObject<FooBar>(1).Default);
         }
     }
 }

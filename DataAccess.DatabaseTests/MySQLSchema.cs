@@ -2,16 +2,17 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Xunit;
 using DataAccess.DatabaseTests.Tests;
 using DataAccess.Core.Interfaces;
 using DataAccess.MySql;
 using DataAccess.Core.Data;
 using DataAccess.DatabaseTests.DataObjects;
 using MySql.Data.MySqlClient;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DataAccess.DatabaseTests
 {
+    [TestClass]
     public class MySQLSchema : SchemaValidatorTests
     {
         public override IDataStore GetDataStore()
@@ -19,11 +20,11 @@ namespace DataAccess.DatabaseTests
             return MySqlServerConnection.GetDataStore("server=mysql;user id=test;password=test;persist security info=True;database=test");
         }
 
-        [Fact]
+        [TestMethod]
         public override void Test_Can_Modify_Column_Type()
         {
             TypeInfo ti1 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemPrimaryKey));
-            Assert.True(ti1 != null);
+            Assert.IsTrue(ti1 != null);
 
             TestItemPrimaryKey tipk = new TestItemPrimaryKey();
             tipk.ID = Guid.NewGuid().ToString();
@@ -33,26 +34,22 @@ namespace DataAccess.DatabaseTests
 
 
             TypeInfo ti2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemPrimaryKeyDateFieldDifferentType));
-            Assert.True(ti2 != null);
+            Assert.IsTrue(ti2 != null);
         }
 
-        [Fact]
+        [TestMethod, ExpectedException(typeof(MySqlException))]
         public override void Test_Honors_Field_Length()
         {
             base.Test_Honors_Field_Length();
-
-            Assert.Throws(typeof(MySqlException), () =>
-            {
-                dstore.InsertObject(new TestItemSmallString() { SmallString = "IAMHoweverToLongForTheFieldLength" });
-            });
+            dstore.InsertObject(new TestItemSmallString() { SmallString = "IAMHoweverToLongForTheFieldLength" });
         }
 
-        [Fact]
+        [TestMethod]
         public void Test_MySql_Changes_String_Max_To_Text()
         {
             dstore.InsertObject(new TestObjectMaxTextField() { Text = "Hello"});
             var objects = dstore.SchemaValidator.TableValidator.GetObjects();
-            Assert.True(objects.ElementAt(0).Columns[1].DataType.Equals("longtext"));
+            Assert.IsTrue(objects.ElementAt(0).Columns[1].DataType.Equals("longtext"));
         }
     }
 }

@@ -2,15 +2,16 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Xunit;
 using DataAccess.Core.Interfaces;
 using DataAccess.Core;
 using DataAccess.Core.Data;
 using System.Data.SqlClient;
 using DataAccess.DatabaseTests.DataObjects;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DataAccess.DatabaseTests.Tests
 {
+    [TestClass]
     public abstract class LinqTests
     {
         protected IDataStore dStore;
@@ -22,25 +23,25 @@ namespace DataAccess.DatabaseTests.Tests
             dStore.InitDataStore();
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Where()
         {
             for (int i = 0; i < 10; i++)
                 dStore.InsertObject(new TestItem() { Something = "foo" });
             var result = dStore.Query<TestItem>().Where(R => R.Something == "foo").Take(2).ToList();
-            Assert.True(result.Count() == 2);
+            Assert.IsTrue(result.Count() == 2);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Return_Count()
         {
             for (int i = 0; i < 10; i++)
                 dStore.InsertObject(new TestItem() { Something = "foo" });
             var result = dStore.Query<TestItem>().Where(R => R.Something == "foo").Count();
-            Assert.True(result == 10);
+            Assert.IsTrue(result == 10);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Do_Join_And_Return_Aggregate_Object()
         {
             TestItemPrimaryKey newItem = new TestItemPrimaryKey() { Name = "Hello", ID = Guid.NewGuid().ToString() };
@@ -62,10 +63,10 @@ namespace DataAccess.DatabaseTests.Tests
                               x.Date
                           };
 
-            result.ToList().ForEach(R => Assert.True(!string.IsNullOrEmpty(R.Name)));
+            result.ToList().ForEach(R => Assert.IsTrue(!string.IsNullOrEmpty(R.Name)));
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Do_Join_And_Return_Compound_Object()
         {
             TestItemPrimaryKey newItem = new TestItemPrimaryKey() { Name = "Hello", ID = Guid.NewGuid().ToString() };
@@ -86,10 +87,10 @@ namespace DataAccess.DatabaseTests.Tests
                              x
                          };
 
-            result.ToList().ForEach(R => Assert.True(!string.IsNullOrEmpty(R.x.Name)));
+            result.ToList().ForEach(R => Assert.IsTrue(!string.IsNullOrEmpty(R.x.Name)));
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Do_First()
         {
             dStore.InsertObject(new TestItemPrimaryKey() { Name = "Hello", ID = Guid.NewGuid().ToString() });
@@ -101,13 +102,13 @@ namespace DataAccess.DatabaseTests.Tests
             dStore.InsertObject(new TestItemPrimaryKey() { Name = "Hello", ID = Guid.NewGuid().ToString() });
 
             TestItemPrimaryKey item = dStore.Query<TestItemPrimaryKey>().First();
-            Assert.NotNull(item);
+            Assert.IsNotNull(item);
 
             item = dStore.Query<TestItemPrimaryKey>().FirstOrDefault();
-            Assert.NotNull(item);
+            Assert.IsNotNull(item);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Do_Skip_Take()
         {
             dStore.InsertObject(new TestItemPrimaryKey() { Name = "Hello", ID = Guid.NewGuid().ToString() });
@@ -119,11 +120,11 @@ namespace DataAccess.DatabaseTests.Tests
             dStore.InsertObject(new TestItemPrimaryKey() { Name = "Hello", ID = Guid.NewGuid().ToString() });
 
             TestItemPrimaryKey item = dStore.Query<TestItemPrimaryKey>().OrderBy(R => R.ID).Skip(2).Take(1).First();
-            Assert.NotNull(item);
+            Assert.IsNotNull(item);
         }
 
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Do_Order_By()
         {
             dStore.InsertObject(new TestItemPrimaryKey() { Name = "Hello", ID = Guid.NewGuid().ToString() });
@@ -135,10 +136,10 @@ namespace DataAccess.DatabaseTests.Tests
             dStore.InsertObject(new TestItemPrimaryKey() { Name = "Hello", ID = Guid.NewGuid().ToString() });
 
             TestItemPrimaryKey item = dStore.Query<TestItemPrimaryKey>().OrderBy(R => R.ID).First();
-            Assert.NotNull(item);
+            Assert.IsNotNull(item);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_can_do_max()
         {
             dStore.InsertObject(new TestItem());
@@ -147,10 +148,10 @@ namespace DataAccess.DatabaseTests.Tests
             dStore.InsertObject(new TestItem());
 
             int ti = dStore.Query<TestItem>().Max(r => r.id);
-            Assert.True(ti == 4);
+            Assert.IsTrue(ti == 4);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Do_Starts_With()
         {
             dStore.InsertObject(new TestItemPrimaryKey() { Name = "Puppy ", ID = Guid.NewGuid().ToString() });
@@ -162,11 +163,11 @@ namespace DataAccess.DatabaseTests.Tests
             dStore.InsertObject(new TestItemPrimaryKey() { Name = "Kitten", ID = Guid.NewGuid().ToString() });
 
             var items = dStore.Query<TestItemPrimaryKey>().Where(R => R.Name.StartsWith("P"));
-            Assert.True(items != null);
-            Assert.True(items.Count() == 5);
+            Assert.IsTrue(items != null);
+            Assert.IsTrue(items.Count() == 5);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Do_Ends_With()
         {
             dStore.InsertObject(new TestItemPrimaryKey() { Name = "Puppy", ID = Guid.NewGuid().ToString() });
@@ -178,11 +179,11 @@ namespace DataAccess.DatabaseTests.Tests
             dStore.InsertObject(new TestItemPrimaryKey() { Name = "Kitten", ID = Guid.NewGuid().ToString() });
 
             var items = dStore.Query<TestItemPrimaryKey>().Where(R => R.Name.EndsWith("y"));
-            Assert.True(items != null);
-            Assert.True(items.Count() == 2);
+            Assert.IsTrue(items != null);
+            Assert.IsTrue(items.Count() == 2);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Delete_With_Expression()
         {
             dStore.InsertObject(new TestItemPrimaryKey() { Name = "Puppy", ID = Guid.NewGuid().ToString() });
@@ -194,10 +195,10 @@ namespace DataAccess.DatabaseTests.Tests
             dStore.InsertObject(new TestItemPrimaryKey() { Name = "Kitten", ID = Guid.NewGuid().ToString() });
 
             int items = dStore.DeleteObjects<TestItemPrimaryKey>(r => r.Name == "Doggy");
-            Assert.True(items == 1);
+            Assert.IsTrue(items == 1);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Do_Join_When_Two_Objects_Have_Same_Field()
         {
             TestJoinObjectSameFields o1 = new TestJoinObjectSameFields();
@@ -218,12 +219,12 @@ namespace DataAccess.DatabaseTests.Tests
                            SortOrder1 = i.SortOrder
                        };
 
-            Assert.True(data.Count() == 1);
-            Assert.True(data.First().SortOrder == 10);
-            Assert.True(data.First().SortOrder1 == 5);
+            Assert.IsTrue(data.Count() == 1);
+            Assert.IsTrue(data.First().SortOrder == 10);
+            Assert.IsTrue(data.First().SortOrder1 == 5);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Do_Projection_With_Different_Field_Names()
         {
             TestJoinObjectSameFields o1 = new TestJoinObjectSameFields();
@@ -244,12 +245,12 @@ namespace DataAccess.DatabaseTests.Tests
                            SortOrder1 = i.SortOrder
                        };
 
-            Assert.True(data.Count() == 1);
-            Assert.True(data.First().MySort == 10);
-            Assert.True(data.First().SortOrder1 == 5);
+            Assert.IsTrue(data.Count() == 1);
+            Assert.IsTrue(data.First().MySort == 10);
+            Assert.IsTrue(data.First().SortOrder1 == 5);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Do_Join_When_Two_Objects_Have_Same_Field_And_Only_Result_Field_Is_Aliased()
         {
             TestJoinObjectSameFields o1 = new TestJoinObjectSameFields();
@@ -269,22 +270,22 @@ namespace DataAccess.DatabaseTests.Tests
                            SortOrder1 = i.SortOrder
                        };
 
-            Assert.True(data.Count() == 1);
-            Assert.True(data.First().SortOrder1 == 5);
+            Assert.IsTrue(data.Count() == 1);
+            Assert.IsTrue(data.First().SortOrder1 == 5);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Query_Method_Honors_Predicates()
         {
             dStore.InsertObject(new TestItemWithPredicate() { Name = "foo", IsDeleted = false });
             dStore.InsertObject(new TestItemWithPredicate() { Name = "bar", IsDeleted = true });
 
-            Assert.True(dStore.Query<TestItemWithPredicate>().ToList().Count() == 1);
-            Assert.True(dStore.Query<TestItemWithPredicate>().First().Name.Equals("foo"));
+            Assert.IsTrue(dStore.Query<TestItemWithPredicate>().ToList().Count() == 1);
+            Assert.IsTrue(dStore.Query<TestItemWithPredicate>().First().Name.Equals("foo"));
         }
 
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Linq_Maps_Ids_Right_When_Projecting_More_Then_One_Object()
         {
             dStore.InsertObject(new TestItem() { Something = "Hello" });
@@ -304,13 +305,13 @@ namespace DataAccess.DatabaseTests.Tests
 
             foreach (var v in data)
             {
-                Assert.True(v != null);
-                Assert.True(v.i.id == 1);
-                Assert.True(v.x.id != 1);
+                Assert.IsTrue(v != null);
+                Assert.IsTrue(v.i.id == 1);
+                Assert.IsTrue(v.x.id != 1);
             }
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Do_In()
         {
             dStore.InsertObject(new TestItem() { Something = "Hello" });
@@ -328,11 +329,11 @@ namespace DataAccess.DatabaseTests.Tests
 
             IEnumerable<int> ids = new List<int>() { 1, 2 };
             var items = dStore.Query<TestItemWithForeignKey>().Where(r => ids.Contains(r.ForeignKey)).ToList();
-            Assert.NotNull(items);
-            Assert.True(items.Count == 6);
+            Assert.IsNotNull(items);
+            Assert.IsTrue(items.Count == 6);
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Map_Reuslt_Data_When_More_Than_One_Object_Requires_Same_Field_Name()
         {
             TestJoinObjectSameFields o1 = new TestJoinObjectSameFields();
@@ -352,7 +353,7 @@ namespace DataAccess.DatabaseTests.Tests
                        };
         }
 
-        [Fact]
+        [TestMethod]
         public virtual void Test_Can_Do_Group_By()
         {
             dStore.InsertObject(new TestItemThreeFields() { something = "foo", something2 = Guid.NewGuid().ToString() });
@@ -365,8 +366,8 @@ namespace DataAccess.DatabaseTests.Tests
             dStore.InsertObject(new TestItemThreeFields() { something = "bar", something2 = Guid.NewGuid().ToString() });
 
             var result = dStore.Query<TestItemThreeFields>().GroupBy(r => r.something).Select(r => new { Count = r.Count(), Key = r.Key }).ToList();
-            Assert.NotNull(result);
-            Assert.True(result.Count() == 2);
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Count() == 2);
         }
     }
 }

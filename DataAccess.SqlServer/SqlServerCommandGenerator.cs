@@ -41,25 +41,24 @@ namespace DataAccess.SqlServer
         public override IDbCommand GetInsertCommand(object item)
         {
             TypeInfo ti = base.DataStore.TypeInformationParser.GetTypeInfo(item.GetType());
-            if (ti.PrimaryKeys.Count == 1 && !ti.PrimaryKeys[0].SetOnInsert)
+            IDbCommand cmd = base.GetInsertCommand(item);
+
+            if (!ti.IsCompilerGenerated)
             {
-                if (ti.PrimaryKeys[0].PropertyType == typeof(string))
+                if (ti.PrimaryKeys.Count == 1 && !ti.PrimaryKeys[0].SetOnInsert)
                 {
-                    IDbCommand cmd = base.GetInsertCommand(item);
-                    cmd.CommandText = cmd.CommandText.Replace("VALUES", "output inserted.* VALUES");
-                    return cmd;                    
+                    if (ti.PrimaryKeys[0].PropertyType == typeof(string))
+                    {
+                        cmd.CommandText = cmd.CommandText.Replace("VALUES", "output inserted.* VALUES");
+                    }
+                    else
+                    {//this will only work with int keys
+                        cmd.CommandText = cmd.CommandText.Replace(";", "; select SCOPE_IDENTITY() as " + ti.PrimaryKeys[0].EscapedFieldName);
+                    }
                 }
-                else
-                {//this will only work with int keys
-                    IDbCommand cmd = base.GetInsertCommand(item);
-                    cmd.CommandText = cmd.CommandText.Replace(";", "; select SCOPE_IDENTITY() as " + ti.PrimaryKeys[0].EscapedFieldName);
-                    return cmd;
-                }                
             }
-            else
-            {
-                return base.GetInsertCommand(item);
-            }
+
+            return cmd;
         }
 
         /// <summary>
