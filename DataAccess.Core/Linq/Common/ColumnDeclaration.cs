@@ -15,12 +15,12 @@ namespace DataAccess.Core.Linq.Common
         /// <summary>
         /// Gets the name.
         /// </summary>
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets the expression.
         /// </summary>
-        public Expression Expression { get; private set; }
+        public Expression Expression { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ColumnDeclaration"/> class.
@@ -30,7 +30,7 @@ namespace DataAccess.Core.Linq.Common
         /// <param name="queryType">Type of the query.</param>
         public ColumnDeclaration(string name, Expression expression)
         {
-            if (name == null)
+if (name == null)
                 throw new ArgumentNullException("name");
             if (expression == null)
                 throw new ArgumentNullException("expression");

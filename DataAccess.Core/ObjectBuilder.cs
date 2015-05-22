@@ -62,7 +62,7 @@ namespace DataAccess.Core
                 if (ti.IsCompilerGenerated)
                 {
                     if (curr.ParameterType.IsSystemType())
-                        toReturn[i] = dstore.Connection.CLRConverter.ConvertToType(dt.GetDataForRowField(i), parminfo[i].ParameterType);
+                        toReturn[i] = dstore.Connection.CLRConverter.ConvertToType(dt.GetDataForRowField(curr.Name), parminfo[i].ParameterType);
                     else
                         toReturn[i] = BuildObject(dstore, dt, dstore.TypeInformationParser.GetTypeInfo(curr.ParameterType));
                 }

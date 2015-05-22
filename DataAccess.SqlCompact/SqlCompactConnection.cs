@@ -89,6 +89,14 @@ namespace DataAccess.SqlCompact
             _connectionString = string.Format("Data Source={0};Persist Security Info=False;", file);
             _tConverter = new SqlCompactTypeConverter();
             _dConverter = new SqlCompactDBConverter();
+
+            if (!System.IO.File.Exists(file))
+            {
+                using (SqlCeEngine engine = new SqlCeEngine(_connectionString))
+                {
+                    engine.CreateDatabase();
+                }
+            }
         }
 
         /// <summary>

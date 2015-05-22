@@ -8,6 +8,7 @@ using DataAccess.Core.Schema;
 using DataAccess.DatabaseTests.DataObjects;
 using DataAccess.SqlCompact;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.IO;
 
 namespace DataAccess.DatabaseTests
 {
@@ -16,7 +17,7 @@ namespace DataAccess.DatabaseTests
     {
         public override IDataStore GetDataStore()
         {
-            return SqlCompactConnection.GetDataStore("C:\\Data.sdf");
+            return SqlCompactConnection.GetDataStore(Path.GetTempFileName());
         }
 
         public override void Test_Can_Get_Escape_Sequences()

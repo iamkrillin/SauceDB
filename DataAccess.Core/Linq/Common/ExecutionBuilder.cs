@@ -316,6 +316,23 @@ namespace DataAccess.Core.Linq.Common
                 projection = (ProjectionExpression)OuterParameterizer.Parameterize(this.scope.Alias, projection);
             }
 
+            NewExpression newExpress = projection.Projector as NewExpression;
+
+            //need to fix the column names...
+            if (newExpress != null)
+            {
+                List<ColumnExpression> memberColumns = newExpress.Arguments.Cast<ColumnExpression>().ToList();
+
+                for (int i = 0; i < projection.Select.Columns.Count; i++)
+                {
+                    ColumnDeclaration dec = projection.Select.Columns[i];
+                    ColumnExpression match = memberColumns.FirstOrDefault(r => r.Name.Equals(dec.Name));
+                    MemberInfo mi = newExpress.Members[memberColumns.IndexOf(match)];
+                    dec.Name = linguist.Translator.Mapper.Mapping.GetColumnName(mi);
+                    match.Name = dec.Name;
+                }
+            }
+
             string commandText = this.linguist.Format(projection.Select);
             ReadOnlyCollection<NamedValueExpression> namedValues = NamedValueGatherer.Gather(projection.Select);
             QueryCommand command = new QueryCommand(commandText, namedValues.Select(v => new QueryParameter(v.Name, v.Type)));

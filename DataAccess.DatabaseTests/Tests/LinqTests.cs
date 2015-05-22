@@ -24,7 +24,7 @@ namespace DataAccess.DatabaseTests.Tests
         }
 
         [TestMethod]
-        public virtual void Test_Where()
+        public virtual void Test_Where_Take()
         {
             for (int i = 0; i < 10; i++)
                 dStore.InsertObject(new TestItem() { Something = "foo" });
@@ -57,11 +57,11 @@ namespace DataAccess.DatabaseTests.Tests
             var result = from i in dStore.Query<TestItemForeignKeyWithString>()
                          join x in dStore.Query<TestItemPrimaryKey>() on i.FKeyField equals x.ID
                          select new
-                          {
-                              i.ID,
-                              x.Name,
-                              x.Date
-                          };
+                         {
+                             i.ID,
+                             x.Name,
+                             x.Date
+                         };
 
             result.ToList().ForEach(R => Assert.IsTrue(!string.IsNullOrEmpty(R.Name)));
         }
@@ -349,7 +349,8 @@ namespace DataAccess.DatabaseTests.Tests
                        join x in dStore.Query<TestJoinObjectSameFields>() on i.ForeignKey equals x.ID
                        select new
                        {
-                           i,x
+                           i,
+                           x
                        };
         }
 
@@ -368,6 +369,42 @@ namespace DataAccess.DatabaseTests.Tests
             var result = dStore.Query<TestItemThreeFields>().GroupBy(r => r.something).Select(r => new { Count = r.Count(), Key = r.Key }).ToList();
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Count() == 2);
+        }
+
+        [TestMethod]
+        public virtual void Test_Multiple_Objects_With_Same_Field_Projected_Map_Right_To_Anonymous_Object()
+        {
+            for (var i = 0; i < 10; i++)
+                dStore.InsertObject(new TestItem() { Something = "Test Item" });
+
+            for (var i = 0; i < 10; i++)
+                dStore.InsertObject(new TestItemIgnoredField() { Something = "Test Item Ignored Field" });
+
+            for (var i = 0; i < 10; i++)
+                dStore.InsertObject(new TestItemAdditionalInit() { Something = "Test Item Additional Init" });
+
+            var query = from i in dStore.Query<TestItem>()
+                        join x in dStore.Query<TestItemIgnoredField>() on i.id equals x.id
+                        join z in dStore.Query<TestItemAdditionalInit>() on x.id equals z.id
+                        where x.id > 5
+                        select new
+                        {
+                            i.id,
+                            TestItemIgnoredField = x.Something,
+                            TestItem = i.Something,
+                            TestItemAdditionalInit = z.Something
+                        };
+
+            var data = query.ToList();
+            Assert.IsTrue(data.Count() == 5);
+            foreach (var item in data)
+            {
+                Assert.IsTrue(item.id > 5);
+                Assert.IsTrue(item.TestItem.Equals("Test Item"));
+                Assert.IsTrue(item.TestItemIgnoredField.Equals("Test Item Ignored Field"));
+                Assert.IsTrue(item.TestItemAdditionalInit.Equals("Test Item Additional Init"));
+            }
+
         }
     }
 }

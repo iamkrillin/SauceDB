@@ -19,23 +19,11 @@ namespace DataAccess.Core.Data.Results
 
         public int? FindField(string field)
         {
-            string search = field.ToUpper();
             int? result = null;
+            string search = field.ToUpper();
+
             if (FieldAvailable(search))
                 result = _result.QueryFields[search];
-            else
-            {//check if there is a field in the form {name}_{marker}
-                //This here accounts for how LINQ works, its not very uncommon to get the same field in a result set more than once,
-                //if the field has been mapped once already for this row, try to find one that hasn't
-                var key = _result.QueryFields.Keys.Where(r => r.StartsWith(search + "_") && !FieldData[_result.QueryFields[r]].Used).FirstOrDefault();
-                if (key == null)
-                {//k, so that didn't work, just try to find something..
-                    key = _result.QueryFields.Keys.Where(r => r.StartsWith(search + "_")).FirstOrDefault();
-                }
-
-                if (key != null)
-                    result = _result.QueryFields[key];
-            }
 
             return result;
         }
@@ -43,11 +31,7 @@ namespace DataAccess.Core.Data.Results
         public bool FieldAvailable(string key)
         {
             if (_result.QueryFields == null) return false;
-
-            if (_result.QueryFields.ContainsKey(key))
-                return !FieldData[_result.QueryFields[key]].Used;
-            else
-                return false;
+            return _result.QueryFields.ContainsKey(key);
         }
 
         public void SetFieldData(object[] data)

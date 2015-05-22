@@ -3,6 +3,7 @@ using DataAccess.Core.Interfaces;
 using System.Data;
 using DataAccess.SqlCompact;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.IO;
 
 namespace DataAccess.DatabaseTests
 {
@@ -11,7 +12,7 @@ namespace DataAccess.DatabaseTests
     {
         public override IDataStore GetDataStore()
         {
-            IDataStore toReturn = SqlCompactConnection.GetDataStore("C:\\Data.sdf");
+            IDataStore toReturn = SqlCompactConnection.GetDataStore(Path.GetTempFileName());
             IDbCommand cmd = toReturn.Connection.GetCommand();
             return toReturn;
         }

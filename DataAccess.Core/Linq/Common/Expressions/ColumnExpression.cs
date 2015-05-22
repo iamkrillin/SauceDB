@@ -20,7 +20,7 @@ namespace DataAccess.Core.Linq.Common.Expressions
         /// <summary>
         /// Gets the name.
         /// </summary>
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ColumnExpression"/> class.
