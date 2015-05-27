@@ -316,22 +316,7 @@ namespace DataAccess.Core.Linq.Common
                 projection = (ProjectionExpression)OuterParameterizer.Parameterize(this.scope.Alias, projection);
             }
 
-            NewExpression newExpress = projection.Projector as NewExpression;
-
-            //need to fix the column names...
-            if (newExpress != null)
-            {
-                List<ColumnExpression> memberColumns = newExpress.Arguments.Cast<ColumnExpression>().ToList();
-
-                for (int i = 0; i < projection.Select.Columns.Count; i++)
-                {
-                    ColumnDeclaration dec = projection.Select.Columns[i];
-                    ColumnExpression match = memberColumns.FirstOrDefault(r => r.Name.Equals(dec.Name));
-                    MemberInfo mi = newExpress.Members[memberColumns.IndexOf(match)];
-                    dec.Name = linguist.Translator.Mapper.Mapping.GetColumnName(mi);
-                    match.Name = dec.Name;
-                }
-            }
+            FixColumnNames(projection);
 
             string commandText = this.linguist.Format(projection.Select);
             ReadOnlyCollection<NamedValueExpression> namedValues = NamedValueGatherer.Gather(projection.Select);
@@ -339,6 +324,35 @@ namespace DataAccess.Core.Linq.Common
             Expression[] values = namedValues.Select(v => Expression.Convert(this.Visit(v.Value), typeof(object))).ToArray();
 
             return this.ExecuteProjection(projection, okayToDefer, command, values);
+        }
+
+        private void FixColumnNames(ProjectionExpression projection)
+        {
+            NewExpression newExpress = projection.Projector as NewExpression;
+
+            //need to fix the column names...
+            if (newExpress != null)
+            {
+                List<ColumnExpression> memberColumns = new List<ColumnExpression>();
+                foreach(var v in newExpress.Arguments)
+                {
+                    ColumnExpression cExpress = v as ColumnExpression;
+                    if(cExpress != null)
+                        memberColumns.Add(cExpress);
+                }
+
+                if(memberColumns.Count() == projection.Select.Columns.Count)
+                {
+                    for (int i = 0; i < projection.Select.Columns.Count; i++)
+                    {
+                        ColumnDeclaration dec = projection.Select.Columns[i];
+                        ColumnExpression match = memberColumns.FirstOrDefault(r => r.Name.Equals(dec.Name));
+                        MemberInfo mi = newExpress.Members[memberColumns.IndexOf(match)];
+                        dec.Name = linguist.Translator.Mapper.Mapping.GetColumnName(mi);
+                        match.Name = dec.Name;
+                    }
+                }
+            }
         }
 
         /// <summary>

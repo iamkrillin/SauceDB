@@ -17,7 +17,7 @@ namespace DataAccess.DatabaseTests
         {
             IConvertToDatastore mapper = new SqlCompactDBConverter();
             string type = mapper.MapType(typeof(char), new Core.Data.DataFieldInfo() { DataFieldType = Core.Attributes.FieldType.UnicodeChar });
-            Assert.Equals("nvarchar(1)", type);
+            Assert.AreEqual("nvarchar(1)", type);
         }
 
         [TestMethod]
@@ -25,7 +25,7 @@ namespace DataAccess.DatabaseTests
         {
             IConvertToDatastore mapper = new SqlCompactDBConverter();
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { DataFieldType = Core.Attributes.FieldType.UnicodeText });
-            Assert.Equals("ntext", type);
+            Assert.AreEqual("ntext", type);
         }
 
         [TestMethod]
@@ -33,7 +33,7 @@ namespace DataAccess.DatabaseTests
         {
             IConvertToDatastore mapper = new SqlCompactDBConverter();
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { DataFieldType = Core.Attributes.FieldType.Text });
-            Assert.Equals("ntext", type);
+            Assert.AreEqual("ntext", type);
         }
 
         [TestMethod]
@@ -41,7 +41,7 @@ namespace DataAccess.DatabaseTests
         {
             IConvertToDatastore mapper = new SqlCompactDBConverter();
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { DataFieldType = Core.Attributes.FieldType.UnicodeString });
-            Assert.Equals("NVARCHAR(200)", type);
+            Assert.AreEqual("NVARCHAR(200)", type);
         }
 
         [TestMethod]
@@ -50,7 +50,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SqlCompactDBConverter();
 
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("NVARCHAR(200)", type);
+            Assert.AreEqual("NVARCHAR(200)", type);
         }
 
         [TestMethod]
@@ -59,7 +59,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SqlCompactDBConverter();
 
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { FieldLength = 400 });
-            Assert.Equals("NVARCHAR(400)", type);
+            Assert.AreEqual("NVARCHAR(400)", type);
         }
 
         [TestMethod]
@@ -68,7 +68,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SqlCompactDBConverter();
 
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { FieldLength = Int32.MaxValue });
-            Assert.Equals("NVARCHAR(MAX)", type);
+            Assert.AreEqual("NVARCHAR(MAX)", type);
         }
 
         [TestMethod]
@@ -77,7 +77,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SqlCompactDBConverter();
 
             string type = mapper.MapType(typeof(int), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("int", type);
+            Assert.AreEqual("int", type);
         }
 
         [TestMethod]
@@ -86,7 +86,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SqlCompactDBConverter();
 
             string type = mapper.MapType(typeof(long), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("bigint", type);
+            Assert.AreEqual("bigint", type);
         }
 
         [TestMethod]
@@ -95,13 +95,13 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SqlCompactDBConverter();
 
             string type = mapper.MapType(typeof(double), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("real", type);
+            Assert.AreEqual("real", type);
 
             type = mapper.MapType(typeof(float), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("real", type);
+            Assert.AreEqual("real", type);
 
             type = mapper.MapType(typeof(decimal), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("Money", type);
+            Assert.AreEqual("Money", type);
         }
 
         [TestMethod]
@@ -110,7 +110,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SqlCompactDBConverter();
 
             string type = mapper.MapType(typeof(byte[]), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("nvarchar(200)", type);
+            Assert.AreEqual("nvarchar(200)", type);
         }
 
         [TestMethod]
@@ -119,7 +119,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SqlCompactDBConverter();
 
             string type = mapper.MapType(typeof(bool), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("bit", type);
+            Assert.AreEqual("bit", type);
         }
 
         [TestMethod]
@@ -128,7 +128,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SqlCompactDBConverter();
 
             string type = mapper.MapType(typeof(DateTime), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("DATETIME", type);
+            Assert.AreEqual("DATETIME", type);
         }
 
         [TestMethod]
@@ -137,7 +137,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SqlCompactDBConverter();
 
             string type = mapper.MapType(typeof(TimeSpan), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("NVARCHAR(20)", type);
+            Assert.AreEqual("NVARCHAR(20)", type);
         }
 
         [TestMethod]
@@ -146,7 +146,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SqlCompactDBConverter();
 
             string type = mapper.MapType(typeof(char), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("nvarchar(1)", type);
+            Assert.AreEqual("nvarchar(1)", type);
         }
 
         [TestMethod]
@@ -155,7 +155,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SqlCompactDBConverter();
 
             string type = mapper.MapType(this.GetType(), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("nvarchar(200)", type);
+            Assert.AreEqual("nvarchar(200)", type);
         }
     }
 }
