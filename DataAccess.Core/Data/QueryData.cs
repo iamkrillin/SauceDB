@@ -19,8 +19,6 @@ namespace DataAccess.Core.Data
         protected IDbConnection connection;
         protected IDbCommand command;
         protected IDataReader reader;
-
-        private static Dictionary<string, Dictionary<string, int>> Mappings = new Dictionary<string, Dictionary<string, int>>();
         public Dictionary<string, int> QueryFields { get; set; }
 
         /// <summary>
@@ -64,19 +62,11 @@ namespace DataAccess.Core.Data
         /// <param name="reader">The reader.</param>
         public virtual void MapReturnData(IDataReader reader)
         {
-            if (!Mappings.ContainsKey(command.CommandText))
-            {
-                lock (Mappings)
-                {
-                    int len = reader.FieldCount;
-                    for (int i = 0; i < len; i++)
-                        AddFieldMapping(reader.GetName(i), i);
-
-                    Mappings[command.CommandText] = QueryFields;
-                }
-            }
-
-            QueryFields = Mappings[command.CommandText];
+            QueryFields = new Dictionary<string, int>();
+            
+            int len = reader.FieldCount;
+            for (int i = 0; i < len; i++)
+                AddFieldMapping(reader.GetName(i), i);
         }
 
         protected virtual void CloseConnection()
