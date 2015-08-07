@@ -71,8 +71,7 @@ namespace DataAccess.Core
 
         protected virtual void AddCommandParameter(string key, object value)
         {
-            if (value != null)
-                Command.Parameters.Add(DataStore.Connection.GetParameter(key, value));
+            Command.Parameters.Add(DataStore.Connection.GetParameter(key, value));
         }
 
         /// <summary>

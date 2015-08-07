@@ -163,6 +163,8 @@ namespace DataAccess.Migrations
         {
             foreach (var v in _views.GetObjects())
             {
+                if (v.Schema.StartsWith("sys", StringComparison.CurrentCultureIgnoreCase)) continue;
+
                 Console.WriteLine("Removing View {0}...", v.Name);
                 IDbCommand cmd = _dstore.Connection.GetCommand();
                 cmd.CommandText = string.Format("DROP VIEW {0};", _dstore.Connection.CommandGenerator.ResolveTableName(v.Schema, v.Name));
