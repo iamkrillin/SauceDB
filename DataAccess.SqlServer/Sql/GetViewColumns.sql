@@ -1,0 +1,8 @@
+﻿SELECT * FROM
+(
+	SELECT col.ORDINAL_POSITION, col.TABLE_SCHEMA 'Schema', col.TABLE_NAME AS TableName, 
+		   col.COLUMN_NAME AS ColumnName, Data_Type as DataType, 
+		   col.Table_Schema + '.' + col.TABLE_NAME as FullName
+	FROM INFORMATION_SCHEMA.COLUMNS col 	
+) a
+WHERE FullName IN(SELECT TABLE_SCHEMA + '.' + TABLE_NAME FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='VIEW')

@@ -42,9 +42,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Advantage.Data.Provider">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Advantage\Advantage.Data.Provider.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\..\..\..\..\tfs\Misc\DrugpakTaskEngine\Packages\Common\Advantage.Data.Provider.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

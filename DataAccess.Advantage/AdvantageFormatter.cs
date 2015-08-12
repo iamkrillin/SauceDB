@@ -28,6 +28,21 @@ namespace DataAccess.Advantage
         {
             this.AddAliases(select.From);
             this.Write("SELECT ");
+
+            if (select.Take != null)
+            {
+                this.WriteLine(Indentation.Same);
+                this.Write("TOP ");
+                this.Visit(select.Take);
+
+                //if (select.Skip != null)
+                //{
+                //    this.Write(" OFFSET ");
+                //    this.Write(select.Skip);
+                //}
+            }
+
+
             if (select.IsDistinct)
             {
                 this.Write("DISTINCT ");
@@ -74,18 +89,6 @@ namespace DataAccess.Advantage
                     {
                         this.Write(" DESC");
                     }
-                }
-            }
-            if (select.Take != null)
-            {
-                this.WriteLine(Indentation.Same);
-                this.Write("LIMIT ");
-                this.Visit(select.Take);
-
-                if (select.Skip != null)
-                {
-                    this.Write(" OFFSET ");
-                    this.Write(select.Skip);
                 }
             }
             return select;

@@ -1,0 +1,1 @@
+﻿IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name ='{0}') EXEC dbo.sp_executesql @statement=N' CREATE SCHEMA {0}';

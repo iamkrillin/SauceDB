@@ -213,22 +213,9 @@ namespace DataAccess.SqlServer
         /// <param name="dstore">The data store to use when executing</param>
         public void DoBulkInsert(IList items, IDataStore dstore)
         {
-#if(!DEBUG)
-            try
-            {
-#endif
                 ArrayList toUse = new ArrayList();
                 toUse.AddRange(items);
                 DoBulkCopy(toUse, dstore);
-
-#if(!DEBUG)
-            }
-            catch
-            { //sometimes bulk copy will fail... lets fall back to other method and try again
-                while (items.Count > 0)
-                    dstore.InsertObjects(items.GetSmallerList(100));
-            }
-#endif
         }
 
         private void DoBulkCopy(IList items, IDataStore dstore)
