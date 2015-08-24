@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DataAccess.Core.Data;
 
 namespace DataAccess.Core.ObjectValidators
 {
@@ -61,6 +62,11 @@ namespace DataAccess.Core.ObjectValidators
         public IEnumerable<Data.DBObject> GetObjects()
         {
             return null;
+        }
+
+        public bool ObjectExistsInDataStore(TypeInfo info)
+        {
+            return false;
         }
     }
 }

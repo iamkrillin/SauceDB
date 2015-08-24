@@ -55,5 +55,11 @@ namespace DataAccess.Core.Interfaces
         /// </summary>
         /// <returns></returns>
         IEnumerable<DBObject> GetObjects();
+
+        /// <summary>
+        /// Will return true if a given object exists in the datastore
+        /// </summary>
+        /// <returns></returns>
+        bool ObjectExistsInDataStore(TypeInfo info);
     }
 }

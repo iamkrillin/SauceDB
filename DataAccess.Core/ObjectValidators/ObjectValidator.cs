@@ -131,5 +131,10 @@ namespace DataAccess.Core.ObjectValidators
                 OnObjectModified(this, new ObjectModifiedEventArgs(ti, action));
             }
         }
+
+        public bool ObjectExistsInDataStore(TypeInfo info)
+        {
+            return GetObject(info) != null;
+        }
     }
 }
