@@ -155,7 +155,7 @@ namespace DataAccess.Core.Schema
         /// Performs schema validation/modification to match the type
         /// </summary>
         /// <param name="typeInfo"></param>
-        public virtual void ValidateType(TypeInfo typeInfo)
+        public virtual void ValidateType(DatabaseTypeInfo typeInfo)
         {
             if (!typeInfo.BypassValidation)
             {

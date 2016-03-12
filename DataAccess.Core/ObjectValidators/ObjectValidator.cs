@@ -56,7 +56,7 @@ namespace DataAccess.Core.ObjectValidators
         /// Validates an objects info against the datastore
         /// </summary>
         /// <param name="ti"></param>
-        public abstract void ValidateObject(TypeInfo ti);
+        public abstract void ValidateObject(DatabaseTypeInfo ti);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectValidator"/> class.
@@ -90,7 +90,7 @@ namespace DataAccess.Core.ObjectValidators
         /// </summary>
         /// <param name="typeInfo">The type info.</param>
         /// <returns></returns>
-        protected DBObject GetObject(TypeInfo typeInfo)
+        protected DBObject GetObject(DatabaseTypeInfo typeInfo)
         {
             return _dstore.ObjectFinder.GetObject(GetObjects(), typeInfo);
         }
@@ -99,7 +99,7 @@ namespace DataAccess.Core.ObjectValidators
         /// Fires the created event
         /// </summary>
         /// <param name="ti">The ti.</param>
-        protected void FireCreated(TypeInfo ti)
+        protected void FireCreated(DatabaseTypeInfo ti)
         {
             if (OnObjectCreated != null)
                 OnObjectCreated(this, new ObjectCreatedEventArgs(ti));
@@ -110,7 +110,7 @@ namespace DataAccess.Core.ObjectValidators
         /// </summary>
         /// <param name="ti">The ti.</param>
         /// <param name="action">A description of the action taken</param>
-        protected void FireModified(TypeInfo ti, string action)
+        protected void FireModified(DatabaseTypeInfo ti, string action)
         {
             FireModified(ti, action, null);
         }
@@ -121,7 +121,7 @@ namespace DataAccess.Core.ObjectValidators
         /// <param name="ti">The ti.</param>
         /// <param name="action">A description of the action taken</param>
         /// <param name="stringFormatData">Allows you to do stirng.format() style action message, just provide the items and a formattable string for action else null</param>
-        protected void FireModified(TypeInfo ti, string action, params object[] stringFormatData)
+        protected void FireModified(DatabaseTypeInfo ti, string action, params object[] stringFormatData)
         {
             if (OnObjectModified != null)
             {
@@ -132,7 +132,7 @@ namespace DataAccess.Core.ObjectValidators
             }
         }
 
-        public bool ObjectExistsInDataStore(TypeInfo info)
+        public bool ObjectExistsInDataStore(DatabaseTypeInfo info)
         {
             return GetObject(info) != null;
         }

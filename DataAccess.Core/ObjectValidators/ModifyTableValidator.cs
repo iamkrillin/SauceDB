@@ -28,7 +28,7 @@ namespace DataAccess.Core.ObjectValidators
         /// Validates an objects info against the datastore
         /// </summary>
         /// <param name="ti"></param>
-        public override void ValidateObject(TypeInfo ti)
+        public override void ValidateObject(DatabaseTypeInfo ti)
         {
             DBObject table = GetObject(ti);
 
@@ -42,7 +42,7 @@ namespace DataAccess.Core.ObjectValidators
         /// Creates a new table.
         /// </summary>
         /// <param name="typeInfo">The type info.</param>
-        public virtual void CreateNewTable(TypeInfo typeInfo)
+        public virtual void CreateNewTable(DatabaseTypeInfo typeInfo)
         {
             AddTable(typeInfo);
             if (typeInfo.OnTableCreate != null)
@@ -62,7 +62,7 @@ namespace DataAccess.Core.ObjectValidators
         /// </summary>
         /// <param name="typeInfo">The type info.</param>
         /// <param name="t">The t.</param>
-        protected virtual void ValidateExistingTable(TypeInfo typeInfo, DBObject t)
+        protected virtual void ValidateExistingTable(DatabaseTypeInfo typeInfo, DBObject t)
         {
             List<Column> valid = new List<Column>();
             bool dirty = false;
@@ -109,7 +109,7 @@ namespace DataAccess.Core.ObjectValidators
         /// <param name="t">The t.</param>
         /// <param name="valid">The valid.</param>
         /// <returns></returns>
-        protected virtual bool CheckForDeletedColumns(TypeInfo typeInfo, DBObject t, List<Column> valid)
+        protected virtual bool CheckForDeletedColumns(DatabaseTypeInfo typeInfo, DBObject t, List<Column> valid)
         {
             if (CanRemoveColumns)
             {
@@ -135,7 +135,7 @@ namespace DataAccess.Core.ObjectValidators
         /// </summary>
         /// <param name="ti"></param>
         /// <returns></returns>
-        public virtual DBObject AddTable(TypeInfo ti)
+        public virtual DBObject AddTable(DatabaseTypeInfo ti)
         {
             if (ti.DataFields.Count > 0)
             {
@@ -158,7 +158,7 @@ namespace DataAccess.Core.ObjectValidators
         /// <param name="field">The field to add</param>
         /// <param name="ti">The type its being added to</param>
         /// <returns></returns>
-        public virtual bool AddColumn(DataFieldInfo field, TypeInfo ti)
+        public virtual bool AddColumn(DataFieldInfo field, DatabaseTypeInfo ti)
         {
             if (CanAddColumns)
             {
@@ -185,7 +185,7 @@ namespace DataAccess.Core.ObjectValidators
         /// <param name="field">The field to remove</param>
         /// <param name="ti">The type to remove it from</param>
         /// <returns></returns>
-        public virtual bool RemoveColumn(DataFieldInfo field, TypeInfo ti)
+        public virtual bool RemoveColumn(DataFieldInfo field, DatabaseTypeInfo ti)
         {
             if (CanRemoveColumns)
             {
@@ -210,7 +210,7 @@ namespace DataAccess.Core.ObjectValidators
         /// </summary>
         /// <param name="dfi">The data field.</param>
         /// <param name="typeInfo">The type info.</param>
-        public bool ModifyColumn(DataFieldInfo dfi, TypeInfo typeInfo)
+        public bool ModifyColumn(DataFieldInfo dfi, DatabaseTypeInfo typeInfo)
         {
             if (CanUpdateColumns)
             {
@@ -247,7 +247,7 @@ namespace DataAccess.Core.ObjectValidators
         /// executes a command to add a schema
         /// </summary>
         /// <param name="ti">The ti.</param>
-        public virtual void CheckSchema(TypeInfo ti)
+        public virtual void CheckSchema(DatabaseTypeInfo ti)
         {
             if (!ti.UnEscapedSchema.Equals(_dstore.Connection.DefaultSchema, StringComparison.InvariantCultureIgnoreCase))
             {

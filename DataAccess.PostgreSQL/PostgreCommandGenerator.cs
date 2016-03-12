@@ -24,7 +24,7 @@ namespace DataAccess.PostgreSQL
         /// </summary>
         /// <param name="ti">The type to create a table for</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetAddTableCommand(TypeInfo ti)
+        public override IEnumerable<IDbCommand> GetAddTableCommand(DatabaseTypeInfo ti)
         {
             StringBuilder sb = new StringBuilder();
             StringBuilder pFields = new StringBuilder();
@@ -53,7 +53,7 @@ namespace DataAccess.PostgreSQL
                 if (dfi.PrimaryKeyType != null)
                 {
                     if (contrain.Length > 0) contrain.Append(",");
-                    TypeInfo pkType = DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType);
+                    DatabaseTypeInfo pkType = DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType);
                     contrain.AppendFormat(_createFKSQL, Guid.NewGuid().ToString(), dfi.EscapedFieldName, ResolveTableName(pkType, false), pkType.PrimaryKeys.First().EscapedFieldName, TranslateFkeyType(dfi.ForeignKeyType));
                 }
 
@@ -98,7 +98,7 @@ namespace DataAccess.PostgreSQL
         /// <param name="type">The type to remove the column from</param>
         /// <param name="dfi">The column to remove</param>
         /// <returns></returns>
-        public override IDbCommand GetRemoveColumnCommand(TypeInfo type, DataFieldInfo dfi)
+        public override IDbCommand GetRemoveColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             NpgsqlCommand command = new NpgsqlCommand();
             command.CommandText = string.Format("ALTER TABLE {0} DROP COLUMN {1};", ResolveTableName(type, false), dfi.FieldName);
@@ -111,7 +111,7 @@ namespace DataAccess.PostgreSQL
         /// <param name="type">The type to add the column to</param>
         /// <param name="dfi">The column to add</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetAddColumnCommnad(TypeInfo type, DataFieldInfo dfi)
+        public override IEnumerable<IDbCommand> GetAddColumnCommnad(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             if (dfi.PrimaryKey)
                 throw new DataStoreException("Adding a primary key to an existing table is not supported");
@@ -131,7 +131,7 @@ namespace DataAccess.PostgreSQL
 
                 if (dfi.PrimaryKeyType != null)
                 {
-                    TypeInfo pkType = DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType);
+                    DatabaseTypeInfo pkType = DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType);
                     sb.Append(",");
                     sb.AppendFormat(_addFKSql, Guid.NewGuid().ToString(), dfi.EscapedFieldName, ResolveTableName(pkType, false), pkType.PrimaryKeys.First().EscapedFieldName, TranslateFkeyType(dfi.ForeignKeyType));
                 }
@@ -149,7 +149,7 @@ namespace DataAccess.PostgreSQL
         /// <param name="dfi">The column to modify</param>
         /// <param name="targetFieldType">The type to change the field to</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetModifyColumnCommand(TypeInfo type, DataFieldInfo dfi, string targetFieldType)
+        public override IEnumerable<IDbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
         {
             targetFieldType = targetFieldType.Replace("varchar", "character varying");
             NpgsqlCommand cmd = new NpgsqlCommand();
@@ -172,7 +172,7 @@ namespace DataAccess.PostgreSQL
         /// </summary>
         /// <param name="ti">The ti.</param>
         /// <returns></returns>
-        public override string ResolveTableName(TypeInfo ti)
+        public override string ResolveTableName(DatabaseTypeInfo ti)
         {
             return ResolveTableName(ti, false);
         }
@@ -182,7 +182,7 @@ namespace DataAccess.PostgreSQL
         /// </summary>
         /// <param name="ti"></param>
         /// <returns></returns>
-        public override IDbCommand GetAddSchemaCommand(TypeInfo ti)
+        public override IDbCommand GetAddSchemaCommand(DatabaseTypeInfo ti)
         {
             return null;
         }

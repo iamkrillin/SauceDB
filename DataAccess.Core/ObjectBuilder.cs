@@ -22,7 +22,7 @@ namespace DataAccess.Core
         /// <param name="dt">The query data to build with</param>
         /// <param name="ti">The parsed  type info for the object</param>
         /// <returns></returns>
-        public static object BuildObject(this IDataStore dstore, IQueryRow row, TypeInfo ti)
+        public static object BuildObject(this IDataStore dstore, IQueryRow row, DatabaseTypeInfo ti)
         {
             object toAdd;
             ConstructorInfo ci = ti.DataType.GetConstructor(new Type[] { });
@@ -53,7 +53,7 @@ namespace DataAccess.Core
         /// <param name="row">The row in the result set to use</param>
         /// <param name="dt">The query result set</param>
         /// <returns></returns>
-        public static object[] SetConstructorArguments(this IDataStore dstore, ParameterInfo[] parminfo, TypeInfo ti, IQueryRow dt)
+        public static object[] SetConstructorArguments(this IDataStore dstore, ParameterInfo[] parminfo, DatabaseTypeInfo ti, IQueryRow dt)
         {
             object[] toReturn = new object[parminfo.Length];
             for (int i = 0; i < parminfo.Length; i++)
@@ -88,7 +88,7 @@ namespace DataAccess.Core
         {
             if (row != null)
             {
-                TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(dataItem.GetType());
+                DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(dataItem.GetType());
                 SetFieldData(dstore, ti, row, dataItem);
             }
         }
@@ -100,7 +100,7 @@ namespace DataAccess.Core
         /// <param name="info">The information for the type</param>
         /// <param name="row">The row to pull from</param>
         /// <param name="dataItem">The object to set the data on</param>
-        public static void SetFieldData(this IDataStore dstore, TypeInfo info, IQueryRow row, object dataItem)
+        public static void SetFieldData(this IDataStore dstore, DatabaseTypeInfo info, IQueryRow row, object dataItem)
         {
             foreach (DataFieldInfo dfi in info.DataFields)
             {

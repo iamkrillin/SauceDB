@@ -40,7 +40,7 @@ namespace DataAccess.SqlServer
         /// <returns></returns>
         public override IDbCommand GetInsertCommand(object item)
         {
-            TypeInfo ti = base.DataStore.TypeInformationParser.GetTypeInfo(item.GetType());
+            DatabaseTypeInfo ti = base.DataStore.TypeInformationParser.GetTypeInfo(item.GetType());
             IDbCommand cmd = base.GetInsertCommand(item);
 
             if (!ti.IsCompilerGenerated)
@@ -78,7 +78,7 @@ namespace DataAccess.SqlServer
         /// </summary>
         /// <param name="ti">The type to create a table for</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetAddTableCommand(TypeInfo ti)
+        public override IEnumerable<IDbCommand> GetAddTableCommand(DatabaseTypeInfo ti)
         {
             List<IDbCommand> toReturn = new List<IDbCommand>();
             StringBuilder sb = new StringBuilder();
@@ -138,12 +138,12 @@ namespace DataAccess.SqlServer
             return toReturn;
         }
 
-        private string GetDefaultValueSql(TypeInfo ti, DataFieldInfo dfi, SqlCommand cmd)
+        private string GetDefaultValueSql(DatabaseTypeInfo ti, DataFieldInfo dfi, SqlCommand cmd)
         {
             return string.Format("ALTER TABLE {0}.{1} ADD CONSTRAINT DF_{4}_{5}_{6} DEFAULT {3} FOR {2};", ti.Schema, ti.TableName, dfi.FieldName, dfi.DefaultValue, ti.UnEscapedSchema, ti.UnescapedTableName, dfi.FieldName);
         }
 
-        private string GetForeignKeySql(DataFieldInfo field, TypeInfo targetTable, TypeInfo pKeyTable)
+        private string GetForeignKeySql(DataFieldInfo field, DatabaseTypeInfo targetTable, DatabaseTypeInfo pKeyTable)
         {
             StringBuilder sb = new StringBuilder("ALTER TABLE ");
             sb.AppendFormat("{0}.{1} ", targetTable.Schema, targetTable.TableName);
@@ -161,7 +161,7 @@ namespace DataAccess.SqlServer
         /// <param name="type">The type to remove the column from</param>
         /// <param name="dfi">The column to remove</param>
         /// <returns></returns>
-        public override IDbCommand GetRemoveColumnCommand(TypeInfo type, DataFieldInfo dfi)
+        public override IDbCommand GetRemoveColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             SqlCommand scmd = new SqlCommand();
             scmd.CommandText = string.Format("ALTER TABLE {0}.{1} DROP COLUMN [{2}]", type.Schema, type.TableName, dfi.FieldName);
@@ -174,7 +174,7 @@ namespace DataAccess.SqlServer
         /// <param name="type">The type to add the column to</param>
         /// <param name="dfi">The column to add</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetAddColumnCommnad(TypeInfo type, DataFieldInfo dfi)
+        public override IEnumerable<IDbCommand> GetAddColumnCommnad(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             List<IDbCommand> toReturn = new List<IDbCommand>();
 
@@ -211,7 +211,7 @@ namespace DataAccess.SqlServer
         /// <param name="dfi">The field</param>
         /// <param name="targetFieldType">The new column type</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetModifyColumnCommand(TypeInfo type, DataFieldInfo dfi, string targetFieldType)
+        public override IEnumerable<IDbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
         {
             SqlCommand cmd = new SqlCommand();
             cmd.CommandText = string.Format("ALTER TABLE {0} ALTER COLUMN [{1}] {2}", ResolveTableName(type), dfi.FieldName, targetFieldType);
@@ -225,7 +225,7 @@ namespace DataAccess.SqlServer
         /// <param name="ti">The table name</param>
         /// <param name="EscapeTableName">ignored</param>
         /// <returns></returns>
-        public override string ResolveTableName(TypeInfo ti, bool EscapeTableName)
+        public override string ResolveTableName(DatabaseTypeInfo ti, bool EscapeTableName)
         {
             return ResolveTableName(ti);
         }
@@ -235,7 +235,7 @@ namespace DataAccess.SqlServer
         /// </summary>
         /// <param name="ti">The type</param>
         /// <returns></returns>
-        public override string ResolveTableName(TypeInfo ti)
+        public override string ResolveTableName(DatabaseTypeInfo ti)
         {
             if (!string.IsNullOrEmpty(ti.Schema))
                 return string.Concat(ti.Schema, ".", ti.TableName);
@@ -251,7 +251,7 @@ namespace DataAccess.SqlServer
                 return table;
         }
 
-        public override IDbCommand GetAddSchemaCommand(TypeInfo ti)
+        public override IDbCommand GetAddSchemaCommand(DatabaseTypeInfo ti)
         {
             if (!ti.UnEscapedSchema.Equals("dbo", StringComparison.InvariantCultureIgnoreCase))
             {

@@ -22,7 +22,7 @@ namespace DataAccess.DatabaseTests
         [TestMethod]
         public void Test_FieldType_IsParsed_User_String()
         {
-            TypeInfo ti = _parser.GetTypeInfo(typeof(TestItemDefaultValueDifferntFieldType));
+            DatabaseTypeInfo ti = _parser.GetTypeInfo(typeof(TestItemDefaultValueDifferntFieldType));
             Assert.IsTrue(ti.DataFields[1].DataFieldType == Core.Attributes.FieldType.UserString);
             Assert.IsTrue(ti.DataFields[1].DataFieldString == "varchar(1000)");
         }
@@ -30,14 +30,14 @@ namespace DataAccess.DatabaseTests
         [TestMethod]
         public void Test_Field_Lenth_Is_Parsed()
         {
-            TypeInfo ti = _parser.GetTypeInfo(typeof(TestItemSmallString));
+            DatabaseTypeInfo ti = _parser.GetTypeInfo(typeof(TestItemSmallString));
             Assert.IsTrue(ti.DataFields[1].FieldLength == 5);
         }
 
         [TestMethod]
         public void Test_Field_Length_Is_Null_When_Not_Specified()
         {
-            TypeInfo ti = _parser.GetTypeInfo(typeof(TestItem));
+            DatabaseTypeInfo ti = _parser.GetTypeInfo(typeof(TestItem));
             foreach (var v in ti.DataFields)
                 Assert.IsTrue(!v.FieldLength.HasValue);
         }
@@ -45,7 +45,7 @@ namespace DataAccess.DatabaseTests
         [TestMethod]
         public void Test_FieldType_Is_Default_When_Not_Specified()
         {
-            TypeInfo ti = _parser.GetTypeInfo(typeof(TestItem));
+            DatabaseTypeInfo ti = _parser.GetTypeInfo(typeof(TestItem));
             Assert.IsNotNull(ti);
             Assert.IsTrue(ti.DataFields.Count == 3);
             foreach (var v in ti.DataFields)

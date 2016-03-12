@@ -28,7 +28,7 @@ namespace DataAccess.Core.ObjectValidators
         /// Validates an objects info against the datastore
         /// </summary>
         /// <param name="ti"></param>
-        public override void ValidateObject(TypeInfo ti)
+        public override void ValidateObject(DatabaseTypeInfo ti)
         {
             DBObject table = GetObject(ti);
 
@@ -42,7 +42,7 @@ namespace DataAccess.Core.ObjectValidators
         /// Creates a new table.
         /// </summary>
         /// <param name="typeInfo">The type info.</param>
-        protected virtual void CreateNewTable(TypeInfo typeInfo)
+        protected virtual void CreateNewTable(DatabaseTypeInfo typeInfo)
         {
             throw new DataStoreException(string.Format("A Table {0} was requested but was not found in the datastore", typeInfo.TableName));
         }
@@ -52,7 +52,7 @@ namespace DataAccess.Core.ObjectValidators
         /// </summary>
         /// <param name="typeInfo">The type info.</param>
         /// <param name="t">The t.</param>
-        protected virtual void ValidateExistingTable(TypeInfo typeInfo, DBObject t)
+        protected virtual void ValidateExistingTable(DatabaseTypeInfo typeInfo, DBObject t)
         {
             List<Column> valid = new List<Column>();
 
@@ -90,7 +90,7 @@ namespace DataAccess.Core.ObjectValidators
         /// Does nothing...
         /// </summary>
         /// <param name="ti">The ti.</param>
-        public virtual void CheckSchema(TypeInfo ti)
+        public virtual void CheckSchema(DatabaseTypeInfo ti)
         {
         }
     }

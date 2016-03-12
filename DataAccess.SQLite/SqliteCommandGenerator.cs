@@ -22,7 +22,7 @@ namespace DataAccess.SQLite
         /// <returns></returns>
         public override string ResolveFieldName(string PropertyName, Type type)
         {
-            TypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(type);
+            DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(type);
             if (ti.IsView)
                 return ti.DataFields.Where(r => r.PropertyName.Equals(PropertyName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault().FieldName;
             else
@@ -49,7 +49,7 @@ namespace DataAccess.SQLite
         /// </summary>
         /// <param name="ti">The type to create a table for</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetAddTableCommand(TypeInfo ti)
+        public override IEnumerable<IDbCommand> GetAddTableCommand(DatabaseTypeInfo ti)
         {
             StringBuilder sb = new StringBuilder();
             StringBuilder pFields = new StringBuilder();
@@ -104,7 +104,7 @@ namespace DataAccess.SQLite
             yield return cmd;
         }
 
-        private string GetForeignKeySql(DataFieldInfo field, TypeInfo targetTable, TypeInfo pkeyTable)
+        private string GetForeignKeySql(DataFieldInfo field, DatabaseTypeInfo targetTable, DatabaseTypeInfo pkeyTable)
         {
             return string.Format(" FOREIGN KEY({0}) REFERENCES {1}({2}) ON DELETE {3} ON UPDATE {3}", field.EscapedFieldName, ResolveTableName(pkeyTable, false), pkeyTable.PrimaryKeys.First().EscapedFieldName, TranslateFkeyType(field.ForeignKeyType));
         }
@@ -115,7 +115,7 @@ namespace DataAccess.SQLite
         /// <param name="type">The type to remove the column from</param>
         /// <param name="dfi">The column to remove</param>
         /// <returns></returns>
-        public override IDbCommand GetRemoveColumnCommand(TypeInfo type, DataFieldInfo dfi)
+        public override IDbCommand GetRemoveColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             throw new DataStoreException("This is not supported by SQLite");
         }
@@ -126,7 +126,7 @@ namespace DataAccess.SQLite
         /// <param name="type">The type to add the column to</param>
         /// <param name="dfi">The column to add</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetAddColumnCommnad(TypeInfo type, DataFieldInfo dfi)
+        public override IEnumerable<IDbCommand> GetAddColumnCommnad(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             if (dfi.PrimaryKey)
                 throw new DataStoreException("Adding a primary key to an existing table is not supported");
@@ -151,7 +151,7 @@ namespace DataAccess.SQLite
         /// <param name="dfi">The column to modify</param>
         /// <param name="targetFieldType">The type to change the field to</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetModifyColumnCommand(TypeInfo type, DataFieldInfo dfi, string targetFieldType)
+        public override IEnumerable<IDbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
         {
             throw new Exception("this is not supported right now");
             /*
@@ -174,7 +174,7 @@ namespace DataAccess.SQLite
         /// </summary>
         /// <param name="ti"></param>
         /// <returns></returns>
-        public override IDbCommand GetAddSchemaCommand(TypeInfo ti)
+        public override IDbCommand GetAddSchemaCommand(DatabaseTypeInfo ti)
         {
             return null;
         }

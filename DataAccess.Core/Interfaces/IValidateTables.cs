@@ -16,7 +16,7 @@ namespace DataAccess.Core.Interfaces
         /// </summary>
         /// <param name="ti"></param>
         /// <returns></returns>
-        DBObject AddTable(TypeInfo ti);
+        DBObject AddTable(DatabaseTypeInfo ti);
 
         /// <summary>
         /// Will add a column to the datastore
@@ -24,7 +24,7 @@ namespace DataAccess.Core.Interfaces
         /// <param name="field"></param>
         /// <param name="ti"></param>
         /// <returns></returns>
-        bool AddColumn(DataFieldInfo field, TypeInfo ti);
+        bool AddColumn(DataFieldInfo field, DatabaseTypeInfo ti);
 
         /// <summary>
         /// will remove a column from the datastore
@@ -32,7 +32,7 @@ namespace DataAccess.Core.Interfaces
         /// <param name="field"></param>
         /// <param name="ti"></param>
         /// <returns></returns>
-        bool RemoveColumn(DataFieldInfo field, TypeInfo ti);
+        bool RemoveColumn(DataFieldInfo field, DatabaseTypeInfo ti);
 
         /// <summary>
         /// Modifies a column on a table to match the domain object (data type and such)
@@ -40,12 +40,12 @@ namespace DataAccess.Core.Interfaces
         /// <param name="dfi"></param>
         /// <param name="typeInfo"></param>
         /// <returns></returns>
-        bool ModifyColumn(DataFieldInfo dfi, TypeInfo typeInfo);
+        bool ModifyColumn(DataFieldInfo dfi, DatabaseTypeInfo typeInfo);
 
         /// <summary>
         /// Makes sure the schema is valid and present (if required )
         /// </summary>
         /// <param name="ti"></param>
-        void CheckSchema(TypeInfo ti);
+        void CheckSchema(DatabaseTypeInfo ti);
     }
 }

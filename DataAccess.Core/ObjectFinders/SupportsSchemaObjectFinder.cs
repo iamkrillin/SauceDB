@@ -18,7 +18,7 @@ namespace DataAccess.Core.ObjectFinders
         /// <param name="objects">the objects to search</param>
         /// <param name="typeInfo">The type to lookup for</param>
         /// <returns></returns>
-        public DBObject GetObject(IEnumerable<DBObject> objects, TypeInfo typeInfo)
+        public DBObject GetObject(IEnumerable<DBObject> objects, DatabaseTypeInfo typeInfo)
         {
             if (!string.IsNullOrEmpty(typeInfo.Schema))
                 return objects.Where(R => R.Schema.Equals(typeInfo.UnEscapedSchema, StringComparison.InvariantCultureIgnoreCase) && R.Name.Equals(typeInfo.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();

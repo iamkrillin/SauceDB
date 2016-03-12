@@ -349,7 +349,7 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_Parse_Object()
         {
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItem));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItem));
             Assert.IsNotNull(ti);
 
             Assert.IsNotNull(ti.DataFields);
@@ -372,7 +372,7 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_parse_AdditionalInit()
         {
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemAdditionalInit));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemAdditionalInit));
             Assert.IsNotNull(ti);
             Assert.IsNotNull(ti.AdditionalInit);
             Assert.IsTrue(ti.AdditionalInit.Count == 1);
@@ -381,7 +381,7 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_parse_ByPass()
         {
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemBypassValidation));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemBypassValidation));
             Assert.IsNotNull(ti);
             Assert.IsTrue(ti.BypassValidation);
         }
@@ -389,7 +389,7 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_Parse_Foreign_Key()
         {
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemWithForeignKey));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemWithForeignKey));
             Assert.IsNotNull(ti);
             Assert.IsNotNull(ti.DataFields);
             var target = ti.DataFields.Where(R => R.PrimaryKeyType != null).FirstOrDefault();
@@ -399,7 +399,7 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_Parse_Key_Attribute()
         {
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemWithKeyAttribute));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemWithKeyAttribute));
             Assert.IsNotNull(ti);
             Assert.IsNotNull(ti.DataFields);
             var target = ti.DataFields.Where(R => R.PrimaryKey).FirstOrDefault();
@@ -409,7 +409,7 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_Parse_Table_Attribute()
         {
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemNewTableName));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemNewTableName));
             Assert.IsNotNull(ti);
             Assert.IsTrue(ti.TableName.Contains("SomeNewTable"));
 

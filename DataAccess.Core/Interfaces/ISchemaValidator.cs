@@ -41,6 +41,6 @@ namespace DataAccess.Core.Interfaces
         /// Performs schema validation/modification to match the type
         /// </summary>
         /// <param name="typeInfo"></param>
-        void ValidateType(TypeInfo typeInfo);
+        void ValidateType(DatabaseTypeInfo typeInfo);
     }
 }

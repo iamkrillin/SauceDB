@@ -41,7 +41,7 @@ namespace DataAccess.SqlCompact
 
         public override bool InsertObject(object item)
         {
-            TypeInfo ti = TypeInformationParser.GetTypeInfo(item.GetType());
+            DatabaseTypeInfo ti = TypeInformationParser.GetTypeInfo(item.GetType());
 
             EventHandler<CommandExecutingEventArgs> inserting = (sender, e) =>
             {

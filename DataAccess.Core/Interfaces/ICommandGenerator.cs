@@ -67,7 +67,7 @@ namespace DataAccess.Core.Interfaces
         /// </summary>
         /// <param name="ti">The type to create a table for</param>
         /// <returns></returns>
-        IEnumerable<IDbCommand> GetAddTableCommand(TypeInfo ti);
+        IEnumerable<IDbCommand> GetAddTableCommand(DatabaseTypeInfo ti);
 
         /// <summary>
         /// Returns a command for removing a column from a table
@@ -75,7 +75,7 @@ namespace DataAccess.Core.Interfaces
         /// <param name="type">The type to remove the column from</param>
         /// <param name="dfi">The column to remove</param>
         /// <returns></returns>
-        IDbCommand GetRemoveColumnCommand(TypeInfo type, DataFieldInfo dfi);
+        IDbCommand GetRemoveColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi);
 
         /// <summary>
         /// Returns a command for adding a column to a table
@@ -83,7 +83,7 @@ namespace DataAccess.Core.Interfaces
         /// <param name="type">The type to add the column to</param>
         /// <param name="dfi">The column to add</param>
         /// <returns></returns>
-        IEnumerable<IDbCommand> GetAddColumnCommnad(TypeInfo type, DataFieldInfo dfi);
+        IEnumerable<IDbCommand> GetAddColumnCommnad(DatabaseTypeInfo type, DataFieldInfo dfi);
 
         /// <summary>
         /// Returns a command for modifying a column to the specified type
@@ -91,7 +91,7 @@ namespace DataAccess.Core.Interfaces
         /// <param name="type">The type to modify</param>
         /// <param name="dfi">The column to modify</param>
         /// <returns></returns>
-        IEnumerable<IDbCommand> GetModifyColumnCommand(TypeInfo type, DataFieldInfo dfi);
+        IEnumerable<IDbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi);
 
         /// <summary>
         /// Returns a command for modifying a column to the specified type
@@ -100,7 +100,7 @@ namespace DataAccess.Core.Interfaces
         /// <param name="dfi">The column to modify</param>
         /// <param name="targetFieldType">The type to change the field to</param>
         /// <returns></returns>
-        IEnumerable<IDbCommand> GetModifyColumnCommand(TypeInfo type, DataFieldInfo dfi, string targetFieldType);
+        IEnumerable<IDbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType);
 
         /// <summary>
         /// Returns a delete command appropriate for an expression
@@ -191,6 +191,6 @@ namespace DataAccess.Core.Interfaces
         /// </summary>
         /// <param name="ti"></param>
         /// <returns></returns>
-        IDbCommand GetAddSchemaCommand(TypeInfo ti);
+        IDbCommand GetAddSchemaCommand(DatabaseTypeInfo ti);
     }
 }

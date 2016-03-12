@@ -20,7 +20,7 @@ namespace DataAccess.Core.Interfaces
         /// <summary>
         /// The data cache provider for the type parser
         /// </summary>
-        ICacheProvider<Type, TypeInfo> Cache { get; set; }
+        ICacheProvider<Type, DatabaseTypeInfo> Cache { get; set; }
 
         /// <summary>
         /// Gets the types fields.
@@ -41,7 +41,7 @@ namespace DataAccess.Core.Interfaces
         /// </summary>
         /// <param name="type">The type to parse</param>
         /// <returns></returns>
-        TypeInfo GetTypeInfo(Type type);
+        DatabaseTypeInfo GetTypeInfo(Type type);
 
         /// <summary>
         /// Gets a lot of information from a type
@@ -49,6 +49,6 @@ namespace DataAccess.Core.Interfaces
         /// <param name="type">The type to parse</param>
         /// <param name="Validate">if False, the the object will not be passed to the validator</param>
         /// <returns></returns>
-        TypeInfo GetTypeInfo(Type type, bool Validate);
+        DatabaseTypeInfo GetTypeInfo(Type type, bool Validate);
     }
 }

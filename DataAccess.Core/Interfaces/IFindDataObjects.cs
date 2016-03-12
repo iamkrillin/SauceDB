@@ -17,6 +17,6 @@ namespace DataAccess.Core.Interfaces
         /// <param name="objects">the objects to search</param>
         /// <param name="typeInfo">The type to lookup for</param>
         /// <returns></returns>
-        DBObject GetObject(IEnumerable<DBObject> objects, TypeInfo typeInfo);
+        DBObject GetObject(IEnumerable<DBObject> objects, DatabaseTypeInfo typeInfo);
     }
 }

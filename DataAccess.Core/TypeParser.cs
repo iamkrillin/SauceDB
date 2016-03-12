@@ -34,7 +34,7 @@ namespace DataAccess.Core
         /// <summary>
         /// The type information cache provider
         /// </summary>
-        public ICacheProvider<Type, TypeInfo> Cache { get; set; }
+        public ICacheProvider<Type, DatabaseTypeInfo> Cache { get; set; }
 
         /// <summary>
         /// The data store using this parser
@@ -46,7 +46,7 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="dstore">The data store using this parser</param>
         /// <param name="CacheProvider">The cache provider.</param>
-        public TypeParser(IDataStore dstore, ICacheProvider<Type, TypeInfo> CacheProvider)
+        public TypeParser(IDataStore dstore, ICacheProvider<Type, DatabaseTypeInfo> CacheProvider)
         {
             _connection = dstore;
             Cache = CacheProvider;
@@ -57,7 +57,7 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="dstore"></param>
         public TypeParser(IDataStore dstore)
-            : this(dstore, new DictionaryCacheProvider<Type, TypeInfo>())
+            : this(dstore, new DictionaryCacheProvider<Type, DatabaseTypeInfo>())
         {
 
         }
@@ -87,13 +87,13 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="type">The type to parse</param>
         /// <returns></returns>
-        public virtual TypeInfo GetTypeInfo(Type type)
+        public virtual DatabaseTypeInfo GetTypeInfo(Type type)
         {
-            TypeInfo toReturn = Cache.GetObject(type);
+            DatabaseTypeInfo toReturn = Cache.GetObject(type);
 
             if (toReturn == null)
             {
-                toReturn = new TypeInfo(type);
+                toReturn = new DatabaseTypeInfo(type);
 
                 if (!type.IsSystemType())
                 {
@@ -107,13 +107,13 @@ namespace DataAccess.Core
             return toReturn;
         }
 
-        public virtual TypeInfo GetTypeInfo(Type type, bool Validate)
+        public virtual DatabaseTypeInfo GetTypeInfo(Type type, bool Validate)
         {
-            TypeInfo toReturn = Cache.GetObject(type);
+            DatabaseTypeInfo toReturn = Cache.GetObject(type);
 
             if (toReturn == null)
             {
-                toReturn = new TypeInfo(type);
+                toReturn = new DatabaseTypeInfo(type);
 
                 if (!type.IsSystemType())
                 {
@@ -132,7 +132,7 @@ namespace DataAccess.Core
             return toReturn;
         }
 
-        private void StoreTypeInfo(Type type, TypeInfo toAdd)
+        private void StoreTypeInfo(Type type, DatabaseTypeInfo toAdd)
         {
             FireOnTypeParsed(new TypeParsedEventArgs(toAdd));
             lock (Cache)
@@ -147,7 +147,7 @@ namespace DataAccess.Core
             }
         }
 
-        private void ParseDataInfo(Type type, TypeInfo toAdd)
+        private void ParseDataInfo(Type type, DatabaseTypeInfo toAdd)
         {
             ParseTableName(type, toAdd);
             ParseView(type, toAdd);
@@ -156,13 +156,13 @@ namespace DataAccess.Core
             CheckForMultipleKeys(toAdd);
         }
 
-        private void ParseView(Type type, TypeInfo toAdd)
+        private void ParseView(Type type, DatabaseTypeInfo toAdd)
         {
             ViewAttribute dField = type.GetCustomAttributes(typeof(ViewAttribute), true).FirstOrDefault() as ViewAttribute;
             toAdd.IsView = dField != null ? true : false;
         }
 
-        private void CheckForMultipleKeys(TypeInfo toAdd)
+        private void CheckForMultipleKeys(DatabaseTypeInfo toAdd)
         {
             if (toAdd.PrimaryKeys.Count > 1)
                 toAdd.PrimaryKeys.ForEach(R => R.SetOnInsert = true);
@@ -173,7 +173,7 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="type">The type to parse</param>
         /// <param name="toAdd">What to add the data to</param>
-        protected void ParseFunctionAttributes(Type type, TypeInfo toAdd)
+        protected void ParseFunctionAttributes(Type type, DatabaseTypeInfo toAdd)
         {
             toAdd.AdditionalInit = new List<AdditionalInitFunction>();
             toAdd.OnTableCreate = new List<AdditionalInitFunction>();
@@ -200,7 +200,7 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="type">The type to parse</param>
         /// <param name="toAdd">What to add the data to</param>
-        protected void ParseBypass(Type type, TypeInfo toAdd)
+        protected void ParseBypass(Type type, DatabaseTypeInfo toAdd)
         {
             toAdd.BypassValidation = false;
 
@@ -222,7 +222,7 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="type">The type to parse</param>
         /// <param name="toAdd">What to add the data to</param>
-        protected void ParseDataFields(Type type, TypeInfo toAdd)
+        protected void ParseDataFields(Type type, DatabaseTypeInfo toAdd)
         {
             toAdd.DataFields = new List<DataFieldInfo>();
             PropertyInfo[] properties = type.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.Public);
@@ -352,7 +352,7 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="type">The type</param>
         /// <param name="toAdd">What to add the data to</param>
-        protected void ParseTableName(Type type, TypeInfo toAdd)
+        protected void ParseTableName(Type type, DatabaseTypeInfo toAdd)
         {
             TableNameAttribute tName = type.GetCustomAttributes(typeof(TableNameAttribute), true).FirstOrDefault() as TableNameAttribute;
             if (tName != null)

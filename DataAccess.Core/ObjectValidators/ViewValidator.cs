@@ -27,7 +27,7 @@ namespace DataAccess.Core.ObjectValidators
         /// Validates an objects info against the datastore
         /// </summary>
         /// <param name="ti"></param>
-        public override void ValidateObject(TypeInfo ti)
+        public override void ValidateObject(DatabaseTypeInfo ti)
         {
             DBObject obj = GetObject(ti);
             if (obj == null)
@@ -41,7 +41,7 @@ namespace DataAccess.Core.ObjectValidators
         /// </summary>
         /// <param name="ti">The ti.</param>
         /// <param name="obj">The obj.</param>
-        protected virtual void ValidateExistingView(TypeInfo ti, DBObject obj)
+        protected virtual void ValidateExistingView(DatabaseTypeInfo ti, DBObject obj)
         {
             List<string> Missing = new List<string>();
 
@@ -71,7 +71,7 @@ namespace DataAccess.Core.ObjectValidators
         /// </summary>
         /// <param name="ti">The ti.</param>
         /// <returns></returns>
-        protected virtual DBObject CreateNewView(TypeInfo ti)
+        protected virtual DBObject CreateNewView(DatabaseTypeInfo ti)
         {
             if (ti.DataFields.Count > 0)
             {

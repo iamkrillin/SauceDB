@@ -223,7 +223,7 @@ namespace DataAccess.SqlServer
             if (items.Count > 0)
             {
                 Type t = items[0].GetType();
-                TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(t);
+                DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(t);
                 DBObject table = dstore.SchemaValidator.TableValidator.GetObjects().Where(R => R.Schema.Equals(ti.UnEscapedSchema, StringComparison.InvariantCultureIgnoreCase) && R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
 
                 if (table != null)
@@ -254,7 +254,7 @@ namespace DataAccess.SqlServer
             }
         }
 
-        private void ProcessBulkInsert(IList list, Type t, TypeInfo ti, DBObject table)
+        private void ProcessBulkInsert(IList list, Type t, DatabaseTypeInfo ti, DBObject table)
         {
             DataTable dt = new DataTable();
             AddColumnsToTable(dt, ti, table);
@@ -286,7 +286,7 @@ namespace DataAccess.SqlServer
             }
         }
 
-        private void AddColumnsToTable(DataTable dt, TypeInfo ti, DBObject table)
+        private void AddColumnsToTable(DataTable dt, DatabaseTypeInfo ti, DBObject table)
         {
             foreach (Column c in table.Columns)
             {

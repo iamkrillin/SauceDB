@@ -34,7 +34,7 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_Get_Tables()
         {
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemTwoKeys));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemTwoKeys));
             IEnumerable<DBObject> tables = dstore.SchemaValidator.TableValidator.GetObjects();
             Assert.IsTrue(tables.Count() > 0);
             foreach (DBObject t in tables)
@@ -56,14 +56,14 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_Add_Table_With_Schema()
         {
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(ItemWithSchema));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(ItemWithSchema));
             IEnumerable<DBObject> tables = dstore.SchemaValidator.TableValidator.GetObjects();
         }
 
         [TestMethod]
         public virtual void Test_Can_Add_Table_Two_Key()
         {
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemTwoKeys));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemTwoKeys));
             IEnumerable<DBObject> tables = dstore.SchemaValidator.TableValidator.GetObjects();
             DBObject inserted = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             Assert.IsTrue(inserted != null);
@@ -72,7 +72,7 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_Add_Table_One_Key()
         {
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemNewTableName));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemNewTableName));
             IEnumerable<DBObject> tables = dstore.SchemaValidator.TableValidator.GetObjects();
             DBObject inserted = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             Assert.IsTrue(inserted != null);
@@ -81,7 +81,7 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_Add_Table_With_Foreign_Key()
         {
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemWithForeignKey));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemWithForeignKey));
             IEnumerable<DBObject> tables = dstore.SchemaValidator.TableValidator.GetObjects();
             DBObject inserted = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             Assert.IsTrue(inserted != null);
@@ -90,7 +90,7 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_Add_Table_With_Default_Value()
         {
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemDefaultValue));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemDefaultValue));
             IEnumerable<DBObject> tables = dstore.SchemaValidator.TableValidator.GetObjects();
             DBObject inserted = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             Assert.IsTrue(inserted != null);
@@ -105,13 +105,13 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_Add_Column_To_Table()
         {
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFields));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFields));
             IEnumerable<DBObject> tables = dstore.SchemaValidator.TableValidator.GetObjects();
             DBObject inserted = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             Assert.IsTrue(inserted != null);
             Assert.IsTrue(inserted.Columns.Count == 3);
 
-            TypeInfo t2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFieldsPlusOne));
+            DatabaseTypeInfo t2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFieldsPlusOne));
 
             tables = dstore.SchemaValidator.TableValidator.GetObjects();
             DBObject inserted2 = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
@@ -123,7 +123,7 @@ namespace DataAccess.DatabaseTests.Tests
         public virtual void Test_Will_Not_Add_Column_To_Table_With_Option_Off()
         {
             dstore.SchemaValidator.CanAddColumns = false;
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFields));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFields));
             IEnumerable<DBObject> tables = dstore.SchemaValidator.TableValidator.GetObjects();
             DBObject inserted = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             Assert.IsTrue(inserted != null);
@@ -133,7 +133,7 @@ namespace DataAccess.DatabaseTests.Tests
             {
                 Assert.IsTrue(false);
             };
-            TypeInfo t2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFieldsPlusOne));
+            DatabaseTypeInfo t2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFieldsPlusOne));
 
             tables = dstore.SchemaValidator.TableValidator.GetObjects();
             DBObject inserted2 = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
@@ -144,13 +144,13 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_Add_Column_To_Table_Default()
         {
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFields));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFields));
             IEnumerable<DBObject> tables = dstore.SchemaValidator.TableValidator.GetObjects();
             DBObject inserted = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             Assert.IsTrue(inserted != null);
             Assert.IsTrue(inserted.Columns.Count == 3);
 
-            TypeInfo t2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFieldsPlusOneWithDefault));
+            DatabaseTypeInfo t2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFieldsPlusOneWithDefault));
 
             tables = dstore.SchemaValidator.TableValidator.GetObjects();
             DBObject inserted2 = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
@@ -161,13 +161,13 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_Add_Column_To_Table_Foreign_Key()
         {
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFields));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFields));
             IEnumerable<DBObject> tables = dstore.SchemaValidator.TableValidator.GetObjects();
             DBObject inserted = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             Assert.IsTrue(inserted != null);
             Assert.IsTrue(inserted.Columns.Count == 3);
 
-            TypeInfo t2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFieldsPlusOneForeign));
+            DatabaseTypeInfo t2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFieldsPlusOneForeign));
 
             tables = dstore.SchemaValidator.TableValidator.GetObjects();
             DBObject inserted2 = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
@@ -179,13 +179,13 @@ namespace DataAccess.DatabaseTests.Tests
         public virtual void Test_Can_RemoveColumn()
         {
             dstore.SchemaValidator.CanRemoveColumns = true;
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFields));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFields));
             IEnumerable<DBObject> tables = dstore.SchemaValidator.TableValidator.GetObjects();
             DBObject inserted = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             Assert.IsTrue(inserted != null);
             Assert.IsTrue(inserted.Columns.Count == 3);
 
-            TypeInfo t2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFieldsMinusOne));
+            DatabaseTypeInfo t2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFieldsMinusOne));
 
             tables = dstore.SchemaValidator.TableValidator.GetObjects();
             DBObject inserted2 = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
@@ -197,7 +197,7 @@ namespace DataAccess.DatabaseTests.Tests
         public virtual void Test_Will_Not_Remove_Column_With_Option_Off()
         {
             dstore.SchemaValidator.CanRemoveColumns = false;
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFields));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFields));
             IEnumerable<DBObject> tables = dstore.SchemaValidator.TableValidator.GetObjects();
             DBObject inserted = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             Assert.IsTrue(inserted != null);
@@ -208,7 +208,7 @@ namespace DataAccess.DatabaseTests.Tests
                 Assert.IsTrue(false);
             };
 
-            TypeInfo t2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFieldsMinusOne));
+            DatabaseTypeInfo t2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFieldsMinusOne));
 
             tables = dstore.SchemaValidator.TableValidator.GetObjects();
             DBObject inserted2 = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
@@ -219,10 +219,10 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_Add_Foreign_Key_When_Types_Are_Different_But_Can_Convert()
         {
-            TypeInfo pT = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemPrimaryKey));
+            DatabaseTypeInfo pT = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemPrimaryKey));
             Assert.IsTrue(pT != null);
 
-            TypeInfo fT = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemForeignKeyWithString));
+            DatabaseTypeInfo fT = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemForeignKeyWithString));
             Assert.IsTrue(fT != null);
         }
 
@@ -230,7 +230,7 @@ namespace DataAccess.DatabaseTests.Tests
         public virtual void Test_Can_Modify_Column_Type()
         {
             int columnsModified = 0;
-            TypeInfo ti1 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemPrimaryKey));
+            DatabaseTypeInfo ti1 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemPrimaryKey));
             Assert.IsTrue(ti1 != null);
 
             TestItemPrimaryKey tipk = new TestItemPrimaryKey();
@@ -242,7 +242,7 @@ namespace DataAccess.DatabaseTests.Tests
                     columnsModified++;
                 };
 
-            TypeInfo ti2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemPrimaryKeyDateFieldDifferentType));
+            DatabaseTypeInfo ti2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemPrimaryKeyDateFieldDifferentType));
             Assert.IsTrue(ti2 != null);
             Assert.IsTrue(columnsModified > 0);
         }
@@ -251,7 +251,7 @@ namespace DataAccess.DatabaseTests.Tests
         public virtual void Test_Will_Not_Modify_Column_With_Option_Off()
         {
             dstore.SchemaValidator.CanUpdateColumns = false;
-            TypeInfo ti1 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemPrimaryKey));
+            DatabaseTypeInfo ti1 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemPrimaryKey));
             Assert.IsTrue(ti1 != null);
 
             TestItemPrimaryKey tipk = new TestItemPrimaryKey();
@@ -264,7 +264,7 @@ namespace DataAccess.DatabaseTests.Tests
                 Assert.IsTrue(false);
             };
 
-            TypeInfo ti2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemPrimaryKeyDateFieldDifferentType));
+            DatabaseTypeInfo ti2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemPrimaryKeyDateFieldDifferentType));
             Assert.IsTrue(ti2 != null);
         }
 
@@ -333,7 +333,7 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod, ExpectedException(typeof(DataStoreException))]
         public virtual void Test_Notify_Validator_Notifies_Of_Missing_Column()
         {
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFields));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFields));
             IEnumerable<DBObject> tables = dstore.SchemaValidator.TableValidator.GetObjects();
             DBObject inserted = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             Assert.IsTrue(inserted != null);
@@ -341,13 +341,13 @@ namespace DataAccess.DatabaseTests.Tests
 
             //column is there, lets change the validator and try to add a column...
             dstore.SchemaValidator = new NotifyValidator(dstore);
-            TypeInfo t2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFieldsPlusOne));
+            DatabaseTypeInfo t2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFieldsPlusOne));
         }
 
         [TestMethod, ExpectedException(typeof(DataStoreException))]
         public virtual void Test_View_Validator_Notifies_Of_Missing_Columns()
         {
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(ItemWithSchema));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(ItemWithSchema));
             IEnumerable<DBObject> tables = dstore.SchemaValidator.TableValidator.GetObjects();
 
             //need to check the column with a new item + one column
@@ -368,20 +368,20 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_Add_Nullable()
         {
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemNullable));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemNullable));
             IEnumerable<DBObject> tables = dstore.SchemaValidator.TableValidator.GetObjects();
         }
 
         [TestMethod]
         public virtual void Test_Can_Add_Nullable_Column_To_Table()
         {
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFields));
+            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFields));
             IEnumerable<DBObject> tables = dstore.SchemaValidator.TableValidator.GetObjects();
             DBObject inserted = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             Assert.IsTrue(inserted != null);
             Assert.IsTrue(inserted.Columns.Count == 3);
 
-            TypeInfo t2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFieldsPlusOneNullable));
+            DatabaseTypeInfo t2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFieldsPlusOneNullable));
 
             tables = dstore.SchemaValidator.TableValidator.GetObjects();
             DBObject inserted2 = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();

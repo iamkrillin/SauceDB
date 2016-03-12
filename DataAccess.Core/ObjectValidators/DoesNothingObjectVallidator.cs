@@ -41,7 +41,7 @@ namespace DataAccess.Core.ObjectValidators
         /// This does nothing
         /// </summary>
         /// <param name="ti"></param>
-        public void ValidateObject(Data.TypeInfo ti)
+        public void ValidateObject(Data.DatabaseTypeInfo ti)
         {
         }
 
@@ -64,7 +64,7 @@ namespace DataAccess.Core.ObjectValidators
             return null;
         }
 
-        public bool ObjectExistsInDataStore(TypeInfo info)
+        public bool ObjectExistsInDataStore(DatabaseTypeInfo info)
         {
             return false;
         }

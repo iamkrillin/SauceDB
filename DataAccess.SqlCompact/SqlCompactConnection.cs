@@ -181,7 +181,7 @@ namespace DataAccess.SqlCompact
                 dstore.InsertObjects(items.GetSmallerList(100));
         }
 
-        private void AddColumnsToTable(DataTable dt, TypeInfo ti, DBObject table)
+        private void AddColumnsToTable(DataTable dt, DatabaseTypeInfo ti, DBObject table)
         {
             foreach (Column c in table.Columns)
             {

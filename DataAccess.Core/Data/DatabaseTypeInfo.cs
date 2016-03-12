@@ -8,13 +8,13 @@ namespace DataAccess.Core.Data
     /// Resolved type information
     /// </summary>
     [Serializable]
-    public class TypeInfo
+    public class DatabaseTypeInfo
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TypeInfo" /> class.
+        /// Initializes a new instance of the <see cref="DatabaseTypeInfo" /> class.
         /// </summary>
         /// <param name="type">The type.</param>
-        public TypeInfo(Type type)
+        public DatabaseTypeInfo(Type type)
         {
             DataType = type;
         }

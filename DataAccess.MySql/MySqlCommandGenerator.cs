@@ -70,7 +70,7 @@ namespace DataAccess.MySql
         /// </summary>
         /// <param name="ti">The type to create a table for</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetAddTableCommand(TypeInfo ti)
+        public override IEnumerable<IDbCommand> GetAddTableCommand(DatabaseTypeInfo ti)
         {
             StringBuilder sb = new StringBuilder();
             StringBuilder pFields = new StringBuilder();
@@ -98,7 +98,7 @@ namespace DataAccess.MySql
 
                 if (dfi.PrimaryKeyType != null && StorageEngine == MySql.StorageEngine.InnoDB)
                 {
-                    TypeInfo pkType = DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType);
+                    DatabaseTypeInfo pkType = DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType);
                     contrain.AppendFormat(_createFKSQL, ResolveTableName(ti, false), pkType.UnescapedTableName, pkType.PrimaryKeys.First().EscapedFieldName, TranslateFkeyType(dfi.ForeignKeyType), dfi.EscapedFieldName);
                 }
 
@@ -122,7 +122,7 @@ namespace DataAccess.MySql
         /// <param name="type">The type to remove the column from</param>
         /// <param name="dfi">The column to remove</param>
         /// <returns></returns>
-        public override IDbCommand GetRemoveColumnCommand(TypeInfo type, DataFieldInfo dfi)
+        public override IDbCommand GetRemoveColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             MySqlCommand command = new MySqlCommand();
             command.CommandText = string.Format("ALTER TABLE `{0}` DROP COLUMN `{1}`;", ResolveTableName(type, false), dfi.FieldName);
@@ -135,7 +135,7 @@ namespace DataAccess.MySql
         /// <param name="type">The type to add the column to</param>
         /// <param name="dfi">The column to add</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetAddColumnCommnad(TypeInfo type, DataFieldInfo dfi)
+        public override IEnumerable<IDbCommand> GetAddColumnCommnad(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             if (dfi.PrimaryKey)
                 throw new DataStoreException("Adding a primary key to an existing table is not supported");
@@ -150,7 +150,7 @@ namespace DataAccess.MySql
 
                 if (dfi.PrimaryKeyType != null)
                 {
-                    TypeInfo pkType = DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType);
+                    DatabaseTypeInfo pkType = DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType);
                     sb.Append(",");
                     sb.AppendFormat(_addFKSql, ResolveTableName(type, false), ResolveTableName(pkType, false), dfi.EscapedFieldName, pkType.PrimaryKeys.First().EscapedFieldName, TranslateFkeyType(dfi.ForeignKeyType));
                 }
@@ -168,7 +168,7 @@ namespace DataAccess.MySql
         /// <param name="dfi">The field to edit</param>
         /// <param name="targetFieldType">the new column type</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetModifyColumnCommand(TypeInfo type, DataFieldInfo dfi, string targetFieldType)
+        public override IEnumerable<IDbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
         {
             MySqlCommand cmd = new MySqlCommand();
             cmd.CommandText = string.Format(_ModifyColumn, ResolveTableName(type, false), dfi.EscapedFieldName, targetFieldType, string.IsNullOrEmpty(dfi.DefaultValue) ? "" : string.Concat(" NOT NULL DEFAULT ", dfi.DefaultValue));
@@ -180,7 +180,7 @@ namespace DataAccess.MySql
         /// </summary>
         /// <param name="ti"></param>
         /// <returns></returns>
-        public override IDbCommand GetAddSchemaCommand(TypeInfo ti)
+        public override IDbCommand GetAddSchemaCommand(DatabaseTypeInfo ti)
         {
             return null;
         }

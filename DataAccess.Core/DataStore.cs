@@ -165,7 +165,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual object LoadObject(Type item, object key, bool LoadAllFields)
         {
-            TypeInfo ti = TypeInformationParser.GetTypeInfo(item);
+            DatabaseTypeInfo ti = TypeInformationParser.GetTypeInfo(item);
             if (ti.PrimaryKeys.Count == 1)
             {
                 object toReturn = CreateObjectSetKey(item, key, ti);
@@ -418,7 +418,7 @@ namespace DataAccess.Core
         public virtual IQueryable<T> Query<T>()
         {
             IQueryable<T> toReturn = new Query<T>(Connection.GetQueryProvider(this));
-            TypeInfo ti = TypeInformationParser.GetTypeInfo(typeof(T));
+            DatabaseTypeInfo ti = TypeInformationParser.GetTypeInfo(typeof(T));
             if (ti.QueryPredicate != null)
             {
                 toReturn = ti.QueryPredicate.Invoke(toReturn);
@@ -466,18 +466,18 @@ namespace DataAccess.Core
             return ExecuteCommands.ExecuteCommandQuery(command, Connection);
         }
 
-        private object BuildObject(IQueryRow dt, TypeInfo ti)
+        private object BuildObject(IQueryRow dt, DatabaseTypeInfo ti)
         {
             object toReturn = ObjectBuilder.BuildObject(this, dt, ti);
             FireObjectLoaded(toReturn);
             return toReturn;
         }
 
-        private void SetFieldData(TypeInfo typeInfo, IQueryRow dt, object p)
+        private void SetFieldData(DatabaseTypeInfo DatabaseTypeInfo, IQueryRow dt, object p)
         {
             if (dt != null)
             {
-                ObjectBuilder.SetFieldData(this, typeInfo, dt, p);
+                ObjectBuilder.SetFieldData(this, DatabaseTypeInfo, dt, p);
                 FireObjectLoaded(p);
             }
         }
@@ -495,7 +495,7 @@ namespace DataAccess.Core
             {
                 if (dt.QuerySuccessful)
                 {
-                    TypeInfo ti = TypeInformationParser.GetTypeInfo(objectType);
+                    DatabaseTypeInfo ti = TypeInformationParser.GetTypeInfo(objectType);
                     foreach (IQueryRow row in dt)
                     {
                         ReturnType toAdd;

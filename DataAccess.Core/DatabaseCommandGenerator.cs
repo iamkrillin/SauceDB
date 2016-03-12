@@ -27,7 +27,7 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="ti">The type to create a table for</param>
         /// <returns></returns>
-        public abstract IEnumerable<IDbCommand> GetAddTableCommand(TypeInfo ti);
+        public abstract IEnumerable<IDbCommand> GetAddTableCommand(DatabaseTypeInfo ti);
 
         /// <summary>
         /// Returns a command for removing a column from a table
@@ -35,7 +35,7 @@ namespace DataAccess.Core
         /// <param name="type">The type to remove the column from</param>
         /// <param name="dfi">The column to remove</param>
         /// <returns></returns>
-        public abstract IDbCommand GetRemoveColumnCommand(TypeInfo type, DataFieldInfo dfi);
+        public abstract IDbCommand GetRemoveColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi);
 
         /// <summary>
         /// Returns a command for adding a column to a table
@@ -43,14 +43,14 @@ namespace DataAccess.Core
         /// <param name="type">The type to add the column to</param>
         /// <param name="dfi">The column to add</param>
         /// <returns></returns>
-        public abstract IEnumerable<IDbCommand> GetAddColumnCommnad(TypeInfo type, DataFieldInfo dfi);
+        public abstract IEnumerable<IDbCommand> GetAddColumnCommnad(DatabaseTypeInfo type, DataFieldInfo dfi);
 
         /// <summary>
         /// Returns a command appropriate for adding a schema
         /// </summary>
         /// <param name="ti"></param>
         /// <returns></returns>
-        public abstract IDbCommand GetAddSchemaCommand(TypeInfo ti);
+        public abstract IDbCommand GetAddSchemaCommand(DatabaseTypeInfo ti);
 
         /// <summary>
         /// Returns a command for modifying a column to the specified type
@@ -59,7 +59,7 @@ namespace DataAccess.Core
         /// <param name="dfi">The column to modify</param>
         /// <param name="targetFieldType">The type to change the field to</param>
         /// <returns></returns>
-        public abstract IEnumerable<IDbCommand> GetModifyColumnCommand(TypeInfo type, DataFieldInfo dfi, string targetFieldType);
+        public abstract IEnumerable<IDbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType);
 
         /// <summary>
         /// Generates a command appropriate for loading an entire table from the data store
@@ -79,7 +79,7 @@ namespace DataAccess.Core
         /// <param name="type">The type to modify</param>
         /// <param name="dfi">The column to modify</param>
         /// <returns></returns>
-        public virtual IEnumerable<IDbCommand> GetModifyColumnCommand(TypeInfo type, DataFieldInfo dfi)
+        public virtual IEnumerable<IDbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             return GetModifyColumnCommand(type, dfi, TranslateTypeToSql(dfi));
         }
@@ -134,7 +134,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual IDbCommand GetInsertCommand(object item)
         {
-            TypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(item.GetType());
+            DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(item.GetType());
             IDbCommand cmd = null;
             if (item != null)
             {
@@ -161,7 +161,7 @@ namespace DataAccess.Core
 
             if (items.Count > 0)
             {
-                TypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(items[0].GetType());
+                DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(items[0].GetType());
                 cmd = DataStore.Connection.GetCommand();
                 string fieldList = null;
                 StringBuilder parmbuilder = new StringBuilder();
@@ -188,7 +188,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual IDbCommand GetUpdateCommand(object item)
         {
-            TypeInfo data = DataStore.TypeInformationParser.GetTypeInfo(item.GetType());
+            DatabaseTypeInfo data = DataStore.TypeInformationParser.GetTypeInfo(item.GetType());
             IDbCommand toReturn = DataStore.Connection.GetCommand();
             StringBuilder fieldList = new StringBuilder("UPDATE ");
             fieldList.Append(ResolveTableName(data));
@@ -238,7 +238,7 @@ namespace DataAccess.Core
         /// <param name="item">The item.</param>
         /// <param name="TypeInfo">The type info.</param>
         /// <returns></returns>
-        protected virtual List<ParameterData> GetObjectParameters(int startingIndex, object item, TypeInfo TypeInfo)
+        protected virtual List<ParameterData> GetObjectParameters(int startingIndex, object item, DatabaseTypeInfo TypeInfo)
         {
             List<ParameterData> toReturn = new List<ParameterData>();
             foreach (DataFieldInfo info in TypeInfo.DataFields)
@@ -267,7 +267,7 @@ namespace DataAccess.Core
         public virtual IDbCommand GetSelectCommand(object item, bool LoadAllFields)
         {
             Type t = item.GetType();
-            TypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(t);
+            DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(t);
             IDbCommand cmd = DataStore.Connection.GetCommand();
 
             StringBuilder sb = new StringBuilder();
@@ -298,7 +298,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual IDbCommand GetDeleteCommand(object item)
         {
-            TypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(item.GetType());
+            DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(item.GetType());
             StringBuilder sb = new StringBuilder("DELETE FROM ");
             sb.Append(ResolveTableName(ti));
             sb.Append(" WHERE ");
@@ -324,7 +324,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual IEnumerable<DataFieldInfo> GetSelectFields(Type type, bool LoadAllFields)
         {
-            TypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(type);
+            DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(type);
 
             foreach (DataFieldInfo dfi in ti.DataFields)
             {
@@ -341,7 +341,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual string GetSelectList(Type type, bool LoadAllFields)
         {
-            TypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(type);
+            DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(type);
             if (ti.SelectString == null)
             {
                 StringBuilder sb = new StringBuilder();
@@ -366,7 +366,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual string ResolveTableName(Type type)
         {
-            TypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(type);
+            DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(type);
             return ResolveTableName(ti);
         }
 
@@ -375,7 +375,7 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="ti">The ti.</param>
         /// <returns></returns>
-        public virtual string ResolveTableName(TypeInfo ti)
+        public virtual string ResolveTableName(DatabaseTypeInfo ti)
         {
             return ResolveTableName(ti, true);
         }
@@ -386,7 +386,7 @@ namespace DataAccess.Core
         /// <param name="ti">The ti.</param>
         /// <param name="EscapeTableName">Should the table name be escaped</param>
         /// <returns></returns>
-        public virtual string ResolveTableName(TypeInfo ti, bool EscapeTableName)
+        public virtual string ResolveTableName(DatabaseTypeInfo ti, bool EscapeTableName)
         {
             string toReturn = EscapeTableName ? ti.TableName : ti.UnescapedTableName;
 
@@ -637,7 +637,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual IDbCommand GetDeleteCommand<T>(Expression<Func<T, bool>> criteria)
         {
-            TypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(typeof(T));
+            DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(typeof(T));
             StringBuilder sb = new StringBuilder("DELETE FROM ");
             sb.Append(ResolveTableName(ti));
             sb.Append(" WHERE ");
@@ -664,7 +664,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual IDbCommand GetInCommand<T>(IEnumerable Ids)
         {
-            TypeInfo data = DataStore.TypeInformationParser.GetTypeInfo(typeof(T));
+            DatabaseTypeInfo data = DataStore.TypeInformationParser.GetTypeInfo(typeof(T));
             IDbCommand toReturn = DataStore.Connection.GetCommand();
             StringBuilder sb = new StringBuilder();
             sb.Append("SELECT ");

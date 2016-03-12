@@ -55,7 +55,7 @@ namespace DataAccess.Core
         public virtual void SetParameters(object parameters)
         {
             Command.Parameters.Clear();
-            TypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(parameters.GetType(), false);
+            DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(parameters.GetType(), false);
             if (ti.IsDynamic)
             {
                 IDictionary<string, object> items = (IDictionary<string, object>)parameters;

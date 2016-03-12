@@ -39,7 +39,7 @@ namespace DataAccess.Core.Schema
         /// <summary>
         /// Always returns true
         /// </summary>
-        public bool AddColumn(DataFieldInfo field, TypeInfo ti)
+        public bool AddColumn(DataFieldInfo field, DatabaseTypeInfo ti)
         {
             return true;
         }
@@ -47,7 +47,7 @@ namespace DataAccess.Core.Schema
         /// <summary>
         /// Always returns true
         /// </summary>
-        public bool RemoveColumn(DataFieldInfo field, TypeInfo ti)
+        public bool RemoveColumn(DataFieldInfo field, DatabaseTypeInfo ti)
         {
             return true;
         }
@@ -55,7 +55,7 @@ namespace DataAccess.Core.Schema
         /// <summary>
         /// Does nothing
         /// </summary>
-        public void ValidateType(TypeInfo typeInfo)
+        public void ValidateType(DatabaseTypeInfo typeInfo)
         {
 
         }

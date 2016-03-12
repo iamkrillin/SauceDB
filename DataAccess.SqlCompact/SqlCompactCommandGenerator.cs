@@ -35,7 +35,7 @@ namespace DataAccess.SqlCompact
         /// </summary>
         /// <param name="ti">The type to create a table for</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetAddTableCommand(TypeInfo ti)
+        public override IEnumerable<IDbCommand> GetAddTableCommand(DatabaseTypeInfo ti)
         {
             List<IDbCommand> toReturn = new List<IDbCommand>();
             StringBuilder sb = new StringBuilder();
@@ -95,12 +95,12 @@ namespace DataAccess.SqlCompact
             return toReturn;
         }
 
-        private string GetDefaultValueSql(TypeInfo ti, DataFieldInfo dfi, SqlCeCommand cmd)
+        private string GetDefaultValueSql(DatabaseTypeInfo ti, DataFieldInfo dfi, SqlCeCommand cmd)
         {
             return string.Format("ALTER TABLE {0} ADD CONSTRAINT DF_{3}_{4}_{5} DEFAULT {2} FOR {1};", ResolveTableName(ti), dfi.FieldName, dfi.DefaultValue, ti.UnEscapedSchema, ti.UnescapedTableName, dfi.FieldName);
         }
 
-        private string GetForeignKeySql(DataFieldInfo field, TypeInfo targetTable, TypeInfo pKeyTable)
+        private string GetForeignKeySql(DataFieldInfo field, DatabaseTypeInfo targetTable, DatabaseTypeInfo pKeyTable)
         {
             StringBuilder sb = new StringBuilder("ALTER TABLE ");
             sb.AppendFormat("{0} ", ResolveTableName(targetTable));
@@ -118,7 +118,7 @@ namespace DataAccess.SqlCompact
         /// <param name="type">The type to remove the column from</param>
         /// <param name="dfi">The column to remove</param>
         /// <returns></returns>
-        public override IDbCommand GetRemoveColumnCommand(TypeInfo type, DataFieldInfo dfi)
+        public override IDbCommand GetRemoveColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             SqlCeCommand scmd = new SqlCeCommand();
             scmd.CommandText = string.Format("ALTER TABLE {0} DROP COLUMN [{1}]", ResolveTableName(type), dfi.FieldName);
@@ -131,7 +131,7 @@ namespace DataAccess.SqlCompact
         /// <param name="type">The type to add the column to</param>
         /// <param name="dfi">The column to add</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetAddColumnCommnad(TypeInfo type, DataFieldInfo dfi)
+        public override IEnumerable<IDbCommand> GetAddColumnCommnad(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             List<IDbCommand> toReturn = new List<IDbCommand>();
 
@@ -168,7 +168,7 @@ namespace DataAccess.SqlCompact
         /// <param name="dfi">The field</param>
         /// <param name="targetFieldType">The new column type</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetModifyColumnCommand(TypeInfo type, DataFieldInfo dfi, string targetFieldType)
+        public override IEnumerable<IDbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
         {
             List<IDbCommand> toReturn = new List<IDbCommand>();
             SqlCeCommand cmd = new SqlCeCommand();
@@ -199,7 +199,7 @@ namespace DataAccess.SqlCompact
         /// <param name="ti">The table name</param>
         /// <param name="EscapeTableName">ignored</param>
         /// <returns></returns>
-        public override string ResolveTableName(TypeInfo ti, bool EscapeTableName)
+        public override string ResolveTableName(DatabaseTypeInfo ti, bool EscapeTableName)
         {
             return ResolveTableName(ti);
         }
@@ -209,7 +209,7 @@ namespace DataAccess.SqlCompact
         /// </summary>
         /// <param name="ti">The type</param>
         /// <returns></returns>
-        public override string ResolveTableName(TypeInfo ti)
+        public override string ResolveTableName(DatabaseTypeInfo ti)
         {
             if (!string.IsNullOrEmpty(ti.UnEscapedSchema))
                 return string.Concat(ti.UnEscapedSchema, "_", ti.UnescapedTableName);
@@ -225,7 +225,7 @@ namespace DataAccess.SqlCompact
                 return table;
         }
 
-        public override IDbCommand GetAddSchemaCommand(TypeInfo ti)
+        public override IDbCommand GetAddSchemaCommand(DatabaseTypeInfo ti)
         {
             return null;
         }

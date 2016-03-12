@@ -68,7 +68,7 @@ namespace DataAccess.Async
 
         public async Task<object> LoadObject(Type item, object key, bool LoadAllFields = false)
         {
-            TypeInfo ti = TypeInformationParser.GetTypeInfo(item);
+            DatabaseTypeInfo ti = TypeInformationParser.GetTypeInfo(item);
             if (ti.PrimaryKeys.Count == 1)
             {
                 object toReturn = CreateObjectSetKey(item, key, ti);
@@ -171,7 +171,7 @@ namespace DataAccess.Async
             {
                 if (dt.QuerySuccessful)
                 {
-                    TypeInfo ti = TypeInformationParser.GetTypeInfo(objectType);
+                    DatabaseTypeInfo ti = TypeInformationParser.GetTypeInfo(objectType);
                     foreach (IQueryRow row in dt)
                     {
                         if (objectType.IsSystemType())
@@ -209,7 +209,7 @@ namespace DataAccess.Async
             var tTask = Task.Run(() => TypeInformationParser.GetTypeInfo(typeof(T)));
             var rTask = Task.Run(() => new Query<T>(Connection.GetQueryProvider(_dstore)));
 
-            TypeInfo ti = await tTask;
+            DatabaseTypeInfo ti = await tTask;
             IQueryable<T> toReturn = await rTask;
 
             if (ti.QueryPredicate != null)
@@ -252,14 +252,14 @@ namespace DataAccess.Async
             }
         }
 
-        private async Task<object> BuildObjectAsync(IQueryRow dt, TypeInfo ti)
+        private async Task<object> BuildObjectAsync(IQueryRow dt, DatabaseTypeInfo ti)
         {
             object toReturn = await Task.Run(() => ObjectBuilder.BuildObject(_dstore, dt, ti));
             FireObjectLoaded(toReturn);
             return toReturn;
         }
 
-        private async Task SetFieldDataAsync(TypeInfo typeInfo, IQueryRow dt, object p)
+        private async Task SetFieldDataAsync(DatabaseTypeInfo typeInfo, IQueryRow dt, object p)
         {
             if (dt != null)
             {

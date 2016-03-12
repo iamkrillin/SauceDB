@@ -14,13 +14,13 @@ namespace DataAccess.Core.Events
         /// <summary>
         /// The data that was used to create the table
         /// </summary>
-        public TypeInfo Data { get; set; }
+        public DatabaseTypeInfo Data { get; set; }
 
         /// <summary>
         /// Default constructor
         /// </summary>
         /// <param name="TableInfo"></param>
-        public ObjectCreatedEventArgs(TypeInfo TableInfo)
+        public ObjectCreatedEventArgs(DatabaseTypeInfo TableInfo)
         {
             this.Data = TableInfo;
         }

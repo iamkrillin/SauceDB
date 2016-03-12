@@ -41,7 +41,7 @@ namespace DataAccess.Core.Interfaces
         /// Validates an objects info against the datastore
         /// </summary>
         /// <param name="ti"></param>
-        void ValidateObject(TypeInfo ti);
+        void ValidateObject(DatabaseTypeInfo ti);
 
         /// <summary>
         /// Returns a list of objects from the datastore
@@ -60,6 +60,6 @@ namespace DataAccess.Core.Interfaces
         /// Will return true if a given object exists in the datastore
         /// </summary>
         /// <returns></returns>
-        bool ObjectExistsInDataStore(TypeInfo info);
+        bool ObjectExistsInDataStore(DatabaseTypeInfo info);
     }
 }

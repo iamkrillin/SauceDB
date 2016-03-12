@@ -15,7 +15,7 @@ namespace DataAccess.Core.Events
         /// Initializes a new instance of the <see cref="TypeParsedEventArgs" /> class.
         /// </summary>
         /// <param name="type">The type.</param>
-        public TypeParsedEventArgs(TypeInfo type)
+        public TypeParsedEventArgs(DatabaseTypeInfo type)
         {
             this.Data = type;
         }
@@ -23,6 +23,6 @@ namespace DataAccess.Core.Events
         /// <summary>
         /// The type data
         /// </summary>
-        public TypeInfo Data { get; set; }
+        public DatabaseTypeInfo Data { get; set; }
     }
 }
