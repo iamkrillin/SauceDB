@@ -25,7 +25,7 @@ namespace System.Linq
             int numitems = data.Count();
             toreturn.NumPages = numitems / numPerPage;
 
-            if (numitems / numPerPage != 0)
+            if (numitems % numPerPage != 0)
                 toreturn.NumPages++;
 
             toreturn.Data = data.Skip((page - 1) * numPerPage).Take(numPerPage);
