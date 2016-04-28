@@ -10,27 +10,27 @@ namespace DataAccess.Advantage
 {
     public class AdvantageDatabaseCommandGenerator : DatabaseCommandGenerator
     {        
-        public override IEnumerable<System.Data.IDbCommand> GetAddColumnCommnad(DataAccess.Core.Data.TypeInfo type, DataAccess.Core.Data.DataFieldInfo dfi)
+        public override IEnumerable<System.Data.IDbCommand> GetAddColumnCommnad(DataAccess.Core.Data.DatabaseTypeInfo type, DataAccess.Core.Data.DataFieldInfo dfi)
         {
             throw new NotImplementedException();
         }
 
-        public override System.Data.IDbCommand GetAddSchemaCommand(DataAccess.Core.Data.TypeInfo ti)
+        public override System.Data.IDbCommand GetAddSchemaCommand(DataAccess.Core.Data.DatabaseTypeInfo ti)
         {
             throw new NotImplementedException();
         }
 
-        public override IEnumerable<System.Data.IDbCommand> GetAddTableCommand(DataAccess.Core.Data.TypeInfo ti)
+        public override IEnumerable<System.Data.IDbCommand> GetAddTableCommand(DataAccess.Core.Data.DatabaseTypeInfo ti)
         {
             throw new NotImplementedException();
         }
 
-        public override IEnumerable<IDbCommand> GetModifyColumnCommand(DataAccess.Core.Data.TypeInfo type, DataAccess.Core.Data.DataFieldInfo dfi, string targetFieldType)
+        public override IEnumerable<IDbCommand> GetModifyColumnCommand(DataAccess.Core.Data.DatabaseTypeInfo type, DataAccess.Core.Data.DataFieldInfo dfi, string targetFieldType)
         {
             throw new NotImplementedException();
         }
 
-        public override System.Data.IDbCommand GetRemoveColumnCommand(DataAccess.Core.Data.TypeInfo type, DataAccess.Core.Data.DataFieldInfo dfi)
+        public override System.Data.IDbCommand GetRemoveColumnCommand(DataAccess.Core.Data.DatabaseTypeInfo type, DataAccess.Core.Data.DataFieldInfo dfi)
         {
             throw new NotImplementedException();
         }

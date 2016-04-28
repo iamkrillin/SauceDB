@@ -23,11 +23,17 @@ namespace System.Linq
         {
             PageData<T> toreturn = new PageData<T>();
             int numitems = data.Count();
-            toreturn.NumPages = numitems / numPerPage;
 
-            if (numitems % numPerPage != 0)
-                toreturn.NumPages++;
+            int pages = 0;
+            if (numitems > 0)
+            {
+                pages = numitems / numPerPage;
 
+                if (numitems % numPerPage != 0)
+                    pages++;
+            }
+
+            toreturn.NumPages = pages;
             toreturn.Data = data.Skip((page - 1) * numPerPage).Take(numPerPage);
             return toreturn;
         }
