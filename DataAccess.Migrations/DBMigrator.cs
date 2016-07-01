@@ -136,37 +136,64 @@ namespace DataAccess.Migrations
         protected virtual void HandleViews(Assembly asmb)
         {
             Console.WriteLine("Updating Views...");
-            RemoveViews();
-            AddViews(asmb);
+            string viewResource = asmb.GetManifestResourceNames().First(r => r.EndsWith("views.txt", StringComparison.InvariantCultureIgnoreCase));
+            List <string> views = asmb.LoadResource(viewResource).Split(Environment.NewLine.ToCharArray()).ToList();
+            List<Tuple<string, string>> items = new List<Tuple<string, string>>();
+
+            foreach (string s in views)
+            {
+                if (!string.IsNullOrEmpty(s))
+                {
+                    string[] parts = s.Split('|');
+                    items.Add(new Tuple<string, string>(parts[0], parts[1]));
+                }
+            }
+
+            AlterCurrentViews(asmb, items);
+            AddNewViews(asmb, items);
         }
 
-        protected virtual void AddViews(Assembly asmb)
+        private void AddNewViews(Assembly asmb, List<Tuple<string, string>> items)
         {
-            List<string> views = asmb.GetManifestResourceNames().Where(r => r.ToUpper().Contains(".VIEWS")).OrderBy(r=> r).ToList();
+            foreach (Tuple<string, string> item in items)
+            {
+                string resource = asmb.GetManifestResourceNames().Single(r => r.EndsWith(item.Item2));
+                string script = asmb.LoadResource(resource);
 
-            foreach (string script in views)
-                RunScript(asmb, script);
+                Console.WriteLine("Adding View {0}...", item.Item1);
+                RunCommand(string.Format("ALTER VIEW {0} AS {1}", item.Item1, script));
+            }
+        }
+
+        private void AlterCurrentViews(Assembly asmb, List<Tuple<string, string>> items)
+        {
+            foreach (DBObject v in _views.GetObjects())
+            {
+                Console.WriteLine("Modifying View {0}...", _dstore.Connection.CommandGenerator.ResolveTableName(v.Schema, v.Name));
+
+                string fullName = v.Schema.Equals("dbo", StringComparison.InvariantCultureIgnoreCase) ? v.Name : string.Concat(v.Schema, ".", v.Name);
+                Tuple<string, string> item = items.Single(r => r.Item1.Equals(fullName, StringComparison.InvariantCultureIgnoreCase));
+
+                string resource = asmb.GetManifestResourceNames().Single(r => r.EndsWith(item.Item2));
+                string script = asmb.LoadResource(resource);
+
+                
+                RunCommand(string.Format("ALTER VIEW {0} AS {1}", item.Item1, script));
+                items.Remove(item);
+            }
         }
 
         private void RunScript(Assembly asmb, string script)
         {
             Console.WriteLine("Running Script {0}...", script);
-            IDbCommand cmd = _dstore.Connection.GetCommand();
-            cmd.CommandText = asmb.LoadResource(script);
-            ExecuteCommand(cmd);
+            RunCommand(asmb.LoadResource(script));
         }
 
-        protected virtual void RemoveViews()
+        private void RunCommand(string cmdText)
         {
-            foreach (var v in _views.GetObjects())
-            {
-                if (v.Schema.StartsWith("sys", StringComparison.CurrentCultureIgnoreCase)) continue;
-
-                Console.WriteLine("Removing View {0}...", v.Name);
-                IDbCommand cmd = _dstore.Connection.GetCommand();
-                cmd.CommandText = string.Format("DROP VIEW {0};", _dstore.Connection.CommandGenerator.ResolveTableName(v.Schema, v.Name));
-                ExecuteCommand(cmd);
-            }
+            IDbCommand cmd = _dstore.Connection.GetCommand();
+            cmd.CommandText = cmdText;
+            ExecuteCommand(cmd);
         }
 
         protected virtual void HandleStoredProcs(Assembly asmb)
