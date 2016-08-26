@@ -637,6 +637,16 @@ namespace DataAccess.Postgre.Linq
             return base.VisitValue(expr);
         }
 
+        protected override Expression VisitPredicate(Expression expr)
+        {
+            this.Visit(expr);
+            if (!IsPredicate(expr))
+            {
+                this.Write(" <> false");
+            }
+            return expr;
+        }
+
         protected override Expression VisitConditional(ConditionalExpression c)
         {
             if (this.IsPredicate(c.Test))

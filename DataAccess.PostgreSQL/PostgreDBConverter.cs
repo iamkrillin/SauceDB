@@ -20,11 +20,12 @@ namespace DataAccess.PostgreSQL
             FieldMappings.Add(FieldType.Int, new FieldMapInfo("INTEGER"));
             FieldMappings.Add(FieldType.Long, new FieldMapInfo("bigint"));
             FieldMappings.Add(FieldType.Real, new FieldMapInfo("real"));
+            FieldMappings.Add(FieldType.Time, new FieldMapInfo("INTERVAL"));
+            FieldMappings.Add(FieldType.Money, new FieldMapInfo("NUMERIC"));
+
             FieldMappings.Add(FieldType.String, new FieldMapInfo("character varying"));
             FieldMappings.Add(FieldType.Default, new FieldMapInfo("character varying"));
-            FieldMappings.Add(FieldType.Time, new FieldMapInfo("INTERVAL"));
             FieldMappings.Add(FieldType.UnicodeString, new FieldMapInfo("character varying"));
-            FieldMappings.Add(FieldType.Money, new FieldMapInfo("NUMERIC"));
             FieldMappings.Add(FieldType.Text, new FieldMapInfo("text"));
             FieldMappings.Add(FieldType.UnicodeText, new FieldMapInfo("text"));
         }
