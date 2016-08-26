@@ -204,10 +204,6 @@
       <Project>{33e33e37-e287-4aba-8a1b-77e330fbb272}</Project>
       <Name>DataAccess.SqlCompact</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DataAccess.SQLite\DataAccess.SQLite.csproj">
-      <Project>{b78c7fc2-857c-4049-9a08-e1ffc8e44e2f}</Project>
-      <Name>DataAccess.SQLite</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DataAccess.SqlServer\DataAccess.SqlServer.csproj">
       <Project>{A31F417E-791C-4374-B6D3-785B6C24A133}</Project>
       <Name>DataAccess.SqlServer</Name>

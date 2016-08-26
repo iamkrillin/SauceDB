@@ -446,14 +446,7 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_Parse_View_Attribute()
         {
-            try
-            {
-                dstore.TypeInformationParser.GetTypeFields(typeof(ViewObject));
-            }
-            catch
-            {//view is not there so will throw exception but thats cool, should have parsed it
-
-            }
+            dstore.TypeInformationParser.GetTypeFields(typeof(ViewObject));
 
             IEnumerable<DataFieldInfo> fields = dstore.TypeInformationParser.GetTypeFields(typeof(ViewObject));
             Assert.IsTrue(fields != null);

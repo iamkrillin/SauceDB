@@ -145,13 +145,11 @@ namespace DataAccess.Core
             FireOnTypeParsed(new TypeParsedEventArgs(toAdd));
             lock (Cache)
             {
-                if (!Cache.ContainsKey(type))
-                {                    
-                    if (!type.IsSystemType() && !toAdd.BypassValidation)
-                        _connection.SchemaValidator.ValidateType(toAdd);
+                if (!type.IsSystemType() && !toAdd.BypassValidation)
+                    _connection.SchemaValidator.ValidateType(toAdd);
 
+                if (!Cache.ContainsKey(type))
                     Cache.StoreObject(type, toAdd);
-                }
             }
         }
 

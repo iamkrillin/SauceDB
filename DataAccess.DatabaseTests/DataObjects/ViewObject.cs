@@ -6,6 +6,7 @@ using DataAccess.Core.Attributes;
 
 namespace DataAccess.DatabaseTests.DataObjects
 {
+    [BypassValidation]
     [View]
     public class ViewObject
     {

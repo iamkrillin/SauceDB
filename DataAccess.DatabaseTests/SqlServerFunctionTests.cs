@@ -9,6 +9,7 @@ using DataAccess.Core.Schema;
 using DataAccess.DatabaseTests.DataObjects;
 using Microsoft.SqlServer.Types;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using DataAccess.Core;
 
 namespace DataAccess.DatabaseTests
 {
@@ -24,6 +25,16 @@ namespace DataAccess.DatabaseTests
         {
             Assert.IsTrue(dstore.Connection.LeftEscapeCharacter.Equals("["));
             Assert.IsTrue(dstore.Connection.RightEscapeCharacter.Equals("]"));
+        }
+
+        [TestMethod]
+        public void Test_Transaction_Works_With_Temporary_Tables()
+        {
+            using (TransactionContext ctx = dstore.StartTransaction())
+            {
+                ctx.Instance.GetCommand<int>().ExecuteDBCommand("create table #foo ( bar int )");
+                ctx.Instance.GetCommand<int>().ExecuteDBCommand("select * from #foo");
+            }
         }
 
         [TestMethod]
