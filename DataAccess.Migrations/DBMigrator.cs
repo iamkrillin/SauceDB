@@ -86,12 +86,12 @@ namespace DataAccess.Migrations
             Console.WriteLine("Adding Table {0}", _dstore.GetTableName(type));
 
             //need to check for foreign keys and make sure those tables exist..
-            foreach(DataFieldInfo v in ti.DataFields)
+            foreach (DataFieldInfo v in ti.DataFields)
             {
-                if(v.PrimaryKeyType != null)
-                    _tables.ValidateObject(_dstore.TypeInformationParser.GetTypeInfo(v.PrimaryKeyType));    
+                if (v.PrimaryKeyType != null)
+                    _tables.ValidateObject(_dstore.TypeInformationParser.GetTypeInfo(v.PrimaryKeyType));
             }
-            
+
             _tables.CreateNewTable(ti); //this will also run the ontablecreate stuff w00t
         }
 
@@ -137,7 +137,7 @@ namespace DataAccess.Migrations
         {
             Console.WriteLine("Updating Views...");
             string viewResource = asmb.GetManifestResourceNames().First(r => r.EndsWith("views.txt", StringComparison.InvariantCultureIgnoreCase));
-            List <string> views = asmb.LoadResource(viewResource).Split(Environment.NewLine.ToCharArray()).ToList();
+            List<string> views = asmb.LoadResource(viewResource).Split(Environment.NewLine.ToCharArray()).ToList();
             List<Tuple<string, string>> items = new List<Tuple<string, string>>();
 
             foreach (string s in views)
@@ -161,7 +161,7 @@ namespace DataAccess.Migrations
                 string script = asmb.LoadResource(resource);
 
                 Console.WriteLine("Adding View {0}...", item.Item1);
-                RunCommand(string.Format("ALTER VIEW {0} AS {1}", item.Item1, script));
+                RunCommand(string.Format("CREATE VIEW {0} AS {1}", item.Item1, script));
             }
         }
 
@@ -172,14 +172,16 @@ namespace DataAccess.Migrations
                 Console.WriteLine("Modifying View {0}...", _dstore.Connection.CommandGenerator.ResolveTableName(v.Schema, v.Name));
 
                 string fullName = v.Schema.Equals("dbo", StringComparison.InvariantCultureIgnoreCase) ? v.Name : string.Concat(v.Schema, ".", v.Name);
-                Tuple<string, string> item = items.Single(r => r.Item1.Equals(fullName, StringComparison.InvariantCultureIgnoreCase));
+                Tuple<string, string> item = items.SingleOrDefault(r => r.Item1.Equals(fullName, StringComparison.InvariantCultureIgnoreCase));
 
-                string resource = asmb.GetManifestResourceNames().Single(r => r.EndsWith(item.Item2));
-                string script = asmb.LoadResource(resource);
+                if (item != null)
+                {
+                    string resource = asmb.GetManifestResourceNames().Single(r => r.EndsWith(item.Item2));
+                    string script = asmb.LoadResource(resource);
 
-                
-                RunCommand(string.Format("ALTER VIEW {0} AS {1}", item.Item1, script));
-                items.Remove(item);
+                    RunCommand(string.Format("ALTER VIEW {0} AS {1}", item.Item1, script));
+                    items.Remove(item);
+                }
             }
         }
 
@@ -256,10 +258,10 @@ namespace DataAccess.Migrations
             foreach (Type t in migrations)
             {
                 _dstore.InsertObject(new RanMigration()
-                    {
-                        Date = DateTime.Now,
-                        Type = t.ToString()
-                    });
+                {
+                    Date = DateTime.Now,
+                    Type = t.ToString()
+                });
             }
         }
 

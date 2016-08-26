@@ -93,15 +93,23 @@ namespace DataAccess.Core
 
             if (toReturn == null)
             {
-                toReturn = new DatabaseTypeInfo(type);
-
-                if (!type.IsSystemType())
+                lock (Cache)
                 {
-                    ParseBypass(type, toReturn);
-                    ParseDataInfo(type, toReturn);
-                }
+                    toReturn = Cache.GetObject(type);
 
-                StoreTypeInfo(type, toReturn);
+                    if (toReturn == null)
+                    {
+                        toReturn = new DatabaseTypeInfo(type);
+
+                        if (!type.IsSystemType())
+                        {
+                            ParseBypass(type, toReturn);
+                            ParseDataInfo(type, toReturn);
+                        }
+
+                        StoreTypeInfo(type, toReturn);
+                    }
+                }
             }
 
             return toReturn;
@@ -138,11 +146,11 @@ namespace DataAccess.Core
             lock (Cache)
             {
                 if (!Cache.ContainsKey(type))
-                {
-                    Cache.StoreObject(type, toAdd);
-
+                {                    
                     if (!type.IsSystemType() && !toAdd.BypassValidation)
                         _connection.SchemaValidator.ValidateType(toAdd);
+
+                    Cache.StoreObject(type, toAdd);
                 }
             }
         }
@@ -266,7 +274,7 @@ namespace DataAccess.Core
                 dfi.DataFieldString = dField.FieldTypeString;
                 dfi.DataFieldType = dField.FieldType;
 
-                if(dField.FieldLength != -1) //wanted to use nullable for the attribute to, but not allowed :(
+                if (dField.FieldLength != -1) //wanted to use nullable for the attribute to, but not allowed :(
                     dfi.FieldLength = dField.FieldLength;
             }
         }

@@ -82,6 +82,9 @@ namespace DataAccess.Core
             Instance.ExecuteCommands = new TransactionCommandExecutor(TransactionInfo, Instance.ExecuteCommands);
         }
 
+        /// <summary>
+        /// Opens the sql connection
+        /// </summary>
         public virtual void OpenConnection()
         {
             TransactionInfo.Connection = Instance.Connection.GetConnection();

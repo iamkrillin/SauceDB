@@ -491,11 +491,11 @@ namespace DataAccess.Core
         /// <returns></returns>
         protected virtual IEnumerable<ReturnType> ExecuteCommandLoadList<ReturnType>(Type objectType, IDbCommand command)
         {
+            DatabaseTypeInfo ti = TypeInformationParser.GetTypeInfo(objectType);
             using (IQueryData dt = ExecuteCommands.ExecuteCommandQuery(command, Connection))
             {
                 if (dt.QuerySuccessful)
-                {
-                    DatabaseTypeInfo ti = TypeInformationParser.GetTypeInfo(objectType);
+                {                    
                     foreach (IQueryRow row in dt)
                     {
                         ReturnType toAdd;

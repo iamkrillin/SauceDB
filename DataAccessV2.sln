@@ -680,6 +680,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{0AE48BF2-B10C-4535-9AAC-C400698CA662} = {5103E9CD-6A2A-4AD0-B4D1-B57504261FCF}
 		{A31F417E-791C-4374-B6D3-785B6C24A133} = {FD531B3D-9779-4DAF-BCE8-FF3D45FEAF3C}
 		{816B0F31-AC67-4646-A26B-C0D519D65ED6} = {FD531B3D-9779-4DAF-BCE8-FF3D45FEAF3C}
 		{BC486641-E761-48CE-B9A4-F4DBB9E3C6CD} = {FD531B3D-9779-4DAF-BCE8-FF3D45FEAF3C}
@@ -696,8 +697,8 @@ Global
 		{57139405-3A84-4D2A-B540-89FDCC61EA9F} = {FD531B3D-9779-4DAF-BCE8-FF3D45FEAF3C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8;packages\EnterpriseLibrary.TransientFaultHandling.Data.6.0.1304.1\lib\NET45
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\TransientFaultHandling.Core.5.1.1209.1\lib\NET4
+		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8;packages\EnterpriseLibrary.TransientFaultHandling.Data.6.0.1304.1\lib\NET45
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = DataAccess.SqlServer\DataAccess.SqlServer.csproj
