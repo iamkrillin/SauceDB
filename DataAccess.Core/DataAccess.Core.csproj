@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DataAccess.Core</RootNamespace>
     <AssemblyName>DataAccess.Core</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -235,7 +235,6 @@
     <Compile Include="Data\QueryData.cs" />
     <Compile Include="Data\DBObject.cs" />
     <Compile Include="Data\DatabaseTypeInfo.cs" />
-    <Compile Include="Data\WhereType.cs" />
     <Compile Include="Events\ObjectInitializedEventArgs.cs" />
     <Compile Include="Execute\ExecuteCommands.cs" />
     <Compile Include="Execute\TransactionCommandExecutor.cs" />

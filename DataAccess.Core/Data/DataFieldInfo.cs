@@ -38,11 +38,6 @@ namespace DataAccess.Core.Data
         public FieldType DataFieldType { get; set; }
 
         /// <summary>
-        /// The parsed default value
-        /// </summary>
-        public string DefaultValue { get; set; }
-
-        /// <summary>
         /// The resolved field name for the column in the data store
         /// </summary>
         public string FieldName { get; set; }
@@ -89,15 +84,14 @@ namespace DataAccess.Core.Data
 
         /// <summary>
         /// Call to get the value of the property
-        /// object (instance), null
+        /// object (instance)
         /// </summary>
-        public Func<object, object[], object> Getter { get; set; }
+        public Func<object, object> Getter { get; set; }
 
         /// <summary>
         /// Call to set the value of the property
-        /// object (instance), value (what to set it to) , null
+        /// object (instance), value (what to set it to)
         /// </summary>
-        public Action<object, object, object[]> Setter { get; set; }
-
+        public Action<object, object> Setter { get; set; }
     }
 }

@@ -38,7 +38,7 @@ namespace DataAccess.MySql
         /// {1} = Column
         /// {2} = New Type
         /// </summary>
-        private static string _ModifyColumn = "ALTER TABLE {0} MODIFY COLUMN {1} {2} {3};";
+        private static string _ModifyColumn = "ALTER TABLE {0} MODIFY COLUMN {1} {2};";
 
         private StorageEngine StorageEngine;
 
@@ -101,9 +101,6 @@ namespace DataAccess.MySql
                     DatabaseTypeInfo pkType = DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType);
                     contrain.AppendFormat(_createFKSQL, ResolveTableName(ti, false), pkType.UnescapedTableName, pkType.PrimaryKeys.First().EscapedFieldName, TranslateFkeyType(dfi.ForeignKeyType), dfi.EscapedFieldName);
                 }
-
-                if (!string.IsNullOrEmpty(dfi.DefaultValue))
-                    sb.AppendFormat("DEFAULT {0}", dfi.DefaultValue);
             }
 
             if (pFields.Length > 0)
@@ -145,9 +142,6 @@ namespace DataAccess.MySql
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("ALTER TABLE {0} ADD {1} {2} NULL", ResolveTableName(type, false), dfi.EscapedFieldName, TranslateTypeToSql(dfi));
 
-                if (!string.IsNullOrEmpty(dfi.DefaultValue))
-                    sb.AppendFormat(" DEFAULT {0}", dfi.DefaultValue);
-
                 if (dfi.PrimaryKeyType != null)
                 {
                     DatabaseTypeInfo pkType = DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType);
@@ -171,7 +165,7 @@ namespace DataAccess.MySql
         public override IEnumerable<IDbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
         {
             MySqlCommand cmd = new MySqlCommand();
-            cmd.CommandText = string.Format(_ModifyColumn, ResolveTableName(type, false), dfi.EscapedFieldName, targetFieldType, string.IsNullOrEmpty(dfi.DefaultValue) ? "" : string.Concat(" NOT NULL DEFAULT ", dfi.DefaultValue));
+            cmd.CommandText = string.Format(_ModifyColumn, ResolveTableName(type, false), dfi.EscapedFieldName, targetFieldType);
             yield return cmd;
         }        
 

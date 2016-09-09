@@ -23,14 +23,9 @@ namespace DataAccess.Core.Attributes
         public bool SetOnInsert { get; set; }
 
         /// <summary>
-        /// Indicates
+        /// Indicates if a field should be loaded when querying, defaults to true
         /// </summary>
         public bool LoadField { get; set; }
-
-        /// <summary>
-        /// Indicates the default value of this field, defaults to null
-        /// </summary>
-        public string DefaultValue { get; set; }
 
         /// <summary>
         /// Indicates the Data type of the data store field, this string is passed straight to the underlying datastore unchanged

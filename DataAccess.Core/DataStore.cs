@@ -103,34 +103,13 @@ namespace DataAccess.Core
         /// <summary>
         /// Loads an object from the data store, the key must be set
         /// </summary>
-        /// <param name="item"></param>
-        /// <returns></returns>
-        public virtual bool LoadObject(object item)
-        {
-            return LoadObject(item, false);
-        }
-
-        /// <summary>
-        /// Loads an object from the data store, the key must be set
-        /// </summary>
         /// <param name="item">The object to load</param>
         /// <param name="LoadAllFields">If true the loadfield=false will be ignored</param>
         /// <returns></returns>
-        public virtual bool LoadObject(object item, bool LoadAllFields)
+        public virtual bool LoadObject(object item)
         {
-            IDbCommand command = Connection.CommandGenerator.GetSelectCommand(item, LoadAllFields);
+            IDbCommand command = Connection.CommandGenerator.GetSelectCommand(item);
             return ProcessCommand(item, command, true);
-        }
-
-        /// <summary>
-        /// Loads an object
-        /// </summary>
-        /// <param name="item">The type to load</param>
-        /// <param name="PrimaryKey">The primary key.</param>
-        /// <returns></returns>
-        public virtual object LoadObject(Type item, object PrimaryKey)
-        {
-            return LoadObject(item, PrimaryKey, false);
         }
 
         /// <summary>
@@ -141,19 +120,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual T LoadObject<T>(object PrimaryKey)
         {
-            return (T)LoadObject(typeof(T), PrimaryKey, false);
-        }
-
-        /// <summary>
-        /// Loads an object
-        /// </summary>
-        /// <typeparam name="T">The type to load</typeparam>
-        /// <param name="PrimaryKey">The primary key</param>
-        /// <param name="LoadAllFields">if set to <c>true</c> [The load field attribute tag is ignored].</param>
-        /// <returns></returns>
-        public virtual T LoadObject<T>(object PrimaryKey, bool LoadAllFields)
-        {
-            return (T)LoadObject(typeof(T), PrimaryKey, LoadAllFields);
+            return (T)LoadObject(typeof(T), PrimaryKey);
         }
 
         /// <summary>
@@ -161,15 +128,14 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="item">The type to load.</param>
         /// <param name="key">The primary field</param>
-        /// <param name="LoadAllFields">if set to <c>true</c> [The load field attribute tag is ignored].</param>
         /// <returns></returns>
-        public virtual object LoadObject(Type item, object key, bool LoadAllFields)
+        public virtual object LoadObject(Type item, object key)
         {
             DatabaseTypeInfo ti = TypeInformationParser.GetTypeInfo(item);
             if (ti.PrimaryKeys.Count == 1)
             {
                 object toReturn = CreateObjectSetKey(item, key, ti);
-                if (!LoadObject(toReturn, LoadAllFields)) toReturn = null;
+                if (!LoadObject(toReturn)) toReturn = null;
                 return toReturn;
             }
             else
@@ -202,27 +168,21 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual bool InsertObjects(IList items)
         {
-            if (items.Count > 100)
+            if (items.Count > 0)
             {
-                Connection.DoBulkInsert(items, this);
-                return true;
+                if (items.Count > 100)
+                {
+                    Connection.DoBulkInsert(items, this);
+                    return true;
+                }
+                else
+                {
+                    IDbCommand command = Connection.CommandGenerator.GetInsertCommand(items);
+                    return ProcessCommand(items, command);
+                }
             }
-            else
-            {
-                IDbCommand command = Connection.CommandGenerator.GetInsertCommand(items);
-                return ProcessCommand(items, command);
-            }
-        }
 
-        /// <summary>
-        /// Deletes an object
-        /// </summary>
-        /// <param name="item">The type to delete</param>
-        /// <param name="key">The primary key to delete on</param>
-        /// <returns></returns>
-        public virtual bool DeleteObject(Type item, object key)
-        {
-            return DeleteObject(CreateObjectSetKey(item, key));
+            return true;
         }
 
         /// <summary>
@@ -243,17 +203,6 @@ namespace DataAccess.Core
             else
                 return false;
         }        
-
-        /// <summary>
-        /// Deletes an object
-        /// </summary>
-        /// <typeparam name="T">The type to delete</typeparam>
-        /// <param name="primaryKey">The primary key to delete on></param>
-        /// <returns></returns>
-        public virtual bool DeleteObject<T>(object primaryKey)
-        {
-            return DeleteObject(typeof(T), primaryKey);
-        }
 
         /// <summary>
         /// Loads an entire table
@@ -306,7 +255,7 @@ namespace DataAccess.Core
             IEnumerable<DataFieldInfo> fields = TypeInformationParser.GetPrimaryKeys(type);
             if (fields.Count() > 1) throw new DataStoreException("This Type contains more than one key");
             if (fields.Count() < 1) throw new DataStoreException("This type does not contain a key");
-            return fields.ElementAt(0).Getter(item, null);
+            return fields.ElementAt(0).Getter(item);
         }
 
         /// <summary>
@@ -316,7 +265,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual bool IsNew(object item)
         {
-            IDbCommand cmd = Connection.CommandGenerator.GetSelectCommand(item, false);
+            IDbCommand cmd = Connection.CommandGenerator.GetSelectCommand(item);
             using (IQueryData qd = ExecuteCommands.ExecuteCommandQuery(cmd, Connection))
             {
                 var enumerator = qd.GetEnumerator();
@@ -388,18 +337,6 @@ namespace DataAccess.Core
         }
 
         /// <summary>
-        /// Loads a list of objects from the data store
-        /// </summary>
-        /// <typeparam name="T">The type to load</typeparam>
-        /// <param name="Ids">The primary key(s)</param>
-        /// <returns></returns>
-        public IEnumerable<T> LoadObjects<T>(IEnumerable Ids)
-        {
-            IDbCommand cmd = Connection.CommandGenerator.GetInCommand<T>(Ids);
-            return ExecuteCommandLoadList<T>(cmd);
-        }
-
-        /// <summary>
         /// Executes a command and loads a list
         /// </summary>
         /// <typeparam name="T">The type to load in the list</typeparam>
@@ -434,26 +371,6 @@ namespace DataAccess.Core
         public virtual SauceMapping GetQueryMapper()
         {
             return new SauceMapping(this);
-        }
-
-        /// <summary>
-        /// Returns a comma separated list of the fields on an object
-        /// </summary>
-        /// <typeparam name="T">The type</typeparam>
-        /// <returns></returns>
-        public virtual string GetSelectList<T>()
-        {
-            return Connection.CommandGenerator.GetSelectList(typeof(T), false);
-        }
-
-        /// <summary>
-        /// Returns a comma separated list of the fields on an object
-        /// </summary>
-        /// <param name="t">The type</param>
-        /// <returns></returns>
-        public virtual string GetSelectList(Type t)
-        {
-            return Connection.CommandGenerator.GetSelectList(t, false);
         }
 
         /// <summary>

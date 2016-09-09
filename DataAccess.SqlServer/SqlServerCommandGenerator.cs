@@ -100,8 +100,6 @@ namespace DataAccess.SqlServer
                         sb.AppendFormat("{0} {1} NOT NULL IDENTITY(1,1) ", dfi.EscapedFieldName, TranslateTypeToSql(dfi));
                     else
                         sb.AppendFormat("{0} {1} NOT NULL ", dfi.EscapedFieldName, TranslateTypeToSql(dfi));
-
-                    if (dfi.PropertyType == typeof(string) && string.IsNullOrEmpty(dfi.DefaultValue)) dfi.DefaultValue = "newid()"; //if the user specifies a default value, dont override it
                 }
                 else
                 {
@@ -113,13 +111,6 @@ namespace DataAccess.SqlServer
                     SqlCommand fk = new SqlCommand();
                     fk.CommandText = GetForeignKeySql(dfi, ti, DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType));
                     toReturn.Add(fk);
-                }
-
-                if (!string.IsNullOrEmpty(dfi.DefaultValue))
-                {
-                    SqlCommand dv = new SqlCommand();
-                    dv.CommandText = GetDefaultValueSql(ti, dfi, dv);
-                    toReturn.Add(dv);
                 }
             }
             sb.Append(") ON [PRIMARY];");
@@ -136,11 +127,6 @@ namespace DataAccess.SqlServer
             cmd.CommandText = sb.ToString();
             toReturn.Insert(0, cmd);
             return toReturn;
-        }
-
-        private string GetDefaultValueSql(DatabaseTypeInfo ti, DataFieldInfo dfi, SqlCommand cmd)
-        {
-            return string.Format("ALTER TABLE {0}.{1} ADD CONSTRAINT DF_{4}_{5}_{6} DEFAULT {3} FOR {2};", ti.Schema, ti.TableName, dfi.FieldName, dfi.DefaultValue, ti.UnEscapedSchema, ti.UnescapedTableName, dfi.FieldName);
         }
 
         private string GetForeignKeySql(DataFieldInfo field, DatabaseTypeInfo targetTable, DatabaseTypeInfo pKeyTable)
@@ -191,13 +177,6 @@ namespace DataAccess.SqlServer
                     SqlCommand fk = new SqlCommand();
                     fk.CommandText = GetForeignKeySql(dfi, type, DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType));
                     toReturn.Add(fk);
-                }
-
-                if (!string.IsNullOrEmpty(dfi.DefaultValue))
-                {
-                    SqlCommand dv = new SqlCommand();
-                    dv.CommandText = GetDefaultValueSql(type, dfi, dv);
-                    toReturn.Add(dv);
                 }
             }
 

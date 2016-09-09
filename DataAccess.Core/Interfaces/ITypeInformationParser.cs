@@ -40,15 +40,8 @@ namespace DataAccess.Core.Interfaces
         /// Gets a lot of information from a type
         /// </summary>
         /// <param name="type">The type to parse</param>
+        /// <param name="bypassValidate">If true, type will not validate against datastore</param>
         /// <returns></returns>
-        DatabaseTypeInfo GetTypeInfo(Type type);
-
-        /// <summary>
-        /// Gets a lot of information from a type
-        /// </summary>
-        /// <param name="type">The type to parse</param>
-        /// <param name="Validate">if False, the the object will not be passed to the validator</param>
-        /// <returns></returns>
-        DatabaseTypeInfo GetTypeInfo(Type type, bool Validate);
+        DatabaseTypeInfo GetTypeInfo(Type type, bool bypassValidate = false);
     }
 }

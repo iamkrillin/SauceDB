@@ -8,6 +8,7 @@ using DataAccess.Core.Attributes;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using DataAccess.Core.Events;
+using System.Linq.Expressions;
 
 namespace DataAccess.Core
 {
@@ -27,8 +28,7 @@ namespace DataAccess.Core
         /// </summary>
         public virtual void FireOnTypeParsed(TypeParsedEventArgs ea)
         {
-            if (OnTypeParsed != null)
-                OnTypeParsed(this, ea);
+            OnTypeParsed?.Invoke(this, ea);
         }
 
         /// <summary>
@@ -86,8 +86,9 @@ namespace DataAccess.Core
         /// Gets a lot of information from a type
         /// </summary>
         /// <param name="type">The type to parse</param>
+        /// <param name="bypassValidate">If true, type will not validate against datastore</param>
         /// <returns></returns>
-        public virtual DatabaseTypeInfo GetTypeInfo(Type type)
+        public virtual DatabaseTypeInfo GetTypeInfo(Type type, bool bypassValidate = false)
         {
             DatabaseTypeInfo toReturn = Cache.GetObject(type);
 
@@ -107,7 +108,7 @@ namespace DataAccess.Core
                             ParseDataInfo(type, toReturn);
                         }
 
-                        StoreTypeInfo(type, toReturn);
+                        StoreTypeInfo(bypassValidate, type, toReturn);
                     }
                 }
             }
@@ -115,37 +116,12 @@ namespace DataAccess.Core
             return toReturn;
         }
 
-        public virtual DatabaseTypeInfo GetTypeInfo(Type type, bool Validate)
-        {
-            DatabaseTypeInfo toReturn = Cache.GetObject(type);
-
-            if (toReturn == null)
-            {
-                toReturn = new DatabaseTypeInfo(type);
-
-                if (!type.IsSystemType())
-                {
-                    ParseDataInfo(type, toReturn);
-                    toReturn.BypassValidation = true;
-                }
-                else if (type.IsDynamic())
-                {
-                    toReturn.BypassValidation = true;
-                    toReturn.IsDynamic = true;
-                }
-
-                StoreTypeInfo(type, toReturn);
-            }
-
-            return toReturn;
-        }
-
-        private void StoreTypeInfo(Type type, DatabaseTypeInfo toAdd)
+        private void StoreTypeInfo(bool bypassValidate, Type type, DatabaseTypeInfo toAdd)
         {
             FireOnTypeParsed(new TypeParsedEventArgs(toAdd));
             lock (Cache)
             {
-                if (!type.IsSystemType() && !toAdd.BypassValidation)
+                if (!type.IsSystemType() && !toAdd.BypassValidation && !bypassValidate)
                     _connection.SchemaValidator.ValidateType(toAdd);
 
                 if (!Cache.ContainsKey(type))
@@ -243,21 +219,12 @@ namespace DataAccess.Core
                     DataFieldInfo dfi = new DataFieldInfo();
                     dfi.PropertyType = pi.PropertyType;
 
-                    if (dField != null && !string.IsNullOrEmpty(dField.DefaultValue))
-                    {
-                        string dvalue = dField.DefaultValue;
-                        if (dfi.PropertyType == typeof(string) && !dvalue.Contains("("))
-                            dfi.DefaultValue = string.Concat("'", dvalue, "'");
-                        else
-                            dfi.DefaultValue = dvalue;
-                    }
-
                     ParseWithNoDefaults(dfi, dField);
                     ParseFieldName(dfi, dField, pi);
                     ParsePrimaryFieldType(dfi, pi);
                     ParseSetOnInsert(dfi, dField);
                     ParseLoad(dfi, dField);
-                    ParsePropertyInfo(dfi, pi);
+                    ParsePropertyInfo(type, dfi, pi);
                     toAdd.DataFields.Add(dfi);
                 }
             }
@@ -329,11 +296,49 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="dfi">The field to check</param>
         /// <param name="pi">The property information for the field</param>
-        protected void ParsePropertyInfo(DataFieldInfo dfi, PropertyInfo pi)
+        protected void ParsePropertyInfo(Type type, DataFieldInfo dfi, PropertyInfo pi)
         {
-            dfi.Setter = pi.SetValue;
-            dfi.Getter = pi.GetValue;
+            dfi.Setter = GetSetter(type, pi);
+            dfi.Getter = GetGetter(type, pi);
             dfi.PropertyName = pi.Name;
+        }
+
+        //generates a delegate like Func<object, object> foo = (obj, value) => ((ObjType)obj).Property;
+        public Func<object, object> GetGetter(Type objType, PropertyInfo property)
+        {
+            //source prop types
+            ParameterExpression objSourceType = Expression.Parameter(typeof(object));
+
+            //step one create the casting expressions
+            Expression objCast = Expression.Convert(objSourceType, objType);
+
+            //call the cast set method on the caste-d object with the casted value
+            Expression action = Expression.Call(objCast, property.GetMethod);
+
+            //make it a lambda
+            LambdaExpression function = Expression.Lambda(action, objSourceType);
+
+            return (Func<object, object>)function.Compile();
+        }
+
+        //generates a delegate like Action<object, object> foo = (obj, value) => ((ObjType)obj).Property = (valueType)value;
+        public Action<object, object> GetSetter(Type objType, PropertyInfo property)
+        {
+            //source prop types
+            ParameterExpression valueSourceType = Expression.Parameter(typeof(object));
+            ParameterExpression objSourceType = Expression.Parameter(typeof(object));
+
+            //step one create the casting expressions
+            Expression valueCast = Expression.Convert(valueSourceType, property.PropertyType);
+            Expression objCast = Expression.Convert(objSourceType, objType);
+
+            //call the cast set method on the caste-d object with the casted value
+            Expression action = Expression.Call(objCast, property.SetMethod, valueCast);
+
+            //make it a lambda
+            LambdaExpression function = Expression.Lambda(action, objSourceType, valueSourceType);
+
+            return (Action<object, object>)function.Compile();
         }
 
         /// <summary>

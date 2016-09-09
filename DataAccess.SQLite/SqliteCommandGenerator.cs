@@ -82,8 +82,6 @@ namespace DataAccess.SQLite
 
                     if (dfi.PrimaryKeyType == null)
                         sb.Append(" NULL");
-
-                    if (!string.IsNullOrEmpty(dfi.DefaultValue)) sb.AppendFormat(" DEFAULT {0}", dfi.DefaultValue);
                 }
 
                 if (dfi.PrimaryKeyType != null)
@@ -136,9 +134,6 @@ namespace DataAccess.SQLite
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("ALTER TABLE {0} ADD COLUMN {1} {2}", ResolveTableName(type, false), dfi.EscapedFieldName, TranslateTypeToSql(dfi));
 
-                if (!string.IsNullOrEmpty(dfi.DefaultValue))
-                    sb.AppendFormat(" DEFAULT {0}", dfi.DefaultValue);
-
                 scmd.CommandText = sb.ToString();
                 yield return scmd;
             }
@@ -154,19 +149,6 @@ namespace DataAccess.SQLite
         public override IEnumerable<IDbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
         {
             throw new Exception("this is not supported right now");
-            /*
-            List<IDbCommand> toReturn = new List<IDbCommand>();
-            string newCol = Guid.NewGuid().ToString().Replace("-", "");
-            //EscapedFieldName, DataFieldType, 
-
-            toReturn.AddRange(GetAddColumnCommnad(type, new DataFieldInfo() { DataFieldType = dfi.DataFieldType, EscapedFieldName = newCol, PropertyType = dfi.PropertyType }));
-            toReturn.Add(new SQLiteCommand(string.Format("update {0} set {1} = {2}", ResolveTableName(type, true), newCol, dfi.EscapedFieldName)));
-            //toReturn.Add(GetRemoveColumnCommand(type, dfi));
-            toReturn.AddRange(GetAddColumnCommnad(type, dfi));
-            toReturn.Add(new SQLiteCommand(string.Format("update {0} set {2} = {1}", ResolveTableName(type, true), newCol, dfi.EscapedFieldName)));
-        
-            return toReturn;
-             * */
         }
 
         /// <summary>

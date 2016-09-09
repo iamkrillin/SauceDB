@@ -95,50 +95,10 @@ namespace DataAccess.Core.Interfaces
         /// <summary>
         /// Loads an object
         /// </summary>
-        /// <param name="item">The type to load</param>
-        /// <param name="PrimaryKey">The primary key.</param>
-        /// <returns></returns>
-        object LoadObject(Type item, object PrimaryKey);
-
-        /// <summary>
-        /// Loads an object
-        /// </summary>
         /// <typeparam name="T">The type to load</typeparam>
         /// <param name="PrimaryKey">The primary key.</param>
         /// <returns></returns>
         T LoadObject<T>(object PrimaryKey);
-
-        /// <summary>
-        /// Loads a list of objects from the data store
-        /// </summary>
-        /// <typeparam name="T">The type to load</typeparam>
-        /// <param name="Ids">The primary key(s)</param>
-        /// <returns></returns>
-        IEnumerable<T> LoadObjects<T>(IEnumerable Ids);
-
-        /// <summary>
-        /// Loads an object.
-        /// </summary>
-        /// <param name="item">The type to load.</param>
-        /// <param name="key">The primary field</param>
-        /// <param name="LoadAllFields">if set to <c>true</c> [The load field attribute tag is ignored].</param>
-        object LoadObject(Type item, object key, bool LoadAllFields);
-
-        /// <summary>
-        /// Loads an object
-        /// </summary>
-        /// <typeparam name="T">The type to load</typeparam>
-        /// <param name="PrimaryKey">The primary key</param>
-        /// <param name="LoadAllFields">if set to <c>true</c> [The load field attribute tag is ignored].</param>
-        T LoadObject<T>(object PrimaryKey, bool LoadAllFields);
-
-        /// <summary>
-        /// Deletes an object
-        /// </summary>
-        /// <param name="item">The type to delete</param>
-        /// <param name="key">The primary key to delete on</param>
-        /// <returns></returns>
-        bool DeleteObject(Type item, object key);
 
         /// <summary>
         /// Deletes an object
@@ -146,7 +106,7 @@ namespace DataAccess.Core.Interfaces
         /// <typeparam name="T">The type to delete</typeparam>
         /// <param name="primaryKey">The primary key to delete on></param>
         /// <returns></returns>
-        bool DeleteObject<T>(object primaryKey);
+        bool DeleteObject(object primaryKey);
 
         /// <summary>
         /// Deletes objects based on an expression
@@ -228,14 +188,6 @@ namespace DataAccess.Core.Interfaces
         bool LoadObject(object item);
 
         /// <summary>
-        /// Loads an object from the data store, the key must be set
-        /// </summary>
-        /// <param name="item">The object to load</param>
-        /// <param name="LoadAllFields">If true the loadfield=false will be ignored</param>
-        /// <returns></returns>
-        bool LoadObject(object item, bool LoadAllFields);
-
-        /// <summary>
         /// Inserts a list of items into the data store
         /// </summary>
         /// <param name="items">The items to insert</param>
@@ -272,31 +224,10 @@ namespace DataAccess.Core.Interfaces
         IEnumerable<T> UpdateObjects<T>(IEnumerable<T> items);
 
         /// <summary>
-        /// Deletes an objet from the data store, primary key must be set
-        /// </summary>
-        /// <param name="item">The item to remove</param>
-        /// <returns></returns>
-        bool DeleteObject(object item);
-
-        /// <summary>
         /// Executes a command on the data store
         /// </summary>
         /// <param name="command">The command to execute</param>
         int ExecuteCommand(IDbCommand command);
-
-        /// <summary>
-        /// Returns a comma separated list of the fields on an object
-        /// </summary>
-        /// <param name="t">The type</param>
-        /// <returns></returns>
-        string GetSelectList(Type t);
-
-        /// <summary>
-        /// Returns a comma separated list of the fields on an object
-        /// </summary>
-        /// <typeparam name="T">The type</typeparam>
-        /// <returns></returns>
-        string GetSelectList<T>();
 
         /// <summary>
         /// This function will return an IQueryable appropriate for using with LINQ
