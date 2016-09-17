@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using DataAccess.Core.Interfaces;
 using System.Data;
 using MySql.Data.MySqlClient;
 using DataAccess.Core;
@@ -11,6 +10,7 @@ using System.Collections;
 using DataAccess.Core.Data;
 using DataAccess.Core.Conversion;
 using DataAccess.Core.Data.Results;
+using System.Threading.Tasks;
 
 namespace DataAccess.MySql
 {
@@ -232,13 +232,14 @@ namespace DataAccess.MySql
         /// </summary>
         /// <param name="dstore"></param>
         /// <returns></returns>
-        public IEnumerable<DBObject> GetSchemaTables(IDataStore dstore)
+        public async Task<List<DBObject>> GetSchemaTables(IDataStore dstore)
         {
             MySqlCommand getColumns = new MySqlCommand();
             MySqlCommand getTables = new MySqlCommand();
             getTables.CommandText = "show full tables where table_type != 'view'";
+            List<DBObject> items = new List<DBObject>();
 
-            using (IQueryData tables = dstore.ExecuteCommands.ExecuteCommandQuery(getTables, dstore.Connection))
+            using (IQueryData tables = await dstore.ExecuteCommands.ExecuteCommandQuery(getTables, dstore.Connection))
             {
                 foreach (IQueryRow row in tables)
                 {
@@ -247,7 +248,7 @@ namespace DataAccess.MySql
                     t.Columns = new List<Column>();
 
                     getColumns.CommandText = string.Concat("DESCRIBE ", t.Name);
-                    using (IQueryData columns = dstore.ExecuteCommands.ExecuteCommandQuery(getColumns, dstore.Connection))
+                    using (IQueryData columns = await dstore.ExecuteCommands.ExecuteCommandQuery(getColumns, dstore.Connection))
                     {
 
                         foreach (QueryRow c in columns)
@@ -261,10 +262,12 @@ namespace DataAccess.MySql
                             });
                         }
 
-                        yield return t;
+                        items.Add(t);
                     }
                 }
             }
+
+            return items;
         }
 
         /// <summary>
@@ -272,13 +275,15 @@ namespace DataAccess.MySql
         /// </summary>
         /// <param name="dstore"></param>
         /// <returns></returns>
-        public IEnumerable<DBObject> GetSchemaViews(IDataStore dstore)
+        public async Task<List<DBObject>> GetSchemaViews(IDataStore dstore)
         {
             MySqlCommand getColumns = new MySqlCommand();
             MySqlCommand getTables = new MySqlCommand();
             getTables.CommandText = "show full tables where table_type = 'view'";
 
-            using (IQueryData tables = dstore.ExecuteCommands.ExecuteCommandQuery(getTables, dstore.Connection))
+            List<DBObject> items = new List<DBObject>();
+
+            using (IQueryData tables = await dstore.ExecuteCommands.ExecuteCommandQuery(getTables, dstore.Connection))
             {
                 foreach (IQueryRow tab in tables)
                 {
@@ -289,7 +294,7 @@ namespace DataAccess.MySql
                     try
                     {
                         getColumns.CommandText = string.Concat("DESCRIBE ", t.Name);
-                        using (IQueryData columns = dstore.ExecuteCommands.ExecuteCommandQuery(getColumns, dstore.Connection))
+                        using (IQueryData columns = await dstore.ExecuteCommands.ExecuteCommandQuery(getColumns, dstore.Connection))
                         {
                             foreach (IQueryRow col in columns)
                             {
@@ -307,10 +312,11 @@ namespace DataAccess.MySql
                     {
                     }
 
-                    yield return t;
-
+                    items.Add(t);
                 }
             }
+
+            return items;
         }
     }
 }

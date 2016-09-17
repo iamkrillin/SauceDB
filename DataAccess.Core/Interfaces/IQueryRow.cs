@@ -1,7 +1,7 @@
 ﻿using DataAccess.Core.Data.Results;
 using System;
 
-namespace DataAccess.Core.Interfaces
+namespace DataAccess.Core
 {
     /// <summary>
     /// Represents a row in a query set

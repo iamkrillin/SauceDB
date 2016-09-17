@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DataAccess.Core.Data;
-using DataAccess.Core.Interfaces;
 using System.Data;
 using DataAccess.Core.Events;
 using DataAccess.Core.ObjectValidators;

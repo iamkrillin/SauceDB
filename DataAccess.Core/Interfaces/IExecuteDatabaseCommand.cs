@@ -6,8 +6,9 @@ using System.Data;
 using DataAccess.Core.Data;
 using DataAccess.Core.Events;
 using DataAccess.Core.Execute;
+using System.Threading.Tasks;
 
-namespace DataAccess.Core.Interfaces
+namespace DataAccess.Core
 {
     /// <summary>
     /// Represents a class for executing data store commands
@@ -30,7 +31,7 @@ namespace DataAccess.Core.Interfaces
         /// <param name="command">The command to execute</param>
         /// <param name="connection">The connection to use</param>
         /// <returns></returns>
-        IQueryData ExecuteCommandQuery(IDbCommand command, IDataConnection connection);
+        Task<IQueryData> ExecuteCommandQuery(IDbCommand command, IDataConnection connection);
 
         /// <summary>
         /// This method will take a connection that is already open and run a query on it
@@ -45,8 +46,13 @@ namespace DataAccess.Core.Interfaces
         /// </summary>
         /// <param name="command">The command to execute</param>
         /// <param name="connection">The connection to use</param>
-        int ExecuteCommand(IDbCommand command, IDataConnection connection);
+        Task<int> ExecuteCommand(IDbCommand command, IDataConnection connection);
 
+        /// <summary>
+        /// Sets the connection on the command and such
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="conn"></param>
         void InitCommand(IDbCommand command, IDbConnection conn);
     }
 }

@@ -4,8 +4,9 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using DataAccess.Core.Data;
-using DataAccess.Core.Interfaces;
+using DataAccess.Core;
 using DataAccess.Core.Events;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core.Execute
 {
@@ -42,7 +43,7 @@ namespace DataAccess.Core.Execute
             CommandExecuted?.Invoke(this, new CommandExecutingEventArgs(command, connection, conn));
         }
 
-        protected T ExecuteCommand<T>(IDbCommand command, IDataConnection connection, Func<IDbConnection, T> action)
+        protected async Task<T> ExecuteCommand<T>(IDbCommand command, IDataConnection connection, Func<IDbConnection, Task<T>> action)
         {
             command.Connection = _info.Connection;
             command.Transaction = _info.Transaction;
@@ -56,7 +57,7 @@ namespace DataAccess.Core.Execute
             try
             {
                 FireExecutingEvent(command, connection, _info.Connection);
-                toReturn = action(_info.Connection);
+                toReturn = await action(_info.Connection);
                 FireExecutedEvent(command, connection, _info.Connection);
             }
             catch (Exception e)
@@ -76,19 +77,25 @@ namespace DataAccess.Core.Execute
             return _base.ExecuteCommandQueryAction(command, connection, r);
         }
 
-        public virtual IQueryData ExecuteCommandQuery(IDbCommand command, IDataConnection connection)
+        public virtual Task<IQueryData> ExecuteCommandQuery(IDbCommand command, IDataConnection connection)
         {
             return ExecuteCommand<IQueryData>(command, connection, r =>
             {
-                return _base.ExecuteCommandQueryAction(command, connection, r);
+                return Task.Run(() =>
+                {
+                    return _base.ExecuteCommandQueryAction(command, connection, r);
+                });
             });
         }
 
-        public virtual int ExecuteCommand(IDbCommand command, IDataConnection connection)
+        public virtual Task<int> ExecuteCommand(IDbCommand command, IDataConnection connection)
         {
             return ExecuteCommand<int>(command, connection, r =>
             {
-                return command.ExecuteNonQuery();
+                return Task.Run(() =>
+                {
+                    return command.ExecuteNonQuery();
+                });
             });
         }
 

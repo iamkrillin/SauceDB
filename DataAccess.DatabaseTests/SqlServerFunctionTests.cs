@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DataAccess.DatabaseTests.Tests;
-using DataAccess.Core.Interfaces;
+using DataAccess.Core;
 using DataAccess.SqlServer;
 using DataAccess.Core.Schema;
 using DataAccess.DatabaseTests.DataObjects;
 using Microsoft.SqlServer.Types;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DataAccess.Core;
+using System.Threading.Tasks;
 
 namespace DataAccess.DatabaseTests
 {
@@ -28,12 +28,12 @@ namespace DataAccess.DatabaseTests
         }
 
         [TestMethod]
-        public void Test_Transaction_Works_With_Temporary_Tables()
+        public async Task Test_Transaction_Works_With_Temporary_Tables()
         {
             using (TransactionContext ctx = dstore.StartTransaction())
             {
-                ctx.Instance.GetCommand<int>().ExecuteCommand("create table #foo ( bar int )");
-                ctx.Instance.GetCommand<int>().ExecuteCommand("select * from #foo");
+                await ctx.Instance.GetCommand<int>().ExecuteCommand("create table #foo ( bar int )");
+                await ctx.Instance.GetCommand<int>().ExecuteCommand("select * from #foo");
             }
         }
 
@@ -46,23 +46,23 @@ namespace DataAccess.DatabaseTests
         }
 
         [TestMethod]
-        public void Test_Can_Insert_Spacial_Type()
+        public async Task Test_Can_Insert_Spacial_Type()
         {
-            Assert.IsTrue(dstore.InsertObject(new TestItemWithGeography() 
+            Assert.IsTrue(await dstore.InsertObject(new TestItemWithGeography() 
             {
                 Location = SqlGeography.Point(1, 1, 4326)
             }));
         }
 
         [TestMethod]
-        public void Test_Can_CRUD_Spacial_Type()
+        public async Task Test_Can_CRUD_Spacial_Type()
         {
-            Assert.IsTrue(dstore.InsertObject(new TestItemWithGeography()
+            Assert.IsTrue(await dstore.InsertObject(new TestItemWithGeography()
             {
                 Location = SqlGeography.Point(1, 1, 4326)
             }));
 
-            TestItemWithGeography loaded = dstore.LoadObject<TestItemWithGeography>(1);
+            TestItemWithGeography loaded = await dstore.LoadObject<TestItemWithGeography>(1);
             Assert.IsNotNull(loaded);
             Assert.IsNotNull(loaded.Location);
         }

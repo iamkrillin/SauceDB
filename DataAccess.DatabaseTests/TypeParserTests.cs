@@ -23,7 +23,7 @@ namespace DataAccess.DatabaseTests
         public void Test_FieldType_IsParsed_User_String()
         {
             DatabaseTypeInfo ti = _parser.GetTypeInfo(typeof(TestItemDifferentFieldType));
-            Assert.IsTrue(ti.DataFields[1].DataFieldType == Core.Attributes.FieldType.UserString);
+            Assert.IsTrue(ti.DataFields[1].DataFieldType == FieldType.UserString);
             Assert.IsTrue(ti.DataFields[1].DataFieldString == "varchar(1000)");
         }
 
@@ -49,7 +49,7 @@ namespace DataAccess.DatabaseTests
             Assert.IsNotNull(ti);
             Assert.IsTrue(ti.DataFields.Count == 3);
             foreach (var v in ti.DataFields)
-                Assert.IsTrue(v.DataFieldType == Core.Attributes.FieldType.Default);
+                Assert.IsTrue(v.DataFieldType == FieldType.Default);
         }
     }
 }

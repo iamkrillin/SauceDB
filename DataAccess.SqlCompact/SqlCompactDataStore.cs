@@ -5,9 +5,11 @@ using System.Text;
 using DataAccess.Core;
 using System.Data.SqlServerCe;
 using DataAccess.Core.Data;
-using DataAccess.Core.Interfaces;
+using DataAccess.Core;
 using DataAccess.Core.Events;
 using DataAccess.Core.ObjectFinders;
+using System.Threading.Tasks;
+using DataAccess.Core.Execute;
 
 namespace DataAccess.SqlCompact
 {
@@ -39,7 +41,7 @@ namespace DataAccess.SqlCompact
         {
         }
 
-        public override bool InsertObject(object item)
+        public override async Task<bool> InsertObject(object item)
         {
             DatabaseTypeInfo ti = TypeInformationParser.GetTypeInfo(item.GetType());
 
@@ -56,15 +58,30 @@ namespace DataAccess.SqlCompact
             };
 
             this.ExecuteCommands.CommandExecuted += inserting;
-            bool result =  base.InsertObject(item);
+            bool result = await base.InsertObject(item);
             this.ExecuteCommands.CommandExecuted -= inserting;
             return result;
         }
 
-        public override bool InsertObjects(System.Collections.IList items)
+        public override async Task<bool> InsertObjects(System.Collections.IList items)
         {
+            IDataStore toUse = this;
+            TransactionContext ctx = null;
+
+            if (!(this.ExecuteCommands is TransactionCommandExecutor))
+            {
+                ctx = StartTransaction();
+                toUse = ctx.Instance;
+            }
+
             foreach (var v in items)
-                InsertObject(v);
+                await toUse.InsertObject(v);
+
+            if (ctx != null)
+            {
+                ctx.Commit();
+                ctx.Dispose();
+            }
 
             return true;
         }

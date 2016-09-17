@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DataAccess.Core.Attributes
+namespace DataAccess.Core
 {
     /// <summary>
     /// Indicates that the function should be called when an object is loaded (Can optionally accept an IDataStore)

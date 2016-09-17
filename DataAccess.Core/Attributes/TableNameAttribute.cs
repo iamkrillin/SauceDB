@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DataAccess.Core.Attributes
+namespace DataAccess.Core
 {
     /// <summary>
     /// Allows the table name/schema to be specified

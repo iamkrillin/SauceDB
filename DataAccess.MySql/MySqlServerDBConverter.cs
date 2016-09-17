@@ -1,13 +1,8 @@
-﻿using DataAccess.Core.Attributes;
-using DataAccess.Core.Conversion;
-using DataAccess.Core.Interfaces;
+﻿using DataAccess.Core.Conversion;
+using DataAccess.Core;
 using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
 
 namespace DataAccess.MySql
 {

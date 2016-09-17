@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using DataAccess.Core.Interfaces;
 using System.Data;
 using DataAccess.Core.Data;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core.ObjectValidators
 {
@@ -27,9 +27,9 @@ namespace DataAccess.Core.ObjectValidators
         /// Validates an objects info against the datastore
         /// </summary>
         /// <param name="ti"></param>
-        public override void ValidateObject(DatabaseTypeInfo ti)
+        public override async Task ValidateObject(DatabaseTypeInfo ti)
         {
-            DBObject obj = GetObject(ti);
+            DBObject obj = await GetObject(ti);
             if (obj == null)
                 CreateNewView(ti);
             else
@@ -85,17 +85,9 @@ namespace DataAccess.Core.ObjectValidators
         /// Returns a list of objects from the datastore
         /// </summary>
         /// <returns></returns>
-        public override IEnumerable<DBObject> GetObjects()
+        public override Task<List<DBObject>> GetObjects()
         {
-            if (Objects.Count < 1)
-            {
-                lock (Objects)
-                {
-                    Objects.AddRange(_dstore.Connection.GetSchemaViews(_dstore));
-                }
-            }
-
-            return Objects;
+            return _dstore.Connection.GetSchemaViews(_dstore);
         }
     }
 }

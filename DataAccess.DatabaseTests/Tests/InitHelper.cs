@@ -2,20 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using DataAccess.Core.Interfaces;
+using DataAccess.Core;
 using DataAccess.Core.Data;
 using System.Data;
 using DataAccess.SqlServer;
+using System.Threading.Tasks;
 
 namespace DataAccess.DatabaseTests.Tests
 {
     public static class InitHelper
     {
-        public static void InitDataStore(this IDataStore dStore)
+        public static async Task InitDataStore(this IDataStore dStore)
         {
             AttachEvents(dStore);
-            DropObjects(dStore.SchemaValidator.ViewValidator, dStore, "VIEW");
-            DropObjects(dStore.SchemaValidator.TableValidator, dStore, "TABLE");
+            await DropObjects(dStore.SchemaValidator.ViewValidator, dStore, "VIEW");
+            await DropObjects(dStore.SchemaValidator.TableValidator, dStore, "TABLE");
         }
 
         public static void AttachEvents(IDataStore dStore)
@@ -30,19 +31,19 @@ namespace DataAccess.DatabaseTests.Tests
             dStore.SchemaValidator.ViewValidator.OnObjectModified += (s, arg) => Console.WriteLine(arg.Action);
         }
 
-        public static void DropObjects(IDatastoreObjectValidator valid, IDataStore dStore, string name)
+        public static async Task DropObjects(IDatastoreObjectValidator valid, IDataStore dStore, string name)
         {
-            IEnumerable<DBObject> data = valid.GetObjects().ToList();
+            IEnumerable<DBObject> data = (await valid.GetObjects()).ToList();
             while (data.Count() != 0)
             {
                 foreach (DBObject t in data)
                 {
                     IDbCommand cmd = dStore.Connection.GetCommand();
                     cmd.CommandText = string.Format("DROP {0} {1}", name, GetTableName(t, dStore), dStore);
-                    try { dStore.ExecuteCommand(cmd); }
+                    try { await dStore.ExecuteCommand(cmd); }
                     catch { }
                 }
-                data = valid.GetObjects(true);
+                data = await valid.GetObjects();
             }
         }
 

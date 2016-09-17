@@ -1,5 +1,5 @@
 ﻿using DataAccess.DatabaseTests.Tests;
-using DataAccess.Core.Interfaces;
+using DataAccess.Core;
 using DataAccess.SqlServer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

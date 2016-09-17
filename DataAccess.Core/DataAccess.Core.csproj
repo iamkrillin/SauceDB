@@ -203,7 +203,6 @@
     <Compile Include="Attributes\ViewAttribute.cs" />
     <Compile Include="Conversion\StandardDBConverter.cs" />
     <Compile Include="DatabaseCommand.cs" />
-    <Compile Include="DataStoreShared.cs" />
     <Compile Include="Data\Results\FieldData.cs" />
     <Compile Include="Interfaces\FieldMapInfo.cs" />
     <Compile Include="Interfaces\IQueryRow.cs" />

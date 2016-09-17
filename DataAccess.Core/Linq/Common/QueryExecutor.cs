@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Text;
 using DataAccess.Core.Linq.Common;
 using DataAccess.Core.Linq.Common.Mapping;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core.Linq.Common
 {
@@ -45,13 +46,13 @@ namespace DataAccess.Core.Linq.Common
         /// <param name="entity">The entity.</param>
         /// <param name="paramValues">The param values.</param>
         /// <returns></returns>
-        public abstract IEnumerable<T> Execute<T>(QueryCommand command, Func<FieldReader, T> fnProjector, MappingEntity entity, object[] paramValues);
+        public abstract Task<IEnumerable<T>> Execute<T>(QueryCommand command, Func<FieldReader, T> fnProjector, MappingEntity entity, object[] paramValues);
         /// <summary>
         /// Executes the command.
         /// </summary>
         /// <param name="query">The query.</param>
         /// <param name="paramValues">The param values.</param>
         /// <returns></returns>
-        public abstract int ExecuteCommand(QueryCommand query, object[] paramValues);
+        public abstract Task<int> ExecuteCommand(QueryCommand query, object[] paramValues);
     }
 }

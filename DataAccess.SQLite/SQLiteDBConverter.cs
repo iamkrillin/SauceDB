@@ -1,11 +1,5 @@
-﻿using DataAccess.Core.Attributes;
-using DataAccess.Core.Conversion;
-using DataAccess.Core.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+﻿using DataAccess.Core.Conversion;
+using DataAccess.Core;
 
 namespace DataAccess.SQLite
 {

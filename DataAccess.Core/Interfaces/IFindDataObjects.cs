@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DataAccess.Core.Interfaces
+namespace DataAccess.Core
 {
     /// <summary>
     /// Defines how to find a data object froma datastore based on a type

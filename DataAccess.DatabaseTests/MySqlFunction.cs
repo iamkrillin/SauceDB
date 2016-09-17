@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DataAccess.DatabaseTests.Tests;
-using DataAccess.Core.Interfaces;
 using DataAccess.MySql;
 using MySql.Data.Types;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using DataAccess.Core;
+using System.Threading.Tasks;
 
 namespace DataAccess.DatabaseTests
 {
@@ -31,23 +32,23 @@ namespace DataAccess.DatabaseTests
         }
 
         [TestMethod]
-        public void Test_Can_Insert_Spacial_Type()
+        public async Task Test_Can_Insert_Spacial_Type()
         {
-            Assert.IsTrue(dstore.InsertObject(new TestItemWithGeography()
+            Assert.IsTrue(await dstore.InsertObject(new TestItemWithGeography()
             {
                 Location = new MySqlGeometry(1, 1, 4326)
             }));
         }
 
         [TestMethod]
-        public void Test_Can_CRUD_Spacial_Type()
+        public async Task Test_Can_CRUD_Spacial_Type()
         {
-            Assert.IsTrue(dstore.InsertObject(new TestItemWithGeography()
+            Assert.IsTrue(await dstore.InsertObject(new TestItemWithGeography()
             {
                 Location = new MySqlGeometry(1, 1, 4326)
             }));
 
-            TestItemWithGeography loaded = dstore.LoadObject<TestItemWithGeography>(1);
+            TestItemWithGeography loaded = await dstore.LoadObject<TestItemWithGeography>(1);
             Assert.IsNotNull(loaded);
             Assert.IsNotNull(loaded.Location);
         }

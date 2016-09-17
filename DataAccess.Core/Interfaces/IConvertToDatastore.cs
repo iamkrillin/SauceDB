@@ -1,12 +1,11 @@
-﻿using DataAccess.Core.Attributes;
-using DataAccess.Core.Data;
+﻿using DataAccess.Core.Data;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 
-namespace DataAccess.Core.Interfaces
+namespace DataAccess.Core
 {
     /// <summary>
     /// Represents a class that knows how to convert a CLR type to DataStore types

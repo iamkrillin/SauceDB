@@ -1,10 +1,10 @@
 ﻿using DataAccess.Core.Data;
-using DataAccess.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core
 {
@@ -70,7 +70,7 @@ namespace DataAccess.Core
         /// Executes a command and return the number of rows updated
         /// </summary>
         /// <returns></returns>
-        protected virtual int ExecuteCommand()
+        protected virtual Task<int> ExecuteCommand()
         {
             Command.CommandType = CommandType.Text;
             return DataStore.ExecuteCommand(Command);
@@ -80,20 +80,20 @@ namespace DataAccess.Core
         /// Executes the current command and gets a list of objects
         /// </summary>
         /// <returns></returns>
-        protected virtual IEnumerable<T> ExecuteCommandGetList()
+        protected virtual async Task<IEnumerable<T>> ExecuteCommandGetList()
         {
             Command.CommandType = CommandType.Text;
-            return DataStore.ExecuteCommandLoadList<T>(Command);
+            return await DataStore.ExecuteCommandLoadList<T>(Command);
         }
 
         /// <summary>
         /// Executes the current command as a stored procedure and gets a list of items
         /// </summary>
         /// <returns></returns>
-        protected virtual List<T> ExecuteAsStoredProcedureGetList()
+        protected virtual async Task<List<T>> ExecuteAsStoredProcedureGetList()
         {
             Command.CommandType = CommandType.StoredProcedure;
-            return DataStore.ExecuteCommandLoadList<T>(Command).ToList();
+            return (await DataStore.ExecuteCommandLoadList<T>(Command)).ToList();
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace DataAccess.Core
         /// <param name="command">The command text</param>
         /// <param name="parameters">The parameters</param>
         /// <returns></returns>
-        public virtual List<T> ExecuteStoredProcedure(string command, object parameters = null)
+        public virtual Task<List<T>> ExecuteStoredProcedure(string command, object parameters = null)
         {
             SetCommandText(command);
             SetParameters(parameters);
@@ -115,7 +115,7 @@ namespace DataAccess.Core
         /// <param name="command">The command text</param>
         /// <param name="parameters">The parameters</param>
         /// <returns></returns>
-        public virtual IEnumerable<T> ExecuteQuery(string command, object parameters = null)
+        public virtual Task<IEnumerable<T>> ExecuteQuery(string command, object parameters = null)
         {
             SetCommandText(command);
             SetParameters(parameters);
@@ -128,7 +128,7 @@ namespace DataAccess.Core
         /// /// <param name="command">The command text</param>
         /// <param name="parameters">The parameters</param>
         /// <returns></returns>
-        public virtual int ExecuteCommand(string command, object parameters = null)
+        public virtual Task<int> ExecuteCommand(string command, object parameters = null)
         {
             SetCommandText(command);
             SetParameters(parameters);

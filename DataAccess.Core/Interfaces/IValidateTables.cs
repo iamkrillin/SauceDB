@@ -3,8 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace DataAccess.Core.Interfaces
+namespace DataAccess.Core
 {
     /// <summary>
     /// Exposes some more methods to handle table modifications
@@ -16,7 +17,7 @@ namespace DataAccess.Core.Interfaces
         /// </summary>
         /// <param name="ti"></param>
         /// <returns></returns>
-        DBObject AddTable(DatabaseTypeInfo ti);
+        Task<DBObject> AddTable(DatabaseTypeInfo ti);
 
         /// <summary>
         /// Will add a column to the datastore

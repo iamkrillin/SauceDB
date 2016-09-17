@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DataAccess.Core.Attributes
+namespace DataAccess.Core
 {
     /// <summary>
     /// Allows you to specify the type mapping CLR->DB,

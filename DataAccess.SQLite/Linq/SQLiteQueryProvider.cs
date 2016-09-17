@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using DataAccess.Core.Linq;
 using System.Data.SQLite;
-using DataAccess.Core.Interfaces;
+using DataAccess.Core;
 using DataAccess.Core.Linq.Common;
 
 namespace DataAccess.SQLite.Linq

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DataAccess.Core.Linq.Common;
-using DataAccess.Core.Interfaces;
 using DataAccess.Core.Data;
 using System.Reflection;
 using DataAccess.Core.Linq.Common.Mapping;

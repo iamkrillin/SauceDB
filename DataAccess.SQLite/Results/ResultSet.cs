@@ -1,4 +1,4 @@
-﻿using DataAccess.Core.Interfaces;
+﻿using DataAccess.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;

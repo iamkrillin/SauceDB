@@ -7,7 +7,7 @@ using System.Collections;
 using DataAccess.Core.Data;
 using System.Linq.Expressions;
 
-namespace DataAccess.Core.Interfaces
+namespace DataAccess.Core
 {
     /// <summary>
     /// Generates various types of data store Commands

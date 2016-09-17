@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DataAccess.Core.Attributes
+namespace DataAccess.Core
 {
     /// <summary>
     /// Indicates the object needs to a query predicate

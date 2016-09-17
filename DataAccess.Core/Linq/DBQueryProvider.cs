@@ -9,7 +9,6 @@ using System.Text;
 using System.Linq.Expressions;
 using System.Collections.ObjectModel;
 using System.Data;
-using DataAccess.Core.Interfaces;
 using DataAccess.Core.Linq.Common;
 using DataAccess.Core.Linq.Common.Expressions;
 using DataAccess.Core.Linq.Common.Mapping;

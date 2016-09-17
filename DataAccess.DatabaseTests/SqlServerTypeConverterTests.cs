@@ -1,4 +1,4 @@
-﻿using DataAccess.Core.Interfaces;
+﻿using DataAccess.Core;
 using DataAccess.SqlServer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -15,7 +15,7 @@ namespace DataAccess.DatabaseTests
         public void Test_Can_Convert_Unicode_Char()
         {
             IConvertToDatastore mapper = new SqlServerDBConverter();
-            string type = mapper.MapType(typeof(char), new Core.Data.DataFieldInfo() { DataFieldType = Core.Attributes.FieldType.UnicodeChar });
+            string type = mapper.MapType(typeof(char), new Core.Data.DataFieldInfo() { DataFieldType = FieldType.UnicodeChar });
             Assert.AreEqual("nvarchar(1)", type);
         }
 
@@ -23,7 +23,7 @@ namespace DataAccess.DatabaseTests
         public void Test_Can_Convert_Unicode_Text()
         {
             IConvertToDatastore mapper = new SqlServerDBConverter();
-            string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { DataFieldType = Core.Attributes.FieldType.UnicodeText });
+            string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { DataFieldType = FieldType.UnicodeText });
             Assert.AreEqual("NTEXT", type);
         }
 
@@ -31,7 +31,7 @@ namespace DataAccess.DatabaseTests
         public void Test_Can_Convert_Text()
         {
             IConvertToDatastore mapper = new SqlServerDBConverter();
-            string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { DataFieldType = Core.Attributes.FieldType.Text });
+            string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { DataFieldType = FieldType.Text });
             Assert.AreEqual("TEXT", type);
         }
 
@@ -39,7 +39,7 @@ namespace DataAccess.DatabaseTests
         public void Test_Can_Convert_Unicode_String()
         {
             IConvertToDatastore mapper = new SqlServerDBConverter();
-            string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { DataFieldType = Core.Attributes.FieldType.UnicodeString });
+            string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { DataFieldType = FieldType.UnicodeString });
             Assert.AreEqual("nvarchar(200)", type);
         }
 

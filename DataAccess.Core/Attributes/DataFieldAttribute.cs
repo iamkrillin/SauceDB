@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using DataAccess.Core.Data;
 
-namespace DataAccess.Core.Attributes
+namespace DataAccess.Core
 {
     /// <summary>
     /// Indicates that one or more conventions about a data field need to be changed

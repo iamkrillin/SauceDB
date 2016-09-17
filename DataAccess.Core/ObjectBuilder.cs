@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using DataAccess.Core.Data;
 using System.Reflection;
-using DataAccess.Core.Interfaces;
 using DataAccess.Core.Events;
 using DataAccess.Core.Data.Results;
 

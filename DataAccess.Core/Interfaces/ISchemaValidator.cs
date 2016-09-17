@@ -5,7 +5,7 @@ using System.Text;
 using DataAccess.Core.Data;
 using DataAccess.Core.Events;
 
-namespace DataAccess.Core.Interfaces
+namespace DataAccess.Core
 {
     /// <summary>
     /// Represents an object that will perform schema validation/modification on a data store

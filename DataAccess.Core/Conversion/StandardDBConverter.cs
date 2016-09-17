@@ -1,6 +1,4 @@
-﻿using DataAccess.Core.Attributes;
-using DataAccess.Core.Data;
-using DataAccess.Core.Interfaces;
+﻿using DataAccess.Core.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;

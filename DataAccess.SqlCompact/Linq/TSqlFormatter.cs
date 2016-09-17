@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Linq.Expressions;
-using DataAccess.Core.Interfaces;
+using DataAccess.Core;
 using DataAccess.Core.Linq.Common;
 using DataAccess.Core.Linq;
 using DataAccess.Core.Linq.Common.Expressions;
