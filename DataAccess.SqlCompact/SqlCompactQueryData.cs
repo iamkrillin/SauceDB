@@ -5,6 +5,7 @@ using System.Text;
 using DataAccess.Core;
 using DataAccess.Core.Data.Results;
 using System.Collections;
+using DataAccess.Core.Interfaces;
 using DataAccess.SqlCompact.Results;
 
 namespace DataAccess.SqlCompact

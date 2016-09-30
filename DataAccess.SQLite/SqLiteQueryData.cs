@@ -6,6 +6,7 @@ using DataAccess.Core;
 using DataAccess.Core.Data.Results;
 using System.Collections;
 using DataAccess.SQLite.Results;
+using DataAccess.Core.Interfaces;
 
 namespace DataAccess.SQLite
 {

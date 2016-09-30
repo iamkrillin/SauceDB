@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using DataAccess.Core.Data;
+using DataAccess.Core.Interfaces;
 using DataAccess.Core;
 using System.Collections;
 using DataAccess.Core.Linq;
@@ -13,7 +14,6 @@ using DataAccess.Core.Data.Results;
 using DataAccess.Core.Extensions;
 using System.Data.SqlServerCe;
 using DataAccess.SqlCompact.Linq;
-using System.Threading.Tasks;
 
 namespace DataAccess.SqlCompact
 {
@@ -220,7 +220,7 @@ namespace DataAccess.SqlCompact
         /// </summary>
         /// <param name="dstore">the datastore to fetch from</param>
         /// <returns></returns>
-        public async Task<List<DBObject>> GetSchemaTables(IDataStore dstore)
+        public IEnumerable<DBObject> GetSchemaTables(IDataStore dstore)
         {
             IDbCommand tblCmd = GetCommand();
             tblCmd.CommandText = _GetTables;
@@ -228,17 +228,15 @@ namespace DataAccess.SqlCompact
             IDbCommand clmCmd = GetCommand();
             clmCmd.CommandText = _GetTableColumns;
 
-            List<DBObject> items = new List<DBObject>();
-
-            using (IQueryData objects = await dstore.ExecuteCommands.ExecuteCommandQuery(tblCmd, dstore.Connection))
-            using (IQueryData columns = await dstore.ExecuteCommands.ExecuteCommandQuery(clmCmd, dstore.Connection))
+            using (IQueryData objects = dstore.ExecuteCommands.ExecuteCommandQuery(tblCmd, dstore.Connection))
+            using (IQueryData columns = dstore.ExecuteCommands.ExecuteCommandQuery(clmCmd, dstore.Connection))
             {
                 List<IQueryRow> rows = columns.GetQueryEnumerator().ToList();
                 foreach (IQueryRow o in objects)
-                    items.Add(Helpers.LoadObjectInfo(dstore, o, rows));
+                {
+                    yield return Helpers.LoadObjectInfo(dstore, o, rows);
+                }
             }
-
-            return items;
         }
 
         /// <summary>
@@ -246,7 +244,7 @@ namespace DataAccess.SqlCompact
         /// </summary>
         /// <param name="dstore">the datastore to fetch from</param>
         /// <returns></returns>
-        public async Task<List<DBObject>> GetSchemaViews(IDataStore dstore)
+        public IEnumerable<DBObject> GetSchemaViews(IDataStore dstore)
         {
             IDbCommand tblCmd = GetCommand();
             tblCmd.CommandText = _GetViews;
@@ -254,18 +252,14 @@ namespace DataAccess.SqlCompact
             IDbCommand clmCmd = GetCommand();
             clmCmd.CommandText = _GetViewsColumns;
 
-            List<DBObject> items = new List<DBObject>();
-
-            using (IQueryData objects = await dstore.ExecuteCommands.ExecuteCommandQuery(tblCmd, dstore.Connection))
-            using (IQueryData columns = await dstore.ExecuteCommands.ExecuteCommandQuery(clmCmd, dstore.Connection))
+            using (IQueryData objects = dstore.ExecuteCommands.ExecuteCommandQuery(tblCmd, dstore.Connection))
+            using (IQueryData columns = dstore.ExecuteCommands.ExecuteCommandQuery(clmCmd, dstore.Connection))
             {
                 List<IQueryRow> rows = columns.GetQueryEnumerator().ToList();
 
                 foreach (IQueryRow o in objects)
-                    items.Add(Helpers.LoadObjectInfo(dstore, o, rows));
+                    yield return Helpers.LoadObjectInfo(dstore, o, rows);
             }
-
-            return items;
         }
     }
 }

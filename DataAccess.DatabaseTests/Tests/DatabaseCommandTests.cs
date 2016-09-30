@@ -1,4 +1,4 @@
-﻿using DataAccess.Core;
+﻿using DataAccess.Core.Interfaces;
 using DataAccess.DatabaseTests.DataObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.DatabaseTests.Tests
 {
@@ -19,7 +18,7 @@ namespace DataAccess.DatabaseTests.Tests
         public DatabaseCommandTests()
         {
             dStore = GetDataStore();
-            Task.WaitAll(dStore.InitDataStore());
+            dStore.InitDataStore();
         }
 
         [TestMethod]

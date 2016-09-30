@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using DataAccess.Core.Data;
 using System.Data.SqlClient;
+using DataAccess.Core.Interfaces;
 using DataAccess.Core;
 using System.Collections;
 using DataAccess.Core.Linq;
@@ -13,7 +14,6 @@ using DataAccess.SqlServer.Linq;
 using System.Reflection;
 using DataAccess.Core.Data.Results;
 using DataAccess.Core.Extensions;
-using System.Threading.Tasks;
 
 namespace DataAccess.SqlServer
 {
@@ -218,14 +218,13 @@ namespace DataAccess.SqlServer
                 DoBulkCopy(toUse, dstore);
         }
 
-        private async Task DoBulkCopy(IList items, IDataStore dstore)
+        private void DoBulkCopy(IList items, IDataStore dstore)
         {
             if (items.Count > 0)
             {
                 Type t = items[0].GetType();
                 DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(t);
-                List<DBObject> objects = await dstore.SchemaValidator.TableValidator.GetObjects();
-                DBObject table = objects.Where(R => R.Schema.Equals(ti.UnEscapedSchema, StringComparison.InvariantCultureIgnoreCase) && R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+                DBObject table = dstore.SchemaValidator.TableValidator.GetObjects().Where(R => R.Schema.Equals(ti.UnEscapedSchema, StringComparison.InvariantCultureIgnoreCase) && R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
 
                 if (table != null)
                 {
@@ -326,7 +325,7 @@ namespace DataAccess.SqlServer
         /// </summary>
         /// <param name="dstore">the datastore to fetch from</param>
         /// <returns></returns>
-        public async Task<List<DBObject>> GetSchemaTables(IDataStore dstore)
+        public IEnumerable<DBObject> GetSchemaTables(IDataStore dstore)
         {
             IDbCommand tblCmd = GetCommand();
             tblCmd.CommandText = _GetTables;
@@ -334,17 +333,15 @@ namespace DataAccess.SqlServer
             IDbCommand clmCmd = GetCommand();
             clmCmd.CommandText = _GetTableColumns;
 
-            List<DBObject> items = new List<DBObject>();
-
-            using (IQueryData objects = await dstore.ExecuteCommands.ExecuteCommandQuery(tblCmd, dstore.Connection))
-            using (IQueryData columns = await dstore.ExecuteCommands.ExecuteCommandQuery(clmCmd, dstore.Connection))
+            using (IQueryData objects = dstore.ExecuteCommands.ExecuteCommandQuery(tblCmd, dstore.Connection))
+            using (IQueryData columns = dstore.ExecuteCommands.ExecuteCommandQuery(clmCmd, dstore.Connection))
             {
                 List<IQueryRow> rows = columns.GetQueryEnumerator().ToList();
                 foreach (IQueryRow o in objects)
-                    items.Add(Helpers.LoadObjectInfo(dstore, o, rows));
+                {
+                    yield return Helpers.LoadObjectInfo(dstore, o, rows);
+                }
             }
-
-            return items;
         }
 
         /// <summary>
@@ -352,7 +349,7 @@ namespace DataAccess.SqlServer
         /// </summary>
         /// <param name="dstore">the datastore to fetch from</param>
         /// <returns></returns>
-        public async Task<List<DBObject>> GetSchemaViews(IDataStore dstore)
+        public IEnumerable<DBObject> GetSchemaViews(IDataStore dstore)
         {
             IDbCommand tblCmd = GetCommand();
             tblCmd.CommandText = _GetViews;
@@ -360,19 +357,14 @@ namespace DataAccess.SqlServer
             IDbCommand clmCmd = GetCommand();
             clmCmd.CommandText = _GetViewsColumns;
 
-            List<DBObject> toReturn = new List<DBObject>();
-
-            using (IQueryData objects = await dstore.ExecuteCommands.ExecuteCommandQuery(tblCmd, dstore.Connection))
-            using (IQueryData columns = await dstore.ExecuteCommands.ExecuteCommandQuery(clmCmd, dstore.Connection))
+            using (IQueryData objects = dstore.ExecuteCommands.ExecuteCommandQuery(tblCmd, dstore.Connection))
+            using (IQueryData columns = dstore.ExecuteCommands.ExecuteCommandQuery(clmCmd, dstore.Connection))
             {
-                List<IQueryRow> objs = objects.GetQueryEnumerator().ToList();
                 List<IQueryRow> rows = columns.GetQueryEnumerator().ToList();
 
                 foreach (IQueryRow o in objects)
-                    toReturn.Add(Helpers.LoadObjectInfo(dstore, o, rows));
+                    yield return Helpers.LoadObjectInfo(dstore, o, rows);
             }
-
-            return toReturn;
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using DataAccess.Core.Data;
+using DataAccess.Core.Interfaces;
 using System.Collections;
 using System.Linq.Expressions;
 using DataAccess.Core.Linq.Common.Language;
@@ -436,13 +437,13 @@ namespace DataAccess.Core
                 return TranslateTypeToSql(DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType).PrimaryKeys.First());
             else
             {
-                if (dfi.DataFieldType != FieldType.Default)
+                if (dfi.DataFieldType != Attributes.FieldType.Default)
                 {
                     return DataStore.Connection.DatastoreConverter.MapFieldType(dfi.DataFieldType, dfi);
                 }
                 else
                 {
-                    if (dfi.DataFieldType == FieldType.UserString)
+                    if (dfi.DataFieldType == Attributes.FieldType.UserString)
                         return dfi.DataFieldString;
                     else
                     {

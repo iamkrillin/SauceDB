@@ -5,7 +5,6 @@ using System.Text;
 using System.Data;
 using DataAccess.Core.Linq.Common.Mapping;
 using DataAccess.Core.Linq.Common;
-using System.Threading.Tasks;
 
 namespace DataAccess.Core.Linq
 {
@@ -81,7 +80,7 @@ namespace DataAccess.Core.Linq
         /// <param name="entity">The entity.</param>
         /// <param name="paramValues">The param values.</param>
         /// <returns></returns>
-        public override Task<IEnumerable<T>> Execute<T>(QueryCommand command, Func<FieldReader, T> fnProjector, MappingEntity entity, object[] paramValues)
+        public override IEnumerable<T> Execute<T>(QueryCommand command, Func<FieldReader, T> fnProjector, MappingEntity entity, object[] paramValues)
         {
             IDbCommand cmd = this.GetCommand(command, paramValues);
             return Provider.Store.ExecuteCommandLoadList<T>(cmd);
@@ -138,7 +137,7 @@ namespace DataAccess.Core.Linq
         /// <param name="query">The query.</param>
         /// <param name="paramValues">The param values.</param>
         /// <returns></returns>
-        public override Task<int> ExecuteCommand(QueryCommand query, object[] paramValues)
+        public override int ExecuteCommand(QueryCommand query, object[] paramValues)
         {
             return Provider.Store.ExecuteCommand(GetCommand(query, paramValues));
         }

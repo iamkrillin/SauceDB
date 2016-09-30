@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DataAccess.Core.Interfaces;
+using System;
 using System.Reflection;
 
 namespace DataAccess.Core

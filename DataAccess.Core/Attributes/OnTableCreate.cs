@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DataAccess.Core
+namespace DataAccess.Core.Attributes
 {
     /// <summary>
     /// Indicates a function should be called when a table is created (Can optimally accept an IDataStore), must be static

@@ -1,9 +1,9 @@
-﻿using System;
+﻿using DataAccess.Core.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DataAccess.Core.Data;
-using System.Threading.Tasks;
 
 namespace DataAccess.Core.ObjectValidators
 {
@@ -41,9 +41,8 @@ namespace DataAccess.Core.ObjectValidators
         /// This does nothing
         /// </summary>
         /// <param name="ti"></param>
-        public Task ValidateObject(Data.DatabaseTypeInfo ti)
+        public void ValidateObject(Data.DatabaseTypeInfo ti)
         {
-            return new Task(() => { });
         }
 
         /// <summary>
@@ -51,24 +50,18 @@ namespace DataAccess.Core.ObjectValidators
         /// </summary>
         /// <param name="forceReload"></param>
         /// <returns></returns>
-        public Task<List<Data.DBObject>> GetObjects(bool forceReload)
+        public IEnumerable<Data.DBObject> GetObjects(bool forceReload)
         {
-            return new Task<List<DBObject>>(() =>
-            {
-                return null;
-            });
+            return null;
         }
 
         /// <summary>
         /// Returns null
         /// </summary>
         /// <returns></returns>
-        public Task<List<Data.DBObject>> GetObjects()
+        public IEnumerable<Data.DBObject> GetObjects()
         {
-            return new Task<List<Data.DBObject>>(() =>
-            {
-                return null;
-            });
+            return null;
         }
 
         public bool ObjectExistsInDataStore(DatabaseTypeInfo info)

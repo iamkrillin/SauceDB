@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DataAccess.Core.Interfaces;
 using DataAccess.Core.Data;
+using DataAccess.Core.Attributes;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using DataAccess.Core.Events;
@@ -307,17 +309,14 @@ namespace DataAccess.Core
             //source prop types
             ParameterExpression objSourceType = Expression.Parameter(typeof(object));
 
-            //step one create the casting expressions, this is to convert the obj param back to the source type
+            //step one create the casting expressions
             Expression objCast = Expression.Convert(objSourceType, objType);
 
             //call the cast set method on the caste-d object with the casted value
             Expression action = Expression.Call(objCast, property.GetMethod);
 
-            //we need to cast the return of action above to object to return
-            Expression castedAction = Expression.Convert(action, typeof(object));
-            
             //make it a lambda
-            LambdaExpression function = Expression.Lambda(castedAction, objSourceType);
+            LambdaExpression function = Expression.Lambda(action, objSourceType);
 
             return (Func<object, object>)function.Compile();
         }
@@ -325,28 +324,21 @@ namespace DataAccess.Core
         //generates a delegate like Action<object, object> foo = (obj, value) => ((ObjType)obj).Property = (valueType)value;
         public Action<object, object> GetSetter(Type objType, PropertyInfo property)
         {
-            if (property.SetMethod != null)
-            {
-                //source prop types
-                ParameterExpression valueSourceType = Expression.Parameter(typeof(object));
-                ParameterExpression objSourceType = Expression.Parameter(typeof(object));
+            //source prop types
+            ParameterExpression valueSourceType = Expression.Parameter(typeof(object));
+            ParameterExpression objSourceType = Expression.Parameter(typeof(object));
 
-                //step one create the casting expressions
-                Expression valueCast = Expression.Convert(valueSourceType, property.PropertyType);
-                Expression objCast = Expression.Convert(objSourceType, objType);
+            //step one create the casting expressions
+            Expression valueCast = Expression.Convert(valueSourceType, property.PropertyType);
+            Expression objCast = Expression.Convert(objSourceType, objType);
 
-                //call the cast set method on the caste-d object with the casted value
-                Expression action = Expression.Call(objCast, property.SetMethod, valueCast);
+            //call the cast set method on the caste-d object with the casted value
+            Expression action = Expression.Call(objCast, property.SetMethod, valueCast);
 
-                //make it a lambda
-                LambdaExpression function = Expression.Lambda(action, objSourceType, valueSourceType);
+            //make it a lambda
+            LambdaExpression function = Expression.Lambda(action, objSourceType, valueSourceType);
 
-                return (Action<object, object>)function.Compile();
-            }
-            else // no setter for this property, do a noop, more or less..
-            {
-                return (a, b) => { };
-            }
+            return (Action<object, object>)function.Compile();
         }
 
         /// <summary>

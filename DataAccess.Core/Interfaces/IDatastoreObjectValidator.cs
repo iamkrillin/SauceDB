@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using DataAccess.Core.Events;
 using DataAccess.Core.Data;
-using System.Threading.Tasks;
 
-namespace DataAccess.Core
+namespace DataAccess.Core.Interfaces
 {
     /// <summary>
     /// Represents an object that validates a type against a datastore object
@@ -42,13 +41,20 @@ namespace DataAccess.Core
         /// Validates an objects info against the datastore
         /// </summary>
         /// <param name="ti"></param>
-        Task ValidateObject(DatabaseTypeInfo ti);
+        void ValidateObject(DatabaseTypeInfo ti);
+
+        /// <summary>
+        /// Returns a list of objects from the datastore
+        /// </summary>
+        /// <param name="forceReload">Will force the fetch of a fresh copy</param>
+        /// <returns></returns>
+        IEnumerable<DBObject> GetObjects(bool forceReload);
 
         /// <summary>
         /// Returns a list of objects from the datastore
         /// </summary>
         /// <returns></returns>
-        Task<List<DBObject>> GetObjects();
+        IEnumerable<DBObject> GetObjects();
 
         /// <summary>
         /// Will return true if a given object exists in the datastore

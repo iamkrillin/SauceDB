@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DataAccess.Core.Interfaces;
 using System.Data;
 using DataAccess.Core.Data;
 using DataAccess.Core.Events;
-using System.Threading.Tasks;
 
 namespace DataAccess.Core.ObjectValidators
 {
@@ -28,9 +28,9 @@ namespace DataAccess.Core.ObjectValidators
         /// Validates an objects info against the datastore
         /// </summary>
         /// <param name="ti"></param>
-        public override async Task ValidateObject(DatabaseTypeInfo ti)
+        public override void ValidateObject(DatabaseTypeInfo ti)
         {
-            DBObject table = await GetObject(ti);
+            DBObject table = GetObject(ti);
 
             if (table == null)
                 CreateNewTable(ti);
@@ -98,6 +98,8 @@ namespace DataAccess.Core.ObjectValidators
 
             if (CheckForDeletedColumns(typeInfo, t, valid))
                 dirty = true;
+
+            if (dirty) Objects.Clear(); //this will cause the table info to reload
         }
 
         /// <summary>
@@ -133,7 +135,7 @@ namespace DataAccess.Core.ObjectValidators
         /// </summary>
         /// <param name="ti"></param>
         /// <returns></returns>
-        public virtual Task<DBObject> AddTable(DatabaseTypeInfo ti)
+        public virtual DBObject AddTable(DatabaseTypeInfo ti)
         {
             if (ti.DataFields.Count > 0)
             {
@@ -143,6 +145,7 @@ namespace DataAccess.Core.ObjectValidators
                     _dstore.ExecuteCommands.ExecuteCommand(cmd, _dstore.Connection);
 
                 FireCreated(ti);
+                Objects.Clear();
                 return GetObject(ti);
             }
             else
@@ -227,9 +230,17 @@ namespace DataAccess.Core.ObjectValidators
         /// Returns a list of objects from the datastore
         /// </summary>
         /// <returns></returns>
-        public override Task<List<DBObject>> GetObjects()
+        public override IEnumerable<DBObject> GetObjects()
         {
-            return _dstore.Connection.GetSchemaTables(_dstore);
+            if (Objects.Count < 1)
+            {
+                lock (Objects)
+                {
+                    Objects.AddRange(_dstore.Connection.GetSchemaTables(_dstore));
+                }
+            }
+
+            return Objects;
         }
 
         /// <summary>

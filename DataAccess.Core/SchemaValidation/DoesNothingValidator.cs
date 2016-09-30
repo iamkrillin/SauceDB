@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DataAccess.Core.Interfaces;
 using DataAccess.Core.Data;
 using DataAccess.Core.Events;
 

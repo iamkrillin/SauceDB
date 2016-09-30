@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DataAccess.Core.Interfaces;
 using System.Data;
 using System.Data.SQLite;
 using DataAccess.Core;
@@ -10,7 +11,6 @@ using System.Collections;
 using DataAccess.Core.Data;
 using DataAccess.Core.Conversion;
 using DataAccess.Core.Data.Results;
-using System.Threading.Tasks;
 
 namespace DataAccess.SQLite
 {
@@ -157,12 +157,11 @@ namespace DataAccess.SQLite
         /// </summary>
         /// <param name="dstore"></param>
         /// <returns></returns>
-        public async Task<List<DBObject>> GetSchemaTables(IDataStore dstore)
+        public IEnumerable<DBObject> GetSchemaTables(IDataStore dstore)
         {
             SQLiteCommand getTables = new SQLiteCommand();
             getTables.CommandText = "select name from sqlite_master where type = 'table'";
-            List<DBObject> items = new List<DBObject>();
-            using (IQueryData tables = await dstore.ExecuteCommands.ExecuteCommandQuery(getTables, dstore.Connection))
+            using (IQueryData tables = dstore.ExecuteCommands.ExecuteCommandQuery(getTables, dstore.Connection))
             {
                 foreach (IQueryRow tab in tables)
                 {
@@ -173,7 +172,7 @@ namespace DataAccess.SQLite
                         t.Columns = new List<Column>();
 
                         getColumns.CommandText = string.Concat("pragma table_info(", t.Name, ");");
-                        using (IQueryData columns = await dstore.ExecuteCommands.ExecuteCommandQuery(getColumns, dstore.Connection))
+                        using (IQueryData columns = dstore.ExecuteCommands.ExecuteCommandQuery(getColumns, dstore.Connection))
                         {
                             foreach (IQueryRow col in columns)
                             {
@@ -185,13 +184,11 @@ namespace DataAccess.SQLite
                                     DefaultValue = col.GetDataForRowField("dflt_value").ToString()
                                 });
                             }
-                            items.Add(t);
+                            yield return t;
                         }
                     }
                 }
             }
-
-            return items;
         }
 
         /// <summary>
@@ -199,13 +196,12 @@ namespace DataAccess.SQLite
         /// </summary>
         /// <param name="dstore"></param>
         /// <returns></returns>
-        public async Task<List<DBObject>> GetSchemaViews(IDataStore dstore)
+        public IEnumerable<DBObject> GetSchemaViews(IDataStore dstore)
         {
             List<DBObject> toReturn = new List<DBObject>();
             SQLiteCommand getTables = new SQLiteCommand();
             getTables.CommandText = "select name from sqlite_master where type = 'view'";
-            List<DBObject> items = new List<DBObject>();
-            using (IQueryData tables = await dstore.ExecuteCommands.ExecuteCommandQuery(getTables, dstore.Connection))
+            using (IQueryData tables = dstore.ExecuteCommands.ExecuteCommandQuery(getTables, dstore.Connection))
             {
                 foreach (IQueryRow tab in tables)
                 {
@@ -216,7 +212,7 @@ namespace DataAccess.SQLite
                         t.Columns = new List<Column>();
 
                         getColumns.CommandText = string.Concat("pragma table_info(", t.Name, ");");
-                        using (IQueryData columns = await dstore.ExecuteCommands.ExecuteCommandQuery(getColumns, dstore.Connection))
+                        using (IQueryData columns = dstore.ExecuteCommands.ExecuteCommandQuery(getColumns, dstore.Connection))
                         {
                             foreach (IQueryRow col in columns)
                             {
@@ -229,13 +225,11 @@ namespace DataAccess.SQLite
                                 });
                             }
 
-                            items.Add(t);
+                            yield return t;
                         }
                     }
                 }
             }
-
-            return items;
         }
     }
 }

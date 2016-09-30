@@ -10,6 +10,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using DataAccess.Core.Interfaces;
 using DataAccess.Core.Linq.Common.Expressions;
 using DataAccess.Core.Linq.Enums;
 using DataAccess.Core.Linq.Common.Language;

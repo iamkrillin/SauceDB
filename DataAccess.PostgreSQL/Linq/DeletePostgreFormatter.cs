@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using DataAccess.Core;
+using DataAccess.Core.Interfaces;
 using DataAccess.Core.Linq;
 using DataAccess.Core.Linq.Common;
 using System.Linq.Expressions;

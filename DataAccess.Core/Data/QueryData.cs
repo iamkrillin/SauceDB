@@ -6,6 +6,7 @@ using DataAccess.Core;
 using DataAccess.Core.Data.Results;
 using System.Collections;
 using System.Data;
+using DataAccess.Core.Interfaces;
 
 namespace DataAccess.Core.Data
 {
@@ -51,6 +52,7 @@ namespace DataAccess.Core.Data
         {
             this.connection = r;
             this.command = command;
+
             QuerySuccessful = true;
         }
 

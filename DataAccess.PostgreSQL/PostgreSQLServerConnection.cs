@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DataAccess.Core.Interfaces;
 using System.Data;
 using DataAccess.Core;
 using Npgsql;
@@ -13,7 +14,6 @@ using System.Reflection;
 using DataAccess.Core.Conversion;
 using DataAccess.Core.Data.Results;
 using DataAccess.Core.Extensions;
-using System.Threading.Tasks;
 
 namespace DataAccess.PostgreSQL
 {
@@ -215,7 +215,7 @@ namespace DataAccess.PostgreSQL
         /// </summary>
         /// <param name="dstore"></param>
         /// <returns></returns>
-        public Task<List<DBObject>> GetSchemaTables(IDataStore dstore)
+        public IEnumerable<DBObject> GetSchemaTables(IDataStore dstore)
         {
             IDbCommand tblCmd = GetCommand();
             tblCmd.CommandText = _getTablesCommand;
@@ -223,22 +223,15 @@ namespace DataAccess.PostgreSQL
             IDbCommand clmCmd = GetCommand();
             clmCmd.CommandText = _getColumnsCommand;
 
-            return LoadObjects(dstore, tblCmd, clmCmd);
-        }
-
-        private static async Task<List<DBObject>> LoadObjects(IDataStore dstore, IDbCommand tblCmd, IDbCommand clmCmd)
-        {
-            List<DBObject> items = new List<DBObject>();
-
-            using (IQueryData tables = await dstore.ExecuteCommands.ExecuteCommandQuery(tblCmd, dstore.Connection))
-            using (IQueryData columns = await dstore.ExecuteCommands.ExecuteCommandQuery(clmCmd, dstore.Connection))
+            using (IQueryData tables = dstore.ExecuteCommands.ExecuteCommandQuery(tblCmd, dstore.Connection))
+            using (IQueryData columns = dstore.ExecuteCommands.ExecuteCommandQuery(clmCmd, dstore.Connection))
             {
                 List<IQueryRow> rows = columns.GetQueryEnumerator().ToList();
                 foreach (IQueryRow table in tables)
-                    items.Add(Helpers.LoadObjectInfo(dstore, table, rows));
+                {
+                    yield return Helpers.LoadObjectInfo(dstore, table, rows);
+                }
             }
-
-            return items;
         }
 
         /// <summary>
@@ -246,14 +239,21 @@ namespace DataAccess.PostgreSQL
         /// </summary>
         /// <param name="dstore"></param>
         /// <returns></returns>
-        public Task<List<DBObject>> GetSchemaViews(IDataStore dstore)
+        public IEnumerable<DBObject> GetSchemaViews(IDataStore dstore)
         {
             IDbCommand tblCmd = GetCommand();
             tblCmd.CommandText = _getViewCommand;
 
             IDbCommand clmCmd = GetCommand();
             clmCmd.CommandText = _getViewColumnsCommand;
-            return LoadObjects(dstore, tblCmd, clmCmd);
+
+            using (IQueryData objects = dstore.ExecuteCommands.ExecuteCommandQuery(tblCmd, dstore.Connection))
+            using (IQueryData columns = dstore.ExecuteCommands.ExecuteCommandQuery(clmCmd, dstore.Connection))
+            {
+                List<IQueryRow> rows = columns.GetQueryEnumerator().ToList();
+                foreach (IQueryRow o in objects)
+                    yield return Helpers.LoadObjectInfo(dstore, o, rows);
+            }
         }
     }
 }

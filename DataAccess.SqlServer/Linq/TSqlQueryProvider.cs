@@ -10,7 +10,7 @@ using System.Text;
 using System.Linq.Expressions;
 using System.Collections.ObjectModel;
 using System.Data;
-using DataAccess.Core;
+using DataAccess.Core.Interfaces;
 using DataAccess.Core.Linq;
 using DataAccess.Core.Linq.Mapping;
 using DataAccess.Core.Linq.Common;

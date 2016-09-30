@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DataAccess.Core.Execute;
+using DataAccess.Core.Interfaces;
 
 namespace DataAccess.Core
 {
@@ -23,6 +24,11 @@ namespace DataAccess.Core
         public TransactionInfo TransactionInfo { get; set; }
 
         /// <summary>
+        /// If true, on dispose the transaction will commit else rollback
+        /// </summary>
+        public bool CommitOnDispose { get; set; }
+
+        /// <summary>
         /// Fires during the dispose event
         /// </summary>
         public event EventHandler OnDisposing;
@@ -34,6 +40,7 @@ namespace DataAccess.Core
         public TransactionContext(IDataStore store)
         {
             _parent = store;
+            CommitOnDispose = true;            
             Instance = store.GetNewInstance();
             StartNewTransaction();
         }
@@ -90,7 +97,12 @@ namespace DataAccess.Core
         public void Dispose()
         {
             if (TransactionInfo != null)
-                Rollback();
+            {
+               if( CommitOnDispose)
+                   Commit();
+                else
+                   Rollback();
+            }
 
             if (OnDisposing != null)
                 OnDisposing(this, new EventArgs());

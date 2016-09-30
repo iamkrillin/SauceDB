@@ -1,4 +1,5 @@
 ﻿using DataAccess.Core.Data;
+using DataAccess.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;

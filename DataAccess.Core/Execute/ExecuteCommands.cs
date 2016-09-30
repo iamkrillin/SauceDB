@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using DataAccess.Core.Data;
 using System.Data;
+using DataAccess.Core.Interfaces;
 using DataAccess.Core.Events;
-using System.Threading.Tasks;
 
 namespace DataAccess.Core.Execute
 {
@@ -34,20 +34,18 @@ namespace DataAccess.Core.Execute
         /// <param name="command">The command to execute</param>
         /// <param name="connection">The connection to use</param>
         /// <returns></returns>
-        public virtual Task<IQueryData> ExecuteCommandQuery(IDbCommand command, IDataConnection connection)
+        public virtual IQueryData ExecuteCommandQuery(IDbCommand command, IDataConnection connection)
         {
             return ExecuteCommand<IQueryData>(command, connection, r =>
                 {
-                    return Task.Run(() =>
-                    {
-                        return ExecuteCommandQueryAction(command, connection, r);
-                    });
+                    return ExecuteCommandQueryAction(command, connection, r);
                 });
         }
 
         public virtual IQueryData ExecuteCommandQueryAction(IDbCommand command, IDataConnection connection, IDbConnection r)
         {
-            return new QueryData(r, command);
+            QueryData toReturn = new QueryData(r, command);
+            return toReturn;
         }
 
         private static void CloseConnection(IDbConnection r)
@@ -79,20 +77,18 @@ namespace DataAccess.Core.Execute
         /// </summary>
         /// <param name="command">The command to execute</param>
         /// <param name="connection">The connection to use</param>
-        public virtual async Task<int> ExecuteCommand(IDbCommand command, IDataConnection connection)
+        public virtual int ExecuteCommand(IDbCommand command, IDataConnection connection)
         {
-            return await ExecuteCommand<int>(command, connection, r =>
+            return ExecuteCommand<int>(command, connection, r =>
                 {
-                    return Task.Run<int>(() =>
-                    {
-                        var result = command.ExecuteNonQuery();
-                        CloseConnection(r);
-                        return result;
-                    });
+                    var result = command.ExecuteNonQuery();
+                    CloseConnection(r);
+
+                    return result;
                 });
         }
 
-        protected virtual async Task<T> ExecuteCommand<T>(IDbCommand command, IDataConnection connection, Func<IDbConnection, Task<T>> action)
+        protected virtual T ExecuteCommand<T>(IDbCommand command, IDataConnection connection, Func<IDbConnection, T> action)
         {
             T toReturn = default(T);
             foreach (IDbDataParameter parm in command.Parameters)
@@ -104,7 +100,7 @@ namespace DataAccess.Core.Execute
             try
             {
                 FireExecutingEvent(command, connection, conn);
-                toReturn = await action(conn);
+                toReturn = action(conn);
                 FireExecutedEvent(command, connection, conn);
             }
             catch (Exception e)

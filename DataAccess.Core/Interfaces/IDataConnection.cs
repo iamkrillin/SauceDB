@@ -5,9 +5,8 @@ using System.Text;
 using System.Data;
 using DataAccess.Core.Data;
 using System.Collections;
-using System.Threading.Tasks;
 
-namespace DataAccess.Core
+namespace DataAccess.Core.Interfaces
 {
     /// <summary>
     /// A connection to a data store
@@ -54,14 +53,14 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="dstore"></param>
         /// <returns></returns>
-        Task<List<DBObject>> GetSchemaTables(IDataStore dstore);
+        IEnumerable<DBObject> GetSchemaTables(IDataStore dstore);
 
         /// <summary>
         /// Returns a list of views from the datastore
         /// </summary>
         /// <param name="dstore"></param>
         /// <returns></returns>
-        Task<List<DBObject>> GetSchemaViews(IDataStore dstore);
+        IEnumerable<DBObject> GetSchemaViews(IDataStore dstore);
 
         /// <summary>
         /// the data stores escape character (left side)

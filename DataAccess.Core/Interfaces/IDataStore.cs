@@ -5,13 +5,13 @@ using System.Text;
 using System.Collections;
 using System.Data;
 using System.Linq.Expressions;
+using DataAccess.Core.Interfaces;
 using DataAccess.Core.Events;
 using DataAccess.Core.Data;
 using DataAccess.Core.Linq.Common;
 using DataAccess.Core.Linq.Mapping;
-using System.Threading.Tasks;
 
-namespace DataAccess.Core
+namespace DataAccess.Core.Interfaces
 {
     /// <summary>
     /// Represents a data store
@@ -57,7 +57,7 @@ namespace DataAccess.Core
         /// Executes a command
         /// </summary>
         /// <param name="command">The command to execute</param>
-        Task<IQueryData> ExecuteQuery(IDbCommand command);
+        IQueryData ExecuteQuery(IDbCommand command);
 
         /// <summary>
         /// Gets or sets the DataConnection
@@ -90,7 +90,7 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns></returns>
-        Task<bool> InsertObject(object item);
+        bool InsertObject(object item);
 
         /// <summary>
         /// Loads an object
@@ -98,7 +98,7 @@ namespace DataAccess.Core
         /// <typeparam name="T">The type to load</typeparam>
         /// <param name="PrimaryKey">The primary key.</param>
         /// <returns></returns>
-        Task<T> LoadObject<T>(object PrimaryKey);
+        T LoadObject<T>(object PrimaryKey);
 
         /// <summary>
         /// Deletes an object
@@ -106,26 +106,26 @@ namespace DataAccess.Core
         /// <typeparam name="T">The type to delete</typeparam>
         /// <param name="primaryKey">The primary key to delete on></param>
         /// <returns></returns>
-        Task<bool> DeleteObject(object primaryKey);
+        bool DeleteObject(object primaryKey);
 
         /// <summary>
         /// Deletes objects based on an expression
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="criteria"></param>
-        Task<int> DeleteObjects<T>(Expression<Func<T, bool>> criteria);
+        int DeleteObjects<T>(Expression<Func<T, bool>> criteria);
 
         /// <summary>
         /// Loads an entire table
         /// </summary>
         /// <param name="item">The type to load</param>
-        Task<IEnumerable<object>> LoadEntireTable(Type item);
+        IEnumerable<object> LoadEntireTable(Type item);
 
         /// <summary>
         /// Loads an entire table
         /// </summary>
         /// <typeparam name="T">The type to load</typeparam>
-        Task<IEnumerable<T>> LoadEntireTable<T>();
+        IEnumerable<T> LoadEntireTable<T>();
 
         /// <summary>
         /// Returns the resolved table name for a type
@@ -147,7 +147,7 @@ namespace DataAccess.Core
         /// <param name="objectType">The type to load in the list</param>
         /// <param name="command">The command to execute</param>
         /// <returns></returns>
-        Task<IEnumerable<object>> ExecuteCommandLoadList(Type objectType, IDbCommand command);
+        IEnumerable<object> ExecuteCommandLoadList(Type objectType, IDbCommand command);
 
         /// <summary>
         /// Executes a command and loads a list
@@ -155,7 +155,7 @@ namespace DataAccess.Core
         /// <typeparam name="T">The type to load in the list</typeparam>
         /// <param name="command">The command to execute</param>
         /// <returns></returns>
-        Task<IEnumerable<T>> ExecuteCommandLoadList<T>(IDbCommand command);
+        IEnumerable<T> ExecuteCommandLoadList<T>(IDbCommand command);        
 
         /// <summary>
         /// Execute a command an loads an object
@@ -163,7 +163,7 @@ namespace DataAccess.Core
         /// <typeparam name="T">The type to load</typeparam>
         /// <param name="command">The command to execute</param>
         /// <returns></returns>
-        Task<T> ExecuteCommandLoadObject<T>(IDbCommand command);
+        T ExecuteCommandLoadObject<T>(IDbCommand command);
 
         /// <summary>
         /// Returns a helper for dealing with the db directly
@@ -185,35 +185,35 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        Task<bool> LoadObject(object item);
+        bool LoadObject(object item);
 
         /// <summary>
         /// Inserts a list of items into the data store
         /// </summary>
         /// <param name="items">The items to insert</param>
         /// <returns></returns>
-        Task<bool> InsertObjects(IList items);
+        bool InsertObjects(IList items);
 
         /// <summary>
         /// Determines if an object already exists in the data store, based on the primary key
         /// </summary>
         /// <param name="item">The object to check</param>
         /// <returns></returns>
-        Task<bool> IsNew(object item);
+        bool IsNew(object item);
 
         /// <summary>
         /// Will do an insert or update as appropriate to persist your data
         /// Note: This method will determine what operation is required by calling IsNew()
         /// </summary>
         /// <param name="item">The item to persist</param>
-        Task<bool> SaveObject(object item);
+        bool SaveObject(object item);
 
         /// <summary>
         /// Updates an object on the data store, primary key must be set
         /// </summary>
         /// <param name="item">The item to update</param>
         /// <returns></returns>
-        Task<bool> UpdateObject(object item);
+        bool UpdateObject(object item);
 
         /// <summary>
         /// Updates all items in the list, primary keys must be set
@@ -221,13 +221,13 @@ namespace DataAccess.Core
         /// <typeparam name="T"></typeparam>
         /// <param name="items"></param>
         /// <returns>The items that failed to update</returns>
-        Task<IEnumerable<T>> UpdateObjects<T>(IEnumerable<T> items);
+        IEnumerable<T> UpdateObjects<T>(IEnumerable<T> items);
 
         /// <summary>
         /// Executes a command on the data store
         /// </summary>
         /// <param name="command">The command to execute</param>
-        Task<int> ExecuteCommand(IDbCommand command);
+        int ExecuteCommand(IDbCommand command);
 
         /// <summary>
         /// This function will return an IQueryable appropriate for using with LINQ
@@ -242,9 +242,9 @@ namespace DataAccess.Core
         /// <returns></returns>
         SauceMapping GetQueryMapper();
 
-        ///// <summary>
-        ///// Inits a transction scope for the command executor
-        ///// </summary>
+        /// <summary>
+        /// Inits a transction scope for the command executor
+        /// </summary>
         TransactionContext StartTransaction();
 
         /// <summary>

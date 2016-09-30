@@ -5,7 +5,7 @@ using System.Text;
 using DataAccess.Core.Data;
 using DataAccess.Core.Events;
 
-namespace DataAccess.Core
+namespace DataAccess.Core.Interfaces
 {
     /// <summary>
     /// Represents a class responsible for parsing information from a type

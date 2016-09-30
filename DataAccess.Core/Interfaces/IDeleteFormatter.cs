@@ -5,7 +5,7 @@ using System.Text;
 using System.Linq.Expressions;
 #pragma warning disable 1591
 
-namespace DataAccess.Core
+namespace DataAccess.Core.Interfaces
 {
     public interface IDeleteFormatter
     {

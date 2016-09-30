@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Data;
 using MySql.Data.MySqlClient;
 using DataAccess.Core.Linq;
-using DataAccess.Core;
+using DataAccess.Core.Interfaces;
 using DataAccess.Core.Linq.Common;
 
 namespace DataAccess.MySql.Linq
