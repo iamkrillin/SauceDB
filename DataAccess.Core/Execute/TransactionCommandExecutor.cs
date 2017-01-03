@@ -88,6 +88,7 @@ namespace DataAccess.Core.Execute
         {
             return ExecuteCommand<int>(command, connection, r =>
             {
+
                 return command.ExecuteNonQuery();
             });
         }

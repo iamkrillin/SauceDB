@@ -135,11 +135,11 @@ namespace DataAccess.Migrations
 
         protected virtual void HandleViews(Assembly asmb)
         {
-            Console.WriteLine("Updating Views...");
             string viewResource = asmb.GetManifestResourceNames().First(r => r.EndsWith("views.txt", StringComparison.InvariantCultureIgnoreCase));
             List<string> views = asmb.LoadResource(viewResource).Split(Environment.NewLine.ToCharArray()).ToList();
             List<Tuple<string, string>> items = new List<Tuple<string, string>>();
 
+            Console.WriteLine("Parsing View File....");
             foreach (string s in views)
             {
                 if (!string.IsNullOrEmpty(s))
@@ -149,40 +149,44 @@ namespace DataAccess.Migrations
                 }
             }
 
-            AlterCurrentViews(asmb, items);
-            AddNewViews(asmb, items);
-        }
-
-        private void AddNewViews(Assembly asmb, List<Tuple<string, string>> items)
-        {
-            foreach (Tuple<string, string> item in items)
+            var dbViews = _views.GetObjects().OrderBy(r=> r.Name).ToList();
+            foreach (var item in items)
             {
+                Console.Write("Working on view {0}: ", item.Item1);
+                //see if we have a view that matches this one already present in the DB.
+
                 string resource = asmb.GetManifestResourceNames().Single(r => r.EndsWith(item.Item2));
-                string script = asmb.LoadResource(resource);
+                if (string.IsNullOrEmpty(resource))
+                    throw new Exception(string.Format("Resource for {0} was not found", item.Item2));
 
-                Console.WriteLine("Adding View {0}...", item.Item1);
-                RunCommand(string.Format("CREATE VIEW {0} AS {1}", item.Item1, script));
+                string script = asmb.LoadResource(resource);
+                string verb;
+
+                if (ViewExists(dbViews, item.Item1))
+                {
+                    Console.WriteLine("Updating...");
+                    verb = "ALTER";
+                }
+                else
+                {
+                    Console.WriteLine("Creating...");
+                    verb = "CREATE";
+                }
+
+                RunCommand(string.Format("{2} VIEW {0} AS {1}", item.Item1, script, verb));
             }
         }
 
-        private void AlterCurrentViews(Assembly asmb, List<Tuple<string, string>> items)
+        private bool ViewExists(List<DBObject> items, string name)
         {
-            foreach (DBObject v in _views.GetObjects())
+            foreach (DBObject v in items)
             {
-                Console.WriteLine("Modifying View {0}...", _dstore.Connection.CommandGenerator.ResolveTableName(v.Schema, v.Name));
-
                 string fullName = v.Schema.Equals("dbo", StringComparison.InvariantCultureIgnoreCase) ? v.Name : string.Concat(v.Schema, ".", v.Name);
-                Tuple<string, string> item = items.SingleOrDefault(r => r.Item1.Equals(fullName, StringComparison.InvariantCultureIgnoreCase));
-
-                if (item != null)
-                {
-                    string resource = asmb.GetManifestResourceNames().Single(r => r.EndsWith(item.Item2));
-                    string script = asmb.LoadResource(resource);
-
-                    RunCommand(string.Format("ALTER VIEW {0} AS {1}", item.Item1, script));
-                    items.Remove(item);
-                }
+                if (fullName.Equals(name, StringComparison.InvariantCultureIgnoreCase))
+                    return true;
             }
+
+            return false;
         }
 
         private void RunScript(Assembly asmb, string script)
