@@ -45,32 +45,6 @@ namespace DataAccess.Core
         }
 
         /// <summary>
-        /// Translates the where type to sql
-        /// </summary>
-        /// <param name="type">the where type</param>
-        /// <returns></returns>
-        public static string GetWhereString(this WhereType type)
-        {
-            switch (type)
-            {
-                case WhereType.Equal:
-                    return "=";
-                case WhereType.GreaterThan:
-                    return ">";
-                case WhereType.GreaterThanEqual:
-                    return ">=";
-                case WhereType.LessThan:
-                    return "<";
-                case WhereType.LessThanEqual:
-                    return "<=";
-                case WhereType.NotEqual:
-                    return "<>";
-                default:
-                    return "";
-            }
-        }
-
-        /// <summary>
         /// Takes a list and creates a new smaller list of the specified size (Copies the items from the old list into the new one)
         /// </summary>
         /// <param name="source"></param>

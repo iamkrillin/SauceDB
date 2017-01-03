@@ -34,12 +34,12 @@ namespace DataAccess.Core.Execute
 
         protected void FireExecutingEvent(IDbCommand command, IDataConnection connection, IDbConnection conn)
         {
-            if (CommandExecuting != null) CommandExecuting(this, new CommandExecutingEventArgs(command, connection, conn));
+            CommandExecuting?.Invoke(this, new CommandExecutingEventArgs(command, connection, conn));
         }
 
         protected void FireExecutedEvent(IDbCommand command, IDataConnection connection, IDbConnection conn)
         {
-            if (CommandExecuted != null) CommandExecuted(this, new CommandExecutingEventArgs(command, connection, conn));
+            CommandExecuted?.Invoke(this, new CommandExecutingEventArgs(command, connection, conn));
         }
 
         protected T ExecuteCommand<T>(IDbCommand command, IDataConnection connection, Func<IDbConnection, T> action)

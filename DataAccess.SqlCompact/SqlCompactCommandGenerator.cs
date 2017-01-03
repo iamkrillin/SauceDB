@@ -57,8 +57,6 @@ namespace DataAccess.SqlCompact
                         sb.AppendFormat("{0} {1} NOT NULL IDENTITY(1,1) ", dfi.EscapedFieldName, TranslateTypeToSql(dfi));
                     else
                         sb.AppendFormat("{0} {1} NOT NULL ", dfi.EscapedFieldName, TranslateTypeToSql(dfi));
-
-                    if (dfi.PropertyType == typeof(string) && string.IsNullOrEmpty(dfi.DefaultValue)) dfi.DefaultValue = "newid()"; //if the user specifies a default value, dont override it
                 }
                 else
                 {
@@ -70,13 +68,6 @@ namespace DataAccess.SqlCompact
                     SqlCeCommand fk = new SqlCeCommand();
                     fk.CommandText = GetForeignKeySql(dfi, ti, DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType));
                     toReturn.Add(fk);
-                }
-
-                if (!string.IsNullOrEmpty(dfi.DefaultValue))
-                {
-                    SqlCeCommand dv = new SqlCeCommand();
-                    dv.CommandText = GetDefaultValueSql(ti, dfi, dv);
-                    toReturn.Add(dv);
                 }
             }
             sb.Append(");");
@@ -93,11 +84,6 @@ namespace DataAccess.SqlCompact
             cmd.CommandText = sb.ToString();
             toReturn.Insert(0, cmd);
             return toReturn;
-        }
-
-        private string GetDefaultValueSql(DatabaseTypeInfo ti, DataFieldInfo dfi, SqlCeCommand cmd)
-        {
-            return string.Format("ALTER TABLE {0} ADD CONSTRAINT DF_{3}_{4}_{5} DEFAULT {2} FOR {1};", ResolveTableName(ti), dfi.FieldName, dfi.DefaultValue, ti.UnEscapedSchema, ti.UnescapedTableName, dfi.FieldName);
         }
 
         private string GetForeignKeySql(DataFieldInfo field, DatabaseTypeInfo targetTable, DatabaseTypeInfo pKeyTable)
@@ -149,13 +135,6 @@ namespace DataAccess.SqlCompact
                     fk.CommandText = GetForeignKeySql(dfi, type, DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType));
                     toReturn.Add(fk);
                 }
-
-                if (!string.IsNullOrEmpty(dfi.DefaultValue))
-                {
-                    SqlCeCommand dv = new SqlCeCommand();
-                    dv.CommandText = GetDefaultValueSql(type, dfi, dv);
-                    toReturn.Add(dv);
-                }
             }
 
             return toReturn;
@@ -181,13 +160,6 @@ namespace DataAccess.SqlCompact
                 SqlCeCommand fk = new SqlCeCommand();
                 fk.CommandText = GetForeignKeySql(dfi, type, DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType));
                 toReturn.Add(fk);
-            }
-
-            if (!string.IsNullOrEmpty(dfi.DefaultValue))
-            {
-                SqlCeCommand dv = new SqlCeCommand();
-                dv.CommandText = GetDefaultValueSql(type, dfi, dv);
-                toReturn.Add(dv);
             }
 
             return toReturn;

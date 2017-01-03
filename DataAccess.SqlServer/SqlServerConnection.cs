@@ -264,7 +264,7 @@ namespace DataAccess.SqlServer
                 DataRow dr = dt.NewRow();
                 foreach (DataFieldInfo dfi in ti.DataFields)
                 {
-                    object item = dfi.Getter(record, null);
+                    object item = dfi.Getter(record);
                     if (item == null)
                         dr[dfi.FieldName] = DBNull.Value;
                     else

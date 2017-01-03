@@ -88,21 +88,6 @@ namespace DataAccess.DatabaseTests.Tests
         }
 
         [TestMethod]
-        public virtual void Test_Can_Add_Table_With_Default_Value()
-        {
-            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemDefaultValue));
-            IEnumerable<DBObject> tables = dstore.SchemaValidator.TableValidator.GetObjects();
-            DBObject inserted = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-            Assert.IsTrue(inserted != null);
-
-            TestItemDefaultValue newItem = new TestItemDefaultValue();
-            newItem.AnotherField = Guid.NewGuid().ToString();
-            dstore.InsertObject(newItem);
-            dstore.LoadObject(newItem);
-            Assert.IsTrue(!string.IsNullOrEmpty(newItem.Something));
-        }
-
-        [TestMethod]
         public virtual void Test_Can_Add_Column_To_Table()
         {
             DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFields));
@@ -139,23 +124,6 @@ namespace DataAccess.DatabaseTests.Tests
             DBObject inserted2 = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             Assert.IsTrue(inserted2 != null);
             Assert.IsTrue(inserted2.Columns.Count == 3);
-        }
-
-        [TestMethod]
-        public virtual void Test_Can_Add_Column_To_Table_Default()
-        {
-            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFields));
-            IEnumerable<DBObject> tables = dstore.SchemaValidator.TableValidator.GetObjects();
-            DBObject inserted = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-            Assert.IsTrue(inserted != null);
-            Assert.IsTrue(inserted.Columns.Count == 3);
-
-            DatabaseTypeInfo t2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemThreeFieldsPlusOneWithDefault));
-
-            tables = dstore.SchemaValidator.TableValidator.GetObjects();
-            DBObject inserted2 = tables.Where(R => R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-            Assert.IsTrue(inserted2 != null);
-            Assert.IsTrue(inserted2.Columns.Count == 4);
         }
 
         [TestMethod]
@@ -275,15 +243,6 @@ namespace DataAccess.DatabaseTests.Tests
         }
 
         [TestMethod]
-        public virtual void Test_Can_Modify_Column_And_Keep_Default_Value()
-        {
-            dstore.InsertObject(new TestItemDefaultValue() { AnotherField = "First" });
-            dstore.InsertObject(new TestItemDefaultValueDifferntFieldType() { AnotherField = "Second" });
-
-            dstore.LoadEntireTable<TestItemDefaultValue>().ToList().ForEach(R => Assert.IsTrue(R.Something.Equals("SomeDefaultValue", StringComparison.InvariantCultureIgnoreCase)));
-        }
-
-        [TestMethod]
         public virtual void Test_Can_Do_On_Table_Create()
         {
             IEnumerable<TestItemOnTableCreated> items = dstore.LoadEntireTable<TestItemOnTableCreated>();
@@ -327,7 +286,7 @@ namespace DataAccess.DatabaseTests.Tests
         public void Test_Notify_Validator_Notifies_Of_Missing_Table()
         {
             dstore.SchemaValidator = new NotifyValidator(dstore);
-            dstore.InsertObject(new TestItemDefaultValue() { AnotherField = "First" });
+            dstore.InsertObject(new TestItem() { });
         }
 
         [TestMethod, ExpectedException(typeof(DataStoreException))]

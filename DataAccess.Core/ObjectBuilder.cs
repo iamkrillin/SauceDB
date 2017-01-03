@@ -109,21 +109,21 @@ namespace DataAccess.Core
                 {
                     if (dfi.PropertyType.IsAssignableFrom(item.GetType()))
                     {
-                        dfi.Setter(dataItem, item, null);
+                        dfi.Setter(dataItem, item);
                     }
                     else
                     {
                         try
                         {
                             if (!dfi.PropertyType.IsSystemType() && !dfi.PropertyType.IsEnum)
-                                dfi.Setter(dataItem, BuildObject(dstore, row, dstore.TypeInformationParser.GetTypeInfo(dfi.PropertyType)), null);
+                                dfi.Setter(dataItem, BuildObject(dstore, row, dstore.TypeInformationParser.GetTypeInfo(dfi.PropertyType)));
                             else
-                                dfi.Setter(dataItem, dstore.Connection.CLRConverter.ConvertToType(item, dfi.PropertyType), null);
+                                dfi.Setter(dataItem, dstore.Connection.CLRConverter.ConvertToType(item, dfi.PropertyType));
                         }
                         catch
                         {//attempt to set to default
                             ConstructorInfo ci = dfi.PropertyType.GetConstructors().Where(R => R.GetParameters().Count() == 0).FirstOrDefault();
-                            if (ci != null) dfi.Setter(dataItem, ci.Invoke(null), null);
+                            if (ci != null) dfi.Setter(dataItem, ci.Invoke(null));
                         }
                     }
                 }

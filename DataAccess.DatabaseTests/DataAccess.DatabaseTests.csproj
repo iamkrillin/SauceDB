@@ -134,6 +134,7 @@
   <ItemGroup>
     <Compile Include="Asserts.cs" />
     <Compile Include="DataObjects\ClassNoPrimaryKey.cs" />
+    <Compile Include="DataObjects\TestItemDifferentFieldType.cs" />
     <Compile Include="DataObjects\TestItemSmallString.cs" />
     <Compile Include="DataObjects\TestItemThreeFieldsPlusOneNullable.cs" />
     <Compile Include="DataObjects\TestItemNullable.cs" />
@@ -160,8 +161,6 @@
     <Compile Include="DataObjects\Group.cs" />
     <Compile Include="DataObjects\ItemWithSchema.cs" />
     <Compile Include="DataObjects\TestItem.cs" />
-    <Compile Include="DataObjects\TestItemDefaultValue.cs" />
-    <Compile Include="DataObjects\TestItemDefaultValueDifferntFieldType.cs" />
     <Compile Include="DataObjects\TestItemForeignKeyWithString.cs" />
     <Compile Include="DataObjects\TestItemNewTableName.cs" />
     <Compile Include="DataObjects\TestItemPrimaryKey.cs" />
@@ -169,7 +168,6 @@
     <Compile Include="DataObjects\TestItemThreeFieldsMinusOne.cs" />
     <Compile Include="DataObjects\TestItemThreeFieldsPlusOne.cs" />
     <Compile Include="DataObjects\TestItemThreeFieldsPlusOneForeign.cs" />
-    <Compile Include="DataObjects\TestItemThreeFieldsPlusOneWithDefault.cs" />
     <Compile Include="DataObjects\TestItemTwoKeys.cs" />
     <Compile Include="DataObjects\TestItemWithForeignKey.cs" />
     <Compile Include="ExtensionTests.cs" />

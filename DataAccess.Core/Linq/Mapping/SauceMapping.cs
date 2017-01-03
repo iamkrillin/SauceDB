@@ -147,7 +147,7 @@ namespace DataAccess.Core.Linq.Mapping
             {
                 if (firstKey == null)
                 {
-                    firstKey = v.Getter(instance, null);
+                    firstKey = v.Getter(instance);
                 }
                 else
                 {
@@ -156,7 +156,7 @@ namespace DataAccess.Core.Linq.Mapping
                         keys = new List<object>();
                         keys.Add(firstKey);
                     }
-                    keys.Add(v.Getter(instance, null));
+                    keys.Add(v.Getter(instance));
                 }
             }
             if (keys != null)

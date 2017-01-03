@@ -44,9 +44,8 @@ namespace DataAccess.Core.Interfaces
         /// Generates a select for a single object
         /// </summary>
         /// <param name="item">The item to load (primary key needs to be set)</param>
-        /// <param name="LoadAllFields">if true, the load field on type info will be ignored</param>
         /// <returns></returns>
-        IDbCommand GetSelectCommand(object item, bool LoadAllFields);
+        IDbCommand GetSelectCommand(object item);
 
         /// <summary>
         /// Generates a delete command for one object (primary key is required)
@@ -136,40 +135,8 @@ namespace DataAccess.Core.Interfaces
         /// Returns a list of columns comma separated, appropriate for select from
         /// </summary>
         /// <param name="type">The type</param>
-        /// <param name="LoadAllFields">Honor LoadFieldAttribute</param>
         /// <returns></returns>
-        string GetSelectList(Type type, bool LoadAllFields);
-
-        /// <summary>
-        /// Returns a list of columns, appropriate for selecting
-        /// </summary>
-        /// <param name="type">The type</param>
-        /// <param name="LoadAllFields">Honor LoadFieldAttribute</param>
-        /// <returns></returns>
-        IEnumerable<DataFieldInfo> GetSelectFields(Type type, bool LoadAllFields);
-
-        /// <summary>
-        /// Generates an IN() clause
-        /// </summary>
-        /// <param name="fieldName">The parameters name</param>
-        /// <param name="objects">The objects to select on</param>
-        /// <param name="appendTo">The string builder to append to</param>
-        /// <param name="cmdAppend">The command to add the parameters to</param>
-        /// <param name="Type">The Type of constraint, defaults to AND</param>
-        /// <returns></returns>
-        bool AppendInClause(string fieldName, IList objects, StringBuilder appendTo, IDbCommand cmdAppend, ConstraintType Type = ConstraintType.AND);
-
-        /// <summary>
-        /// Appends a restraint to a where, note it will add a comma if needed
-        /// </summary>
-        /// <param name="field">The field</param>
-        /// <param name="value">The value of the field</param>
-        /// <param name="type">The type of constraint</param>
-        /// <param name="appendTo">The string builder to append to</param>
-        /// <param name="cmdAppend">the command to add the parameters to</param>
-        /// <param name="Type">The Type of constraint, defaults to AND</param>
-        /// <returns></returns>
-        bool AppendWhereItem(string field, object value, WhereType type, StringBuilder appendTo, IDbCommand cmdAppend, ConstraintType Type = ConstraintType.AND);
+        string GetSelectList(Type type);
 
         /// <summary>
         /// Translates a type to SQL equivalent
@@ -177,14 +144,6 @@ namespace DataAccess.Core.Interfaces
         /// <param name="dfi">The data field.</param>
         /// <returns></returns>
         string TranslateTypeToSql(DataFieldInfo dfi);
-
-        /// <summary>
-        /// Returns a command that will do an IN
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="Ids"></param>
-        /// <returns></returns>
-        IDbCommand GetInCommand<T>(IEnumerable Ids);
 
         /// <summary>
         /// Returns a command that is appropriate for adding a schema for the object to go into

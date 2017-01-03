@@ -51,7 +51,7 @@ namespace DataAccess.SqlCompact
                     cmd.Connection = (SqlCeConnection)e.RawConnection;
                     object data = cmd.ExecuteScalar();
 
-                    ti.PrimaryKeys[0].Setter(item, Connection.CLRConverter.ConvertToType(data, ti.PrimaryKeys[0].PropertyType) ,null);
+                    ti.PrimaryKeys[0].Setter(item, Connection.CLRConverter.ConvertToType(data, ti.PrimaryKeys[0].PropertyType));
                 }
             };
 

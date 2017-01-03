@@ -56,14 +56,6 @@ namespace DataAccess.PostgreSQL
                     DatabaseTypeInfo pkType = DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType);
                     contrain.AppendFormat(_createFKSQL, Guid.NewGuid().ToString(), dfi.EscapedFieldName, ResolveTableName(pkType, false), pkType.PrimaryKeys.First().EscapedFieldName, TranslateFkeyType(dfi.ForeignKeyType));
                 }
-
-                if (!string.IsNullOrEmpty(dfi.DefaultValue))
-                {
-                    if (dfi.PropertyType == typeof(int))
-                        sb.AppendFormat("DEFAULT {0}", dfi.DefaultValue);
-                    else
-                        sb.AppendFormat("DEFAULT {0}", dfi.DefaultValue);
-                }
             }
 
             if (pFields.Length > 0)
@@ -120,14 +112,6 @@ namespace DataAccess.PostgreSQL
                 NpgsqlCommand scmd = new NpgsqlCommand();
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("ALTER TABLE {0} ADD {1} {2} NULL ", ResolveTableName(type, false), dfi.EscapedFieldName, TranslateTypeToSql(dfi));
-
-                if (!string.IsNullOrEmpty(dfi.DefaultValue))
-                {
-                    if (dfi.PropertyType == typeof(int))
-                        sb.AppendFormat("DEFAULT {0}", dfi.DefaultValue);
-                    else
-                        sb.AppendFormat("DEFAULT {0}", dfi.DefaultValue);
-                }
 
                 if (dfi.PrimaryKeyType != null)
                 {

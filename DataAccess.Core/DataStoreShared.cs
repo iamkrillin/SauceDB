@@ -38,7 +38,7 @@ namespace DataAccess.Core
         protected static object CreateObjectSetKey(Type item, object key, DatabaseTypeInfo ti)
         {
             object toReturn = item.GetConstructor(new Type[] { }).Invoke(new object[] { });
-            ti.PrimaryKeys[0].Setter(toReturn, key, null);
+            ti.PrimaryKeys[0].Setter(toReturn, key);
             return toReturn;
         }
 

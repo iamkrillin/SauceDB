@@ -69,7 +69,7 @@ namespace DataAccess.Core
         public virtual IDbCommand LoadEntireTableCommand(Type item)
         {
             IDbCommand command = DataStore.Connection.GetCommand();
-            command.CommandText = string.Format("SELECT {0} FROM {1};", GetSelectList(item, false), ResolveTableName(item));
+            command.CommandText = string.Format("SELECT {0} FROM {1};", GetSelectList(item), ResolveTableName(item));
             return command;
         }
 
@@ -200,7 +200,7 @@ namespace DataAccess.Core
                 if (!dfi.PrimaryKey && dfi.SetOnInsert)
                 {
                     if (addComma) fieldList.Append(",");
-                    object value = dfi.Getter(item, null);
+                    object value = dfi.Getter(item);
 
                     if (value != null)
                     {
@@ -224,7 +224,7 @@ namespace DataAccess.Core
 
                 string fName = GetParameterName(toReturn);
                 fieldList.Append(string.Concat(dField.EscapedFieldName, "=", fName));
-                toReturn.Parameters.Add(DataStore.Connection.GetParameter(fName, dField.Getter(item, null)));
+                toReturn.Parameters.Add(DataStore.Connection.GetParameter(fName, dField.Getter(item)));
             }
 
             toReturn.CommandText = fieldList.ToString();
@@ -245,7 +245,7 @@ namespace DataAccess.Core
             {
                 if (info.SetOnInsert)
                 {
-                    object value = info.Getter(item, null);
+                    object value = info.Getter(item);
                     if (value != null)
                     {
                         value = DataStore.Connection.CLRConverter.ConvertToType(value, info.PropertyType);
@@ -262,21 +262,20 @@ namespace DataAccess.Core
         /// Generates a select for a single object
         /// </summary>
         /// <param name="item">The item to load (primary key needs to be set)</param>
-        /// <param name="LoadAllFields">if true, the load field on type info will be ignored</param>
         /// <returns></returns>
-        public virtual IDbCommand GetSelectCommand(object item, bool LoadAllFields)
+        public virtual IDbCommand GetSelectCommand(object item)
         {
             Type t = item.GetType();
             DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(t);
             IDbCommand cmd = DataStore.Connection.GetCommand();
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("SELECT {0} FROM {1} WHERE ", GetSelectList(t, LoadAllFields), ResolveTableName(ti));
+            sb.AppendFormat("SELECT {0} FROM {1} WHERE ", GetSelectList(t), ResolveTableName(ti));
 
             for (int i = 0; i < ti.PrimaryKeys.Count; i++)
             {
                 DataFieldInfo dfi = ti.PrimaryKeys[i];
-                object value = dfi.Getter(item, null);
+                object value = dfi.Getter(item);
 
                 if (value != null)
                 {
@@ -309,7 +308,7 @@ namespace DataAccess.Core
 
                 if (cmd.Parameters.Count > 0) sb.Append(" AND ");
                 sb.Append(string.Concat(dfi.EscapedFieldName, "=", pName));
-                cmd.Parameters.Add(DataStore.Connection.GetParameter(pName, dfi.Getter(item, null)));
+                cmd.Parameters.Add(DataStore.Connection.GetParameter(pName, dfi.Getter(item)));
             }
 
             cmd.CommandText = sb.ToString();
@@ -337,9 +336,8 @@ namespace DataAccess.Core
         /// Returns a list of columns comma separated, appropriate for select from
         /// </summary>
         /// <param name="type">The type</param>
-        /// <param name="LoadAllFields">Honor LoadFieldAttribute</param>
         /// <returns></returns>
-        public virtual string GetSelectList(Type type, bool LoadAllFields)
+        public virtual string GetSelectList(Type type)
         {
             DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(type);
             if (ti.SelectString == null)
@@ -348,7 +346,7 @@ namespace DataAccess.Core
 
                 foreach (DataFieldInfo dfi in ti.DataFields)
                 {
-                    if (!dfi.LoadField && !LoadAllFields) continue;
+                    if (!dfi.LoadField) continue;
                     if (sb.Length > 0) sb.Append(",");
                     sb.Append(ResolveFieldName(dfi.PropertyName, type));
                 }
@@ -486,43 +484,6 @@ namespace DataAccess.Core
         }
 
         /// <summary>
-        /// Generates an IN() clause
-        /// </summary>
-        /// <param name="fieldName">The fields name</param>
-        /// <param name="objects">The objects to select on</param>
-        /// <param name="appendTo">The string builder to append to</param>
-        /// <param name="cmdAppend">The command to add the parameters to</param>
-        /// <param name="Type">The Type of constraint, defaults to AND</param>
-        /// <returns></returns>
-        public virtual bool AppendInClause(string fieldName, IList objects, StringBuilder appendTo, IDbCommand cmdAppend, ConstraintType Type = ConstraintType.AND)
-        {
-            bool added = false;
-            if (objects.Count > 0)
-            {
-                if (ConstraintNeeded(appendTo, cmdAppend))
-                    appendTo.Append(string.Concat(" ", Type.ToString(), " "));
-
-                EscapeFieldName(fieldName, appendTo);
-                appendTo.Append(" IN (");
-                for (int i = 0; i < objects.Count; i++)
-                {
-                    if (i > 0)
-                        appendTo.Append(", ");
-
-                    string lvlParm = GetParameterName(cmdAppend);
-                    appendTo.Append(lvlParm);
-                    IDbDataParameter dbParm = cmdAppend.CreateParameter();
-                    dbParm.ParameterName = lvlParm;
-                    dbParm.Value = objects[i];
-                    cmdAppend.Parameters.Add(dbParm);
-                }
-                appendTo.Append(")");
-                added = true;
-            }
-            return added;
-        }
-
-        /// <summary>
         /// escapes the field name of a field, will account for an alias/table name or similar
         /// </summary>
         /// <param name="parmName"></param>
@@ -534,89 +495,6 @@ namespace DataAccess.Core
             {
                 if (i > 0) appendTo.Append(".");
                 appendTo.Append(string.Concat(DataStore.Connection.LeftEscapeCharacter, parts[i], DataStore.Connection.RightEscapeCharacter));
-            }
-        }
-
-        /// <summary>
-        /// Appends a restraint to a where, note it will add a comma if needed
-        /// </summary>
-        /// <param name="field">The field</param>
-        /// <param name="value">The value of the field</param>
-        /// <param name="type">The type of constraint</param>
-        /// <param name="appendTo">The string builder to append to</param>
-        /// <param name="cmdAppend">the command to add the parameters to</param>
-        /// <param name="Type">The Type of constraint, defaults to AND</param>
-        /// <returns></returns>
-        public virtual bool AppendWhereItem(string field, object value, WhereType type, StringBuilder appendTo, IDbCommand cmdAppend, ConstraintType Type = ConstraintType.AND)
-        {
-            bool append = false;
-            string parmName = GetParameterName(cmdAppend);
-
-            if (value != null)
-                append = true;
-            else if (value is string)
-                append = !string.IsNullOrEmpty((string)value);
-
-            if (append)
-            {
-                if (ConstraintNeeded(appendTo, cmdAppend))
-                    appendTo.Append(string.Concat(" ", Type.ToString(), " "));
-
-                appendTo.Append(" ");
-                EscapeFieldName(field, appendTo);
-                appendTo.Append(GenWhere(parmName, type));
-                IDbDataParameter parm = cmdAppend.CreateParameter();
-                parm.Value = value;
-                parm.ParameterName = parmName;
-                cmdAppend.Parameters.Add(parm);
-            }
-            return append;
-        }
-
-        private bool ConstraintNeeded(StringBuilder appendTo, IDbCommand cmd)
-        {
-            bool result = false;
-            if (cmd.Parameters.Count > 0)
-            {// should never need the constraint if there is not at least one parm present...
-                char examine = GetLastNonEmptyCharacter(appendTo);
-                if (examine != '(')
-                    result = true;
-            }
-
-            return result;
-        }
-
-        private char GetLastNonEmptyCharacter(StringBuilder Builder)
-        {
-            int offset = 0;
-            char toReturn = ' ';
-            do
-            {
-                offset++;
-                toReturn = Builder[Builder.Length - offset];
-            } while (toReturn == ' ');
-
-            return toReturn;
-        }
-
-        /// <summary>
-        /// Escapes the field and puts the pieces of the where together
-        /// </summary>
-        /// <param name="parm">The parm.</param>
-        /// <param name="type">The type.</param>
-        /// <returns></returns>
-        protected virtual string GenWhere(string parm, WhereType type)
-        {
-            switch (type)
-            {
-                case WhereType.Contains:
-                    return string.Concat(" LIKE '%' + ", parm, " + '%'");
-                case WhereType.EndsWith:
-                    return string.Concat(" LIKE '%' + ", parm);
-                case WhereType.StartsWith:
-                    return string.Concat(" LIKE ", parm, " + '%'");
-                default:
-                    return string.Concat(type.GetWhereString(), parm);
             }
         }
 
@@ -654,38 +532,6 @@ namespace DataAccess.Core
 
             cmd.CommandText = sb.ToString();
             return cmd;
-        }
-
-        /// <summary>
-        /// Returns a command that will do an IN
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="Ids"></param>
-        /// <returns></returns>
-        public virtual IDbCommand GetInCommand<T>(IEnumerable Ids)
-        {
-            DatabaseTypeInfo data = DataStore.TypeInformationParser.GetTypeInfo(typeof(T));
-            IDbCommand toReturn = DataStore.Connection.GetCommand();
-            StringBuilder sb = new StringBuilder();
-            sb.Append("SELECT ");
-            sb.Append(GetSelectList(data.DataType, false));
-            sb.Append(" FROM ");
-            sb.Append(ResolveTableName(data.DataType));
-            sb.Append(" WHERE ");
-            sb.Append(data.PrimaryKeys.First().EscapedFieldName);
-            sb.Append(" IN(");
-            foreach (object o in Ids)
-            {
-                string name = GetParameterName(toReturn);
-                toReturn.Parameters.Add(DataStore.Connection.GetParameter(name, o));
-                sb.Append(string.Concat(name, ","));
-            }
-
-            sb.Remove(sb.Length - 1, 1); //remove trialing comma
-            sb.Append(");");
-
-            toReturn.CommandText = sb.ToString();
-            return toReturn;
         }
     }
 }

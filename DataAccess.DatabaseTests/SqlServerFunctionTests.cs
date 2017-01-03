@@ -32,8 +32,8 @@ namespace DataAccess.DatabaseTests
         {
             using (TransactionContext ctx = dstore.StartTransaction())
             {
-                ctx.Instance.GetCommand<int>().ExecuteDBCommand("create table #foo ( bar int )");
-                ctx.Instance.GetCommand<int>().ExecuteDBCommand("select * from #foo");
+                ctx.Instance.GetCommand<int>().ExecuteCommand("create table #foo ( bar int )");
+                ctx.Instance.GetCommand<int>().ExecuteCommand("select * from #foo");
             }
         }
 

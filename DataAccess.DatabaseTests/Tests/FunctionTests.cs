@@ -130,20 +130,6 @@ namespace DataAccess.DatabaseTests.Tests
         }
 
         [TestMethod]
-        public virtual void Test_Can_Load_Object_By_Key()
-        {
-            TestItem newObject = new TestItem();
-            newObject.Something = "A Test String";
-            Assert.IsTrue(dstore.InsertObject(newObject));
-            TestItem ti = dstore.LoadObject(typeof(TestItem), newObject.id) as TestItem;
-
-            Assert.IsTrue(dstore.LoadObject(ti));
-            Assert.IsTrue(!string.IsNullOrEmpty(ti.Something));
-            Assert.IsTrue(ti.id == 1);
-            Assert.IsTrue(ti.Something.Equals("A Test String", StringComparison.InvariantCultureIgnoreCase));
-        }
-
-        [TestMethod]
         public virtual void Test_Can_Load_Object_By_Key_Templeted()
         {
             TestItem newObject = new TestItem();
@@ -157,18 +143,12 @@ namespace DataAccess.DatabaseTests.Tests
             Assert.IsTrue(ti.id == 1);
             Assert.IsTrue(ti.Something.Equals("A Test String", StringComparison.InvariantCultureIgnoreCase));
 
-            ti = dstore.LoadObject<TestItem>(1, false);
+            ti = dstore.LoadObject<TestItem>(1);
 
             Assert.IsTrue(dstore.LoadObject(ti));
             Assert.IsTrue(!string.IsNullOrEmpty(ti.Something));
             Assert.IsTrue(ti.id == 1);
             Assert.IsTrue(ti.Something.Equals("A Test String", StringComparison.InvariantCultureIgnoreCase));
-        }
-
-        [TestMethod, ExpectedException(typeof(DataStoreException))]
-        public virtual void Test_Cannot_Load_By_Key_With_Multiple_Keys()
-        {
-            TestItem ti = dstore.LoadObject(typeof(TestItemTwoKeys), 1) as TestItem;
         }
 
         [TestMethod]
@@ -206,24 +186,6 @@ namespace DataAccess.DatabaseTests.Tests
             Test_Can_Insert_Object();
             List<TestItem> items = dstore.LoadEntireTable<TestItem>().OrderBy(R => R.id).ToList();
             Assert.IsTrue(dstore.DeleteObject(items.Last()));
-            Assert.IsNull(dstore.LoadObject<TestItem>(items.Last().id));
-        }
-
-        [TestMethod]
-        public virtual void Test_Can_Delete_Item_By_Key()
-        {
-            Test_Can_Insert_Object();
-            List<TestItem> items = dstore.LoadEntireTable<TestItem>().OrderBy(R => R.id).ToList();
-            Assert.IsTrue(dstore.DeleteObject(typeof(TestItem), items.Last().id));
-            Assert.IsNull(dstore.LoadObject<TestItem>(items.Last().id));
-        }
-
-        [TestMethod]
-        public virtual void Test_Can_Delete_Item_Templeted()
-        {
-            Test_Can_Insert_Object();
-            List<TestItem> items = dstore.LoadEntireTable<TestItem>().OrderBy(R => R.id).ToList();
-            Assert.IsTrue(dstore.DeleteObject<TestItem>((items.Last().id)));
             Assert.IsNull(dstore.LoadObject<TestItem>(items.Last().id));
         }
 
@@ -504,23 +466,6 @@ namespace DataAccess.DatabaseTests.Tests
         }
 
         [TestMethod]
-        public virtual void Can_Do_IN()
-        {
-            dstore.InsertObject(new TestItem() { Something = "foo" });
-            dstore.InsertObject(new TestItem() { Something = "foo" });
-            dstore.InsertObject(new TestItem() { Something = "foo" });
-            dstore.InsertObject(new TestItem() { Something = "foo" });
-            dstore.InsertObject(new TestItem() { Something = "foo" });
-            dstore.InsertObject(new TestItem() { Something = "foo" });
-
-            IEnumerable<TestItem> items = dstore.LoadEntireTable<TestItem>().ToList();
-            List<int> ids = items.Select(r => r.id).ToList();
-            IEnumerable<TestItem> items2 = dstore.LoadObjects<TestItem>(ids).ToList();
-
-            Assert.IsTrue(items.Count() == items2.Count());
-        }
-
-        [TestMethod]
         public virtual void Can_Do_Command_With_Parameter_Object()
         {
             dstore.InsertObject(new TestItem() { Something = "foo" });
@@ -542,21 +487,6 @@ namespace DataAccess.DatabaseTests.Tests
             var items = dstore.GetCommand<TestItem>().ExecuteQuery("select * from TestItems");
             Assert.IsTrue(items != null);
             Assert.IsTrue(items.Count() == 3);
-        }
-
-        [TestMethod]
-        public virtual void Can_Do_Command_And_Set_Markers()
-        {
-            dstore.InsertObject(new TestItem() { Something = "foo" });
-            dstore.InsertObject(new TestItem() { Something = "bar" });
-            dstore.InsertObject(new TestItem() { Something = "foobar" });
-            var command = dstore.GetCommand<TestItem>();
-            command.SetCommandText("select {{selectlist}} from {{tablename}} where Something = @query", "{{selectlist}}", "{{tablename}}");
-            command.SetParameters(new { query = "foo" });
-
-            var items = command.ExecuteCommandGetList();
-            Assert.IsTrue(items != null);
-            Assert.IsTrue(items.Count() == 1);
         }
 
         [TestMethod]
