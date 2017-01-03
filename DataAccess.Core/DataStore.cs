@@ -202,7 +202,18 @@ namespace DataAccess.Core
             }
             else
                 return false;
-        }        
+        }
+
+        /// <summary>
+        /// Deletes an objet from the data store, primary key must be set
+        /// </summary>
+        /// <param name="pkey">The key to delete on</param>
+        /// <returns></returns>
+        public virtual bool DeleteObject<T>(object pkey)
+        {
+            object ToRemove = CreateObjectSetKey(typeof(T), pkey);
+            return DeleteObject(ToRemove);
+        }
 
         /// <summary>
         /// Loads an entire table
