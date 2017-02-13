@@ -155,6 +155,7 @@ namespace DataAccess.Core
         public virtual IDbCommand GetInsertCommand(IList items)
         {
             IDbCommand cmd = null;
+
             //remove null items
             while (items.Contains(null))
                 items.Remove(null);
@@ -166,9 +167,10 @@ namespace DataAccess.Core
                 string fieldList = null;
                 StringBuilder parmbuilder = new StringBuilder();
 
-                foreach (object o in items)
+                for (int i = 0; i < items.Count; i++)
                 {
-                    List<ParameterData> parms = GetObjectParameters(cmd.Parameters.Count, o, ti);
+                    object item = items[i];
+                    List<ParameterData> parms = GetObjectParameters((ti.DataFields.Count * i), item, ti);
                     if (fieldList == null) fieldList = BuildFieldList(parms);
                     if (parmbuilder.Length > 0) parmbuilder.Append(",");
                     parmbuilder.Append("(");
@@ -246,12 +248,9 @@ namespace DataAccess.Core
                 if (info.SetOnInsert)
                 {
                     object value = info.Getter(item);
-                    if (value != null)
-                    {
-                        value = DataStore.Connection.CLRConverter.ConvertToType(value, info.PropertyType);
-                        IDbDataParameter parm = DataStore.Connection.GetParameter((++startingIndex).ToString(), DataStore.Connection.DatastoreConverter.CoerceValue(value));
-                        toReturn.Add(new ParameterData(parm, info.EscapedFieldName));
-                    }
+                    value = DataStore.Connection.CLRConverter.ConvertToType(value, info.PropertyType);
+                    IDbDataParameter parm = DataStore.Connection.GetParameter((++startingIndex).ToString(), DataStore.Connection.DatastoreConverter.CoerceValue(value));
+                    toReturn.Add(new ParameterData(parm, info.EscapedFieldName));
                 }
             }
 

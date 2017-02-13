@@ -1,4 +1,4 @@
-﻿--its WAY faster to pull the pices into temp tables then join at the end, go figure..
+﻿--its WAY faster to pull the pieces into temp tables then join at the end, go figure..
 
 SELECT 
 	ORDINAL_POSITION,
@@ -34,5 +34,4 @@ select
 	case when pkeys.ORDINAL_POSITION iS NULL THEN 0 ELSE 1 end 'PrimaryKey'
 from #Base_Temp base
 LEFT OUTER JOIN #PrimaryKey_Temp pkeys on pkeys.TableObject = base.TableObject AND pkeys.ORDINAL_POSITION = base.ORDINAL_POSITION
-
-
+order by base.ORDINAL_POSITION

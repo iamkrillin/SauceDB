@@ -118,17 +118,32 @@ namespace DataAccess.Core
                             if (!dfi.PropertyType.IsSystemType() && !dfi.PropertyType.IsEnum)
                                 dfi.Setter(dataItem, BuildObject(dstore, row, dstore.TypeInformationParser.GetTypeInfo(dfi.PropertyType)));
                             else
-                                dfi.Setter(dataItem, dstore.Connection.CLRConverter.ConvertToType(item, dfi.PropertyType));
+                            {
+                                object fieldValue = dstore.Connection.CLRConverter.ConvertToType(item, dfi.PropertyType);
+                                if (fieldValue == null)
+                                {//if the value comes back null, lets use the default for the property type (null, zero, whatever)
+                                    SetDefaultValue(dataItem, dfi);
+                                }
+                                else
+                                {
+                                    dfi.Setter(dataItem, fieldValue);
+                                }
+                            }
                         }
                         catch
                         {//attempt to set to default
-                            ConstructorInfo ci = dfi.PropertyType.GetConstructors().Where(R => R.GetParameters().Count() == 0).FirstOrDefault();
-                            if (ci != null) dfi.Setter(dataItem, ci.Invoke(null));
+                            SetDefaultValue(dataItem, dfi);
                         }
                     }
                 }
             }
             if (info.AdditionalInit != null) info.AdditionalInit.ForEach(R => R.Invoke(dstore, dataItem));
+        }
+
+        private static void SetDefaultValue(object dataItem, DataFieldInfo dfi)
+        {
+            ConstructorInfo ci = dfi.PropertyType.GetConstructors().Where(R => R.GetParameters().Count() == 0).FirstOrDefault();
+            if (ci != null) dfi.Setter(dataItem, ci.Invoke(null));
         }
     }
 }

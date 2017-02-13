@@ -170,7 +170,7 @@ namespace DataAccess.Core
         {
             if (items.Count > 0)
             {
-                if (items.Count > 100)
+                if (items.Count > 50)
                 {
                     Connection.DoBulkInsert(items, this);
                     return true;

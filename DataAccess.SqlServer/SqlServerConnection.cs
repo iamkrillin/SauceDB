@@ -213,9 +213,9 @@ namespace DataAccess.SqlServer
         /// <param name="dstore">The data store to use when executing</param>
         public void DoBulkInsert(IList items, IDataStore dstore)
         {
-                ArrayList toUse = new ArrayList();
-                toUse.AddRange(items);
-                DoBulkCopy(toUse, dstore);
+            ArrayList toUse = new ArrayList();
+            toUse.AddRange(items);
+            DoBulkCopy(toUse, dstore);
         }
 
         private void DoBulkCopy(IList items, IDataStore dstore)
