@@ -18,7 +18,7 @@ namespace DataAccess.Core
         public virtual object ConvertToType(object p, Type type)
         {
             object toReturn = null;
-            if (!(p is DBNull))
+            if (!(p is DBNull || p == null))
             {
                 if (type == typeof(bool))
                 {

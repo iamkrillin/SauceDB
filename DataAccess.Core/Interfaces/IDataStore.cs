@@ -101,12 +101,26 @@ namespace DataAccess.Core.Interfaces
         T LoadObject<T>(object PrimaryKey);
 
         /// <summary>
+        /// Loads an object
+        /// </summary>
+        /// <param name="dtoType">The type to load.</param>
+        /// <param name="PrimaryKey">The primary key.</param>
+        /// <returns></returns>
+        object LoadObject(Type dtoType, object PrimaryKey);
+
+        /// <summary>
         /// Deletes an object
         /// </summary>
-        /// <typeparam name="T">The type to delete</typeparam>
-        /// <param name="primaryKey">The primary key to delete on></param>
+        /// <param name="item">The item to remove</param>
         /// <returns></returns>
-        bool DeleteObject(object primaryKey);
+        bool DeleteObject(object item);
+
+        /// <summary>
+        /// Deletes an object
+        /// </summary>
+        /// <param name="pkey">The key to delete on</param>
+        /// <returns></returns>
+        bool DeleteObject<T>(object pkey);
 
         /// <summary>
         /// Deletes objects based on an expression
