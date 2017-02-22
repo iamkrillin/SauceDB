@@ -135,25 +135,30 @@ namespace DataAccess.PostgreSQL
         /// <returns></returns>
         public IDbDataParameter GetParameter(string name, object value)
         {
-            //postgre is the only one that doesnt do enum.getunderlyingtype() when assing a value to a cmd.  So I do it here so it more consistent with the other guys
-            Type type = value.GetType();
-            object converted = value;
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            if (value != null)
             {
-                converted = CLRConverter.ConvertToType(value, type.GetGenericArguments()[0]);
-                if (converted != null)
+                //postgre is the only one that doesnt do enum.getunderlyingtype() when adding a value to a cmd.  So I do it here so it more consistent with the other guys
+                Type type = value.GetType();
+                object converted = value;
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                 {
-                    type = converted.GetType();
-                    converted = typeof(Nullable<>).MakeGenericType(new Type[] { type }).GetConstructor(new Type[] { type }).Invoke(new object[] { converted });
+                    converted = CLRConverter.ConvertToType(value, type.GetGenericArguments()[0]);
+                    if (converted != null)
+                    {
+                        type = converted.GetType();
+                        converted = typeof(Nullable<>).MakeGenericType(new Type[] { type }).GetConstructor(new Type[] { type }).Invoke(new object[] { converted });
+                    }
                 }
-            }
 
-            if (type.IsEnum)
-            {
-                converted = Convert.ChangeType(converted, Enum.GetUnderlyingType(type));
-            }
+                if (type.IsEnum)
+                {
+                    converted = Convert.ChangeType(converted, Enum.GetUnderlyingType(type));
+                }
 
-            return new NpgsqlParameter(name, converted);
+                return new NpgsqlParameter(name, converted);
+            }
+            else
+                return new NpgsqlParameter(name, value);
         }
 
         /// <summary>
