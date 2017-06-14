@@ -108,6 +108,9 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual bool LoadObject(object item)
         {
+            if (item == null)
+                return false;
+
             IDbCommand command = Connection.CommandGenerator.GetSelectCommand(item);
             return ProcessCommand(item, command, true);
         }
