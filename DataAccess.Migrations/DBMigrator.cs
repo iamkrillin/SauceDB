@@ -137,7 +137,7 @@ namespace DataAccess.Migrations
         {
             string viewResource = asmb.GetManifestResourceNames().First(r => r.EndsWith("views.txt", StringComparison.InvariantCultureIgnoreCase));
             List<string> views = asmb.LoadResource(viewResource).Split(Environment.NewLine.ToCharArray()).ToList();
-            List<Tuple<string, string>> items = new List<Tuple<string, string>>();
+            List<ViewData> items = new List<ViewData>();
 
             Console.WriteLine("Parsing View File....");
             foreach (string s in views)
@@ -145,24 +145,29 @@ namespace DataAccess.Migrations
                 if (!string.IsNullOrEmpty(s))
                 {
                     string[] parts = s.Split('|');
-                    items.Add(new Tuple<string, string>(parts[0], parts[1]));
+                    ViewData data = new ViewData(parts[0], parts[1]);
+
+                    if (parts.Length == 3)
+                        data.Options = parts[2];
+
+                    items.Add(data);
                 }
             }
 
             var dbViews = _views.GetObjects().OrderBy(r=> r.Name).ToList();
             foreach (var item in items)
             {
-                Console.Write("Working on view {0}: ", item.Item1);
+                Console.Write("Working on view {0}: ", item.Name);
                 //see if we have a view that matches this one already present in the DB.
 
-                string resource = asmb.GetManifestResourceNames().Single(r => r.EndsWith(item.Item2));
+                string resource = asmb.GetManifestResourceNames().Single(r => r.EndsWith(item.Script));
                 if (string.IsNullOrEmpty(resource))
-                    throw new Exception(string.Format("Resource for {0} was not found", item.Item2));
+                    throw new Exception(string.Format("Resource for {0} was not found", item.Script));
 
                 string script = asmb.LoadResource(resource);
                 string verb;
 
-                if (ViewExists(dbViews, item.Item1))
+                if (ViewExists(dbViews, item.Name))
                 {
                     Console.WriteLine("Updating...");
                     verb = "ALTER";
@@ -173,7 +178,7 @@ namespace DataAccess.Migrations
                     verb = "CREATE";
                 }
 
-                RunCommand(string.Format("{2} VIEW {0} AS {1}", item.Item1, script, verb));
+                RunCommand($"{verb} VIEW {item.Name} {item.Options} as {script}");
             }
         }
 

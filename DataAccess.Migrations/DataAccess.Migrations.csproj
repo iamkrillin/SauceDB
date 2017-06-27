@@ -64,6 +64,7 @@
     <Compile Include="RanMigration.cs" />
     <Compile Include="RequiredAfter.cs" />
     <Compile Include="Properties\SharedAssemblyInfo.cs" />
+    <Compile Include="ViewData.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataAccess.Core\DataAccess.Core.csproj">

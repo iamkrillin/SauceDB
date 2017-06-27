@@ -158,7 +158,23 @@ namespace DataAccess.SqlServer
         /// <returns></returns>
         public IDbDataParameter GetParameter(string name, object value)
         {
-            return new SqlParameter(name, value);
+            SqlParameter parm = new SqlParameter();
+
+            if (value == null)
+            {
+                parm.ParameterName = name;
+                parm.Value = DBNull.Value;
+            }
+            else
+            {
+                parm.Value = value;
+                parm.ParameterName = name;
+
+                if (value is DataTable)
+                    parm.SqlDbType = SqlDbType.Structured;
+            }
+
+            return parm;
         }
 
         /// <summary>
