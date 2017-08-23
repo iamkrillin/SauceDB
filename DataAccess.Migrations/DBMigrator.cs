@@ -154,32 +154,60 @@ namespace DataAccess.Migrations
                 }
             }
 
-            var dbViews = _views.GetObjects().OrderBy(r=> r.Name).ToList();
+            var dbViews = _views.GetObjects().OrderBy(r => r.Name).ToList();
+
+            //may have to run the following multiple times, [some options can prevent updating/removal]
+            bool needsRepeat = true;
+
+            while (needsRepeat)
+                needsRepeat = RemoveOptions(asmb, items, dbViews);
+
             foreach (var item in items)
             {
-                Console.Write("Working on view {0}: ", item.Name);
-                //see if we have a view that matches this one already present in the DB.
-
+                Console.WriteLine("Working on view {0}: ", item.Name);
                 string resource = asmb.GetManifestResourceNames().Single(r => r.EndsWith(item.Script));
                 if (string.IsNullOrEmpty(resource))
                     throw new Exception(string.Format("Resource for {0} was not found", item.Script));
 
                 string script = asmb.LoadResource(resource);
-                string verb;
 
                 if (ViewExists(dbViews, item.Name))
                 {
-                    Console.WriteLine("Updating...");
-                    verb = "ALTER";
+                    RunCommand($"ALTER VIEW {item.Name} {item.Options} as {script}");
                 }
                 else
-                {
-                    Console.WriteLine("Creating...");
-                    verb = "CREATE";
-                }
-
-                RunCommand($"{verb} VIEW {item.Name} {item.Options} as {script}");
+                    RunCommand($"CREATE VIEW {item.Name} {item.Options} as {script}");
             }
+        }
+
+        private bool RemoveOptions(Assembly asmb, List<ViewData> items, List<DBObject> dbViews)
+        {
+            bool HadErrors = false;
+            foreach (var item in items)
+            {
+                string resource = asmb.GetManifestResourceNames().Single(r => r.EndsWith(item.Script));
+                if (string.IsNullOrEmpty(resource))
+                    throw new Exception(string.Format("Resource for {0} was not found", item.Script));
+
+                string script = asmb.LoadResource(resource);
+
+                if (ViewExists(dbViews, item.Name) && !string.IsNullOrEmpty(item.Options))
+                {
+                    Console.WriteLine("Removing Options On View {0}: ", item.Name);
+
+                    try
+                    {
+                        RunCommand($"ALTER VIEW {item.Name} as {script}");
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        HadErrors = true;
+                    }
+                }
+            }
+
+            return HadErrors;
         }
 
         private bool ViewExists(List<DBObject> items, string name)
