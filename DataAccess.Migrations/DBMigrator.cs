@@ -10,11 +10,14 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace DataAccess.Migrations
 {
     public abstract class DBMigrator
     {
+        private const string VIEW_MARKER = "MIGRATIONS.VIEWS";
+
         private ModifyTableValidator _tables;
         private IDatastoreObjectValidator _views;
         private IDataStore _dstore;
@@ -103,6 +106,7 @@ namespace DataAccess.Migrations
 
             List<Action> work = GetWork(migrations);
             work.Add(() => HandleViews(asmb));
+            work.Add(() => HandleIndexes(asmb));
             work.Add(() => HandleStoredProcs(asmb));
 
             for (int i = 0; i < work.Count; i++)
@@ -129,31 +133,60 @@ namespace DataAccess.Migrations
             }
 
             StoreWork(migrations);
-
             Console.WriteLine("All Done!");
+        }
+
+        private void HandleIndexes(Assembly asmb)
+        {
+            Console.WriteLine("Recreating Indexes...");
+            List<string> indexes = asmb.GetManifestResourceNames().Where(r => r.ToUpper().Contains("MIGRATIONS.INDEXES")).ToList();
+
+            foreach (string script in indexes)
+                RunScript(asmb, script);
+        }
+
+        protected virtual List<ViewData> ResolveViews(Assembly asmb)
+        {
+            List<string> views = asmb.GetManifestResourceNames().Where(r => r.ToUpper().Contains(VIEW_MARKER)).ToList();
+            List<ViewData> toReturn = new List<ViewData>();
+
+            Regex optionsRegex = new Regex("#OPTIONS=(?<options>.*)");
+            Regex requiredRegex = new Regex("#REQUIRED=(?<name>.*)");
+
+            foreach (string viewResource in views)
+            {
+                string script = asmb.LoadResource(viewResource);
+                string name = FigureName(viewResource);
+                ViewData vd = new ViewData(name, script);
+
+                if (optionsRegex.IsMatch(script))
+                {
+                    vd.Options = optionsRegex.Match(vd.Script).Groups["options"].Value.Replace("\r", "").Replace("\n", "");
+                    vd.Script = optionsRegex.Replace(vd.Script, "");
+                }
+
+                if (requiredRegex.IsMatch(script))
+                {
+                    vd.Required = requiredRegex.Match(vd.Script).Groups["name"].Value.Replace("\r", "").Replace("\n", "");
+                    vd.Script = requiredRegex.Replace(vd.Script, "");
+                }
+
+                toReturn.Add(vd);
+            }
+
+            return toReturn;
+        }
+
+        private string FigureName(string viewResource)
+        {
+            int start = viewResource.IndexOf(VIEW_MARKER, StringComparison.InvariantCultureIgnoreCase) + VIEW_MARKER.Length + 1; //also remove the . after the market text
+            string name = viewResource.Substring(start, viewResource.Length - start);
+            return name.Substring(0, name.IndexOf(".sql", StringComparison.InvariantCultureIgnoreCase));
         }
 
         protected virtual void HandleViews(Assembly asmb)
         {
-            string viewResource = asmb.GetManifestResourceNames().First(r => r.EndsWith("views.txt", StringComparison.InvariantCultureIgnoreCase));
-            List<string> views = asmb.LoadResource(viewResource).Split(Environment.NewLine.ToCharArray()).ToList();
-            List<ViewData> items = new List<ViewData>();
-
-            Console.WriteLine("Parsing View File....");
-            foreach (string s in views)
-            {
-                if (!string.IsNullOrEmpty(s))
-                {
-                    string[] parts = s.Split('|');
-                    ViewData data = new ViewData(parts[0], parts[1]);
-
-                    if (parts.Length == 3)
-                        data.Options = parts[2];
-
-                    items.Add(data);
-                }
-            }
-
+            List<ViewData> items = ResolveViews(asmb);
             var dbViews = _views.GetObjects().OrderBy(r => r.Name).ToList();
 
             //may have to run the following multiple times, [some options can prevent updating/removal]
@@ -162,44 +195,56 @@ namespace DataAccess.Migrations
             while (needsRepeat)
                 needsRepeat = RemoveOptions(asmb, items, dbViews);
 
-            foreach (var item in items)
+            items = SortList(items);
+
+            foreach (ViewData item in items)
             {
                 Console.WriteLine("Working on view {0}: ", item.Name);
-                string resource = asmb.GetManifestResourceNames().Single(r => r.EndsWith(item.Script));
-                if (string.IsNullOrEmpty(resource))
-                    throw new Exception(string.Format("Resource for {0} was not found", item.Script));
-
-                string script = asmb.LoadResource(resource);
 
                 if (ViewExists(dbViews, item.Name))
-                {
-                    RunCommand($"ALTER VIEW {item.Name} {item.Options} as {script}");
-                }
+                    RunCommand($"ALTER VIEW {item.Name} {item.Options} as {item.Script}");
                 else
-                    RunCommand($"CREATE VIEW {item.Name} {item.Options} as {script}");
+                    RunCommand($"CREATE VIEW {item.Name} {item.Options} as {item.Script}");
             }
+        }
+
+        private List<ViewData> SortList(List<ViewData> items)
+        {
+            List<ViewData> views = items.OrderBy(r => r.Name).ToList();
+
+            foreach(ViewData toMove in views.ToList())
+            {
+                if(!string.IsNullOrEmpty(toMove.Required))
+                {
+                    //see if the specified view exists..
+                    ViewData found = items.Where(r => r.Name.Equals(toMove.Required, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+
+                    if (found != null)
+                    {
+                        int newIndex = views.IndexOf(found);
+                        views.Remove(toMove); //remove from current spot in list
+                        views.Insert(newIndex, toMove); //insert at new spot, this will move all the other items forward one spot
+                    }
+                }
+            }
+
+            return views;
         }
 
         private bool RemoveOptions(Assembly asmb, List<ViewData> items, List<DBObject> dbViews)
         {
             bool HadErrors = false;
-            foreach (var item in items)
+            foreach (ViewData item in items)
             {
-                string resource = asmb.GetManifestResourceNames().Single(r => r.EndsWith(item.Script));
-                if (string.IsNullOrEmpty(resource))
-                    throw new Exception(string.Format("Resource for {0} was not found", item.Script));
-
-                string script = asmb.LoadResource(resource);
-
                 if (ViewExists(dbViews, item.Name) && !string.IsNullOrEmpty(item.Options))
                 {
                     Console.WriteLine("Removing Options On View {0}: ", item.Name);
 
                     try
                     {
-                        RunCommand($"ALTER VIEW {item.Name} as {script}");
+                        RunCommand($"ALTER VIEW {item.Name} as {item.Script}");
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         Console.WriteLine(ex.Message);
                         HadErrors = true;

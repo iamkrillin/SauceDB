@@ -46,23 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Child.cs" />
-    <Compile Include="Migrations\AddMiddleNameToPerson.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Migrations\AddNullableFieldToTable.cs" />
-    <Compile Include="Migrations\AddTableWithForeignKey.cs" />
-    <Compile Include="Migrations\CreatePerson.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Migrations\RemoveFirstNameFromPerson.cs" />
     <Compile Include="Migrator.cs" />
-    <Compile Include="Person.cs" />
-    <Compile Include="PersonTwo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\Views\_RunMeFirst.sql" />
+    <EmbeddedResource Include="Migrations\Views\RunMeFirst.sql" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataAccess.Core\DataAccess.Core.csproj">
@@ -72,10 +60,6 @@
     <ProjectReference Include="..\DataAccess.Migrations\DataAccess.Migrations.csproj">
       <Project>{6e738cc6-5b6f-4d8a-988a-4a66a2d74bf2}</Project>
       <Name>DataAccess.Migrations</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DataAccess.MySql\DataAccess.MySql.csproj">
-      <Project>{bc486641-e761-48ce-b9a4-f4dbb9e3c6cd}</Project>
-      <Name>DataAccess.MySql</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

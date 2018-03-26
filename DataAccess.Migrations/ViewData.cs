@@ -11,6 +11,7 @@ namespace DataAccess.Migrations
         public string Name { get; set; }
         public string Script { get; set; }
         public string Options { get; set; }
+        public string Required { get; set; }
 
         public ViewData(string name, string script)
         {

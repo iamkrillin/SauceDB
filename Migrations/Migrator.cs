@@ -1,5 +1,4 @@
 ﻿using DataAccess.Migrations;
-using DataAccess.MySql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +10,7 @@ namespace Migrations
     {
         protected override DataAccess.Core.Interfaces.IDataStore GetDataStore()
         {
-            return new MySqlDataStore("localhost", "test", "AppLogin", "AppLogin");
+            return null;
         }
     }
 }

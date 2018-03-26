@@ -1,2 +1,4 @@
-﻿create view PersonView as
+﻿#REQUIRED=PersonView
+
+create view PersonView as
 select * from persons;
