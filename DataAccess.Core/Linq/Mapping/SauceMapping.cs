@@ -113,7 +113,7 @@ namespace DataAccess.Core.Linq.Mapping
         /// </returns>
         public bool IsMapped(MappingEntity entity, MemberInfo member)
         {
-            DatabaseTypeInfo ti = _dstore.TypeInformationParser.GetTypeInfo(entity.EntityType);
+            DatabaseTypeInfo ti = _dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(entity.EntityType);
             DataFieldInfo field = ti.DataFields.Where(R => R.PropertyName.Equals(member.Name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             return field != null && field.LoadField;
         }
@@ -128,7 +128,7 @@ namespace DataAccess.Core.Linq.Mapping
         /// </returns>
         public bool IsPrimaryKey(MappingEntity entity, MemberInfo member)
         {
-            DatabaseTypeInfo ti = _dstore.TypeInformationParser.GetTypeInfo(entity.EntityType);
+            DatabaseTypeInfo ti = _dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(entity.EntityType);
             return ti.PrimaryKeys.Where(R => R.PropertyName.Equals(member.Name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault() != null;
         }
 
@@ -142,7 +142,7 @@ namespace DataAccess.Core.Linq.Mapping
         {
             object firstKey = null;
             List<object> keys = null;
-            DatabaseTypeInfo ti = _dstore.TypeInformationParser.GetTypeInfo(entity.EntityType);
+            DatabaseTypeInfo ti = _dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(entity.EntityType);
             foreach (DataFieldInfo v in ti.PrimaryKeys)
             {
                 if (firstKey == null)
@@ -240,7 +240,7 @@ namespace DataAccess.Core.Linq.Mapping
         /// <returns></returns>
         public string GetColumnName(MappingEntity entity, MemberInfo member)
         {
-            DatabaseTypeInfo ti = _dstore.TypeInformationParser.GetTypeInfo(entity.EntityType);
+            DatabaseTypeInfo ti = _dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(entity.EntityType);
             DataFieldInfo field = ti.DataFields.Where(R => R.PropertyName.Equals(member.Name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             return field != null ? field.EscapedFieldName : "";
         }
@@ -252,7 +252,7 @@ namespace DataAccess.Core.Linq.Mapping
         /// <returns></returns>
         public string GetColumnName(MemberInfo memberInfo)
         {
-            DatabaseTypeInfo ti = _dstore.TypeInformationParser.GetTypeInfo(memberInfo.DeclaringType);
+            DatabaseTypeInfo ti = _dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(memberInfo.DeclaringType);
             DataFieldInfo field = ti.DataFields.Where(R => R.PropertyName.Equals(memberInfo.Name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             return field != null ? field.EscapedFieldName : "";
         }

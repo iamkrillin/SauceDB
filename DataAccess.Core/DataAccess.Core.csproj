@@ -203,7 +203,6 @@
     <Compile Include="Attributes\ViewAttribute.cs" />
     <Compile Include="Conversion\StandardDBConverter.cs" />
     <Compile Include="DatabaseCommand.cs" />
-    <Compile Include="DataStoreShared.cs" />
     <Compile Include="Data\Results\FieldData.cs" />
     <Compile Include="Interfaces\FieldMapInfo.cs" />
     <Compile Include="Interfaces\IQueryRow.cs" />
@@ -243,7 +242,6 @@
     <Compile Include="Extensions\PageData.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Interfaces\IFindDataObjects.cs" />
-    <Compile Include="Interfaces\ICacheProvider.cs" />
     <Compile Include="Interfaces\IDataConnection.cs" />
     <Compile Include="Interfaces\IDataStore.cs" />
     <Compile Include="Interfaces\IDatastoreObjectValidator.cs" />
@@ -252,7 +250,6 @@
     <Compile Include="Interfaces\ICommandGenerator.cs" />
     <Compile Include="Interfaces\ISchemaValidator.cs" />
     <Compile Include="Interfaces\IConvertToCLR.cs" />
-    <Compile Include="Interfaces\ITypeInformationParser.cs" />
     <Compile Include="Linq\ColumnAssignment.cs" />
     <Compile Include="Linq\CommandGatherer.cs" />
     <Compile Include="Linq\Common\ColumnDeclaration.cs" />

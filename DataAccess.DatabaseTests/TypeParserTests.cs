@@ -23,8 +23,8 @@ namespace DataAccess.DatabaseTests
         public void Test_FieldType_IsParsed_User_String()
         {
             DatabaseTypeInfo ti = _parser.GetTypeInfo(typeof(TestItemDifferentFieldType));
-            Assert.IsTrue(ti.DataFields[1].DataFieldType == Core.Attributes.FieldType.UserString);
-            Assert.IsTrue(ti.DataFields[1].DataFieldString == "varchar(1000)");
+            Assert.IsTrue(ti.DataFields[0].DataFieldType == Core.Attributes.FieldType.UserString);
+            Assert.IsTrue(ti.DataFields[0].DataFieldString == "varchar(1000)");
         }
 
         [TestMethod]

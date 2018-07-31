@@ -7,6 +7,7 @@ using System.Data;
 using DataAccess.Core.Data;
 using Npgsql;
 using System.Reflection;
+using DataAccess.Core.Interfaces;
 
 namespace DataAccess.PostgreSQL
 {
@@ -18,6 +19,12 @@ namespace DataAccess.PostgreSQL
         private static string _createFKSQL = @"CONSTRAINT ""{0}"" FOREIGN KEY ({1}) REFERENCES {2} ({3}) MATCH SIMPLE ON UPDATE {4} ON DELETE {4}";
         private static string _addFKSql = @"ADD CONSTRAINT ""{0}"" FOREIGN KEY ({1}) REFERENCES {2} ({3}) MATCH SIMPLE ON UPDATE {4} ON DELETE {4}";
         private static string _ModifyColumn = "ALTER TABLE {0} ALTER COLUMN {1} TYPE {2};";
+
+        public PostgreCommandGenerator(IDataConnection connection)
+            : base(connection)
+        {
+
+        }
 
         /// <summary>
         /// Returns a command for creating a new table
@@ -53,7 +60,7 @@ namespace DataAccess.PostgreSQL
                 if (dfi.PrimaryKeyType != null)
                 {
                     if (contrain.Length > 0) contrain.Append(",");
-                    DatabaseTypeInfo pkType = DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType);
+                    DatabaseTypeInfo pkType = TypeParser.GetTypeInfo(dfi.PrimaryKeyType);
                     contrain.AppendFormat(_createFKSQL, Guid.NewGuid().ToString(), dfi.EscapedFieldName, ResolveTableName(pkType, false), pkType.PrimaryKeys.First().EscapedFieldName, TranslateFkeyType(dfi.ForeignKeyType));
                 }
             }
@@ -115,7 +122,7 @@ namespace DataAccess.PostgreSQL
 
                 if (dfi.PrimaryKeyType != null)
                 {
-                    DatabaseTypeInfo pkType = DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType);
+                    DatabaseTypeInfo pkType = TypeParser.GetTypeInfo(dfi.PrimaryKeyType);
                     sb.Append(",");
                     sb.AppendFormat(_addFKSql, Guid.NewGuid().ToString(), dfi.EscapedFieldName, ResolveTableName(pkType, false), pkType.PrimaryKeys.First().EscapedFieldName, TranslateFkeyType(dfi.ForeignKeyType));
                 }
@@ -148,7 +155,7 @@ namespace DataAccess.PostgreSQL
         /// <returns></returns>
         public override string ResolveTableName(Type type)
         {
-            return ResolveTableName(DataStore.TypeInformationParser.GetTypeInfo(type), false);
+            return ResolveTableName(TypeParser.GetTypeInfo(type), false);
         }
 
         /// <summary>

@@ -26,10 +26,8 @@ namespace DataAccess.SqlServer
             _createSchema = asmb.LoadResource("DataAccess.SqlServer.Sql.CreateSchema.sql");
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SqlServerCommandGenerator"/> class.
-        /// </summary>
-        public SqlServerCommandGenerator()
+        public SqlServerCommandGenerator(IDataConnection connection)
+            : base(connection)
         {
         }
 
@@ -40,7 +38,7 @@ namespace DataAccess.SqlServer
         /// <returns></returns>
         public override IDbCommand GetInsertCommand(object item)
         {
-            DatabaseTypeInfo ti = base.DataStore.TypeInformationParser.GetTypeInfo(item.GetType());
+            DatabaseTypeInfo ti = TypeParser.GetTypeInfo(item.GetType());
             IDbCommand cmd = base.GetInsertCommand(item);
 
             if (!ti.IsCompilerGenerated)
@@ -109,7 +107,7 @@ namespace DataAccess.SqlServer
                 if (dfi.PrimaryKeyType != null)
                 {
                     SqlCommand fk = new SqlCommand();
-                    fk.CommandText = GetForeignKeySql(dfi, ti, DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType));
+                    fk.CommandText = GetForeignKeySql(dfi, ti, TypeParser.GetTypeInfo(dfi.PrimaryKeyType));
                     toReturn.Add(fk);
                 }
             }
@@ -175,7 +173,7 @@ namespace DataAccess.SqlServer
                 if (dfi.PrimaryKeyType != null)
                 {
                     SqlCommand fk = new SqlCommand();
-                    fk.CommandText = GetForeignKeySql(dfi, type, DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType));
+                    fk.CommandText = GetForeignKeySql(dfi, type, TypeParser.GetTypeInfo(dfi.PrimaryKeyType));
                     toReturn.Add(fk);
                 }
             }

@@ -54,18 +54,6 @@ namespace DataAccess.DatabaseTests
             }
         }
 
-        public ITypeInformationParser TypeInformationParser
-        {
-            get
-            {
-                return new TypeParser(this);
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
         public ISchemaValidator SchemaValidator
         {
             get

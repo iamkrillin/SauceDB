@@ -14,10 +14,7 @@ namespace DataAccess.Core.Interfaces
     /// </summary>
     public interface ICommandGenerator
     {
-        /// <summary>
-        /// The data store this instance is using
-        /// </summary>
-        IDataStore DataStore { set; }
+        TypeParser TypeParser { get; }
 
         /// <summary>
         /// Returns a command for inserting one object
@@ -100,14 +97,6 @@ namespace DataAccess.Core.Interfaces
         /// <param name="targetFieldType">The type to change the field to</param>
         /// <returns></returns>
         IEnumerable<IDbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType);
-
-        /// <summary>
-        /// Returns a delete command appropriate for an expression
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="criteria"></param>
-        /// <returns></returns>
-        IDbCommand GetDeleteCommand<T>(Expression<Func<T, bool>> criteria);
 
         /// <summary>
         /// Returns the name of the table (schema.table)

@@ -67,7 +67,7 @@ namespace DataAccess.SQLite
         {
             _connectionString = string.Format("Data Source={0}; Version=3;", filename);
             _tConverter = new StandardCLRConverter();
-            _commandGenerator = new SqliteCommandGenerator();
+            _commandGenerator = new SqliteCommandGenerator(this);
             _dConverter = new SQLiteDBConverter();
         }
 

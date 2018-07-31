@@ -11,7 +11,7 @@ namespace DataAccess.Core
     /// </summary>
     /// <typeparam name="KeyType"></typeparam>
     /// <typeparam name="StoreType"></typeparam>
-    public class DictionaryCacheProvider<KeyType, StoreType> : ICacheProvider<KeyType, StoreType>
+    public class DictionaryCacheProvider<KeyType, StoreType>
     {
         private Dictionary<KeyType, StoreType> _cache;
 

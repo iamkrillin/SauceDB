@@ -6,23 +6,17 @@ using DataAccess.Core.Data;
 
 namespace DataAccess.Core.Events
 {
-    /// <summary>
-    /// Fired after a type is parsed
-    /// </summary>
     public class TypeParsedEventArgs : EventArgs
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TypeParsedEventArgs" /> class.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        public TypeParsedEventArgs(DatabaseTypeInfo type)
+        public TypeParsedEventArgs(DatabaseTypeInfo dType, Type type, bool bypassValidation)
         {
-            this.Data = type;
+            this.Data = dType;
+            this.Type = type;
+            this.BypassValidation = bypassValidation;
         }
 
-        /// <summary>
-        /// The type data
-        /// </summary>
-        public DatabaseTypeInfo Data { get; set; }
+        public DatabaseTypeInfo Data { get; private set; }
+        public Type Type { get; private set; }
+        public bool BypassValidation { get; private set; }
     }
 }

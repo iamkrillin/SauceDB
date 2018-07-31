@@ -77,7 +77,7 @@ namespace DataAccess.MySql
         /// <param name="ConnectionString">The connection string.</param>
         public MySqlServerConnection(string ConnectionString)
         {
-            _commandGenerator = new MySqlCommandGenerator(StorageEngine.InnoDB);
+            _commandGenerator = new MySqlCommandGenerator(StorageEngine.InnoDB, this);
             _connectionString = ConnectionString;
             _tConverter = new StandardCLRConverter();
             _dConverter = new MySqlServerDBConverter();
@@ -104,7 +104,7 @@ namespace DataAccess.MySql
         /// <param name="engine">The storage engine to use when creating tables</param>
         public MySqlServerConnection(string ConnectionString, StorageEngine engine)
         {
-            _commandGenerator = new MySqlCommandGenerator(engine);
+            _commandGenerator = new MySqlCommandGenerator(engine, this);
             _connectionString = ConnectionString;
             _tConverter = new StandardCLRConverter();
             _dConverter = new MySqlServerDBConverter();

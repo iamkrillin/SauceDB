@@ -62,17 +62,12 @@ namespace DataAccess.Core.Interfaces
         /// <summary>
         /// Gets or sets the DataConnection
         /// </summary>
-        IDataConnection Connection { get; set; }
+        IDataConnection Connection { get; }
 
         /// <summary>
         /// Gets or sets the command executor
         /// </summary>
         IExecuteDatabaseCommand ExecuteCommands { get; set; }
-
-        /// <summary>
-        /// Gets or sets the type information parser.
-        /// </summary>
-        ITypeInformationParser TypeInformationParser { get; set; }
 
         /// <summary>
         /// Gets or sets the schema validator.

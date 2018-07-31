@@ -95,7 +95,7 @@ namespace DataAccess.SqlServer
         /// <param name="ConnectionString">The connection string.</param>
         public SqlServerConnection(string ConnectionString)
         {
-            _commandGenerator = new SqlServerCommandGenerator();
+            _commandGenerator = new SqlServerCommandGenerator(this);
             _connectionString = ConnectionString;
             _tConverter = new SqlServerTypeConverter();
             _dConverter = new SqlServerDBConverter();
@@ -239,7 +239,7 @@ namespace DataAccess.SqlServer
             if (items.Count > 0)
             {
                 Type t = items[0].GetType();
-                DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(t);
+                DatabaseTypeInfo ti = _commandGenerator.TypeParser.GetTypeInfo(t);
                 DBObject table = dstore.SchemaValidator.TableValidator.GetObjects().Where(R => R.Schema.Equals(ti.UnEscapedSchema, StringComparison.InvariantCultureIgnoreCase) && R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
 
                 if (table != null)

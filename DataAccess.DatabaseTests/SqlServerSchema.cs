@@ -19,7 +19,7 @@ namespace DataAccess.DatabaseTests
     {
         public override IDataStore GetDataStore()
         {
-            IDataStore toReturn = SqlServerConnection.GetDataStore("Data Source=sql;Initial Catalog=Sauce;User Id=AppLogin;Password=AppLogin;");
+            IDataStore toReturn = SqlServerConnection.GetDataStore("Data Source=172.16.0.3;Initial Catalog=Sauce;User Id=AppLogin;Password=AppLogin;");
 
             IDbCommand cmd = toReturn.Connection.GetCommand();
             cmd.CommandText = "DROP SCHEMA NewSchema";

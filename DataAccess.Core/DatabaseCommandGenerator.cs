@@ -16,11 +16,8 @@ namespace DataAccess.Core
     /// </summary>
     public abstract class DatabaseCommandGenerator : ICommandGenerator
     {
-        /// <summary>
-        /// The data store this instance is using
-        /// </summary>
-        /// <value></value>
-        public IDataStore DataStore { set; protected get; }
+        private IDataConnection _connection;
+        public TypeParser TypeParser { get; private set; }
 
         /// <summary>
         /// Returns a command for creating a new table
@@ -61,6 +58,12 @@ namespace DataAccess.Core
         /// <returns></returns>
         public abstract IEnumerable<IDbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType);
 
+        public DatabaseCommandGenerator(IDataConnection connection)
+        {
+            _connection = connection;
+            TypeParser = new TypeParser(_connection);
+        }
+
         /// <summary>
         /// Generates a command appropriate for loading an entire table from the data store
         /// </summary>
@@ -68,7 +71,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual IDbCommand LoadEntireTableCommand(Type item)
         {
-            IDbCommand command = DataStore.Connection.GetCommand();
+            IDbCommand command = _connection.GetCommand();
             command.CommandText = string.Format("SELECT {0} FROM {1};", GetSelectList(item), ResolveTableName(item));
             return command;
         }
@@ -134,11 +137,11 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual IDbCommand GetInsertCommand(object item)
         {
-            DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(item.GetType());
+            DatabaseTypeInfo ti = TypeParser.GetTypeInfo(item.GetType());
             IDbCommand cmd = null;
             if (item != null)
             {
-                cmd = DataStore.Connection.GetCommand();
+                cmd = _connection.GetCommand();
                 List<ParameterData> parms = GetObjectParameters(0, item, ti);
                 string fieldList = BuildFieldList(parms);
                 string parmList = AppendParameters(parms, cmd);
@@ -162,8 +165,8 @@ namespace DataAccess.Core
 
             if (items.Count > 0)
             {
-                DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(items[0].GetType());
-                cmd = DataStore.Connection.GetCommand();
+                DatabaseTypeInfo ti = TypeParser.GetTypeInfo(items[0].GetType());
+                cmd = _connection.GetCommand();
                 string fieldList = null;
                 StringBuilder parmbuilder = new StringBuilder();
 
@@ -190,8 +193,8 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual IDbCommand GetUpdateCommand(object item)
         {
-            DatabaseTypeInfo data = DataStore.TypeInformationParser.GetTypeInfo(item.GetType());
-            IDbCommand toReturn = DataStore.Connection.GetCommand();
+            DatabaseTypeInfo data = TypeParser.GetTypeInfo(item.GetType());
+            IDbCommand toReturn = _connection.GetCommand();
             StringBuilder fieldList = new StringBuilder("UPDATE ");
             fieldList.Append(ResolveTableName(data));
             fieldList.Append(" SET ");
@@ -208,7 +211,7 @@ namespace DataAccess.Core
                     {
                         string fName = GetParameterName(toReturn);
                         fieldList.Append(string.Concat(dfi.EscapedFieldName, "=", fName));
-                        toReturn.Parameters.Add(DataStore.Connection.GetParameter(fName, value));
+                        toReturn.Parameters.Add(_connection.GetParameter(fName, value));
                     }
                     else
                     {
@@ -226,7 +229,7 @@ namespace DataAccess.Core
 
                 string fName = GetParameterName(toReturn);
                 fieldList.Append(string.Concat(dField.EscapedFieldName, "=", fName));
-                toReturn.Parameters.Add(DataStore.Connection.GetParameter(fName, dField.Getter(item)));
+                toReturn.Parameters.Add(_connection.GetParameter(fName, dField.Getter(item)));
             }
 
             toReturn.CommandText = fieldList.ToString();
@@ -248,8 +251,8 @@ namespace DataAccess.Core
                 if (info.SetOnInsert)
                 {
                     object value = info.Getter(item);
-                    value = DataStore.Connection.CLRConverter.ConvertToType(value, info.PropertyType);
-                    IDbDataParameter parm = DataStore.Connection.GetParameter((++startingIndex).ToString(), DataStore.Connection.DatastoreConverter.CoerceValue(value));
+                    value = _connection.CLRConverter.ConvertToType(value, info.PropertyType);
+                    IDbDataParameter parm = _connection.GetParameter((++startingIndex).ToString(), _connection.DatastoreConverter.CoerceValue(value));
                     toReturn.Add(new ParameterData(parm, info.EscapedFieldName));
                 }
             }
@@ -265,8 +268,8 @@ namespace DataAccess.Core
         public virtual IDbCommand GetSelectCommand(object item)
         {
             Type t = item.GetType();
-            DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(t);
-            IDbCommand cmd = DataStore.Connection.GetCommand();
+            DatabaseTypeInfo ti = TypeParser.GetTypeInfo(t);
+            IDbCommand cmd = _connection.GetCommand();
 
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("SELECT {0} FROM {1} WHERE ", GetSelectList(t), ResolveTableName(ti));
@@ -281,7 +284,7 @@ namespace DataAccess.Core
                     if (i > 0) sb.Append(" AND ");
                     string pName = GetParameterName(cmd);
                     sb.Append(string.Concat(dfi.EscapedFieldName, "=", pName));
-                    cmd.Parameters.Add(DataStore.Connection.GetParameter(pName, value));
+                    cmd.Parameters.Add(_connection.GetParameter(pName, value));
                 }
             }
 
@@ -296,18 +299,18 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual IDbCommand GetDeleteCommand(object item)
         {
-            DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(item.GetType());
+            DatabaseTypeInfo ti = TypeParser.GetTypeInfo(item.GetType());
             StringBuilder sb = new StringBuilder("DELETE FROM ");
             sb.Append(ResolveTableName(ti));
             sb.Append(" WHERE ");
-            IDbCommand cmd = DataStore.Connection.GetCommand();
+            IDbCommand cmd = _connection.GetCommand();
             foreach (DataFieldInfo dfi in ti.PrimaryKeys)
             {
                 string pName = GetParameterName(cmd);
 
                 if (cmd.Parameters.Count > 0) sb.Append(" AND ");
                 sb.Append(string.Concat(dfi.EscapedFieldName, "=", pName));
-                cmd.Parameters.Add(DataStore.Connection.GetParameter(pName, dfi.Getter(item)));
+                cmd.Parameters.Add(_connection.GetParameter(pName, dfi.Getter(item)));
             }
 
             cmd.CommandText = sb.ToString();
@@ -322,7 +325,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual IEnumerable<DataFieldInfo> GetSelectFields(Type type, bool LoadAllFields)
         {
-            DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(type);
+            DatabaseTypeInfo ti = TypeParser.GetTypeInfo(type);
 
             foreach (DataFieldInfo dfi in ti.DataFields)
             {
@@ -338,7 +341,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual string GetSelectList(Type type)
         {
-            DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(type);
+            DatabaseTypeInfo ti = TypeParser.GetTypeInfo(type);
             if (ti.SelectString == null)
             {
                 StringBuilder sb = new StringBuilder();
@@ -363,7 +366,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual string ResolveTableName(Type type)
         {
-            DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(type);
+            DatabaseTypeInfo ti = TypeParser.GetTypeInfo(type);
             return ResolveTableName(ti);
         }
 
@@ -388,7 +391,7 @@ namespace DataAccess.Core
             string toReturn = EscapeTableName ? ti.TableName : ti.UnescapedTableName;
 
             if (!string.IsNullOrEmpty(ti.Schema))
-                toReturn = string.Format("{0}{1}_{2}{3}", EscapeTableName ? DataStore.Connection.LeftEscapeCharacter : "", ti.UnEscapedSchema, ti.UnescapedTableName, EscapeTableName ? DataStore.Connection.RightEscapeCharacter : "");
+                toReturn = string.Format("{0}{1}_{2}{3}", EscapeTableName ? _connection.LeftEscapeCharacter : "", ti.UnEscapedSchema, ti.UnescapedTableName, EscapeTableName ? _connection.RightEscapeCharacter : "");
 
             return toReturn;
         }
@@ -418,7 +421,7 @@ namespace DataAccess.Core
         public virtual string ResolveFieldName(string PropertyName, Type type)
         {
             string toReturn = "";
-            DataFieldInfo dfi = DataStore.TypeInformationParser.GetTypeFields(type).Where(R => R.PropertyName.Equals(PropertyName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+            DataFieldInfo dfi = TypeParser.GetTypeFields(type).Where(R => R.PropertyName.Equals(PropertyName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             if (dfi != null)
                 toReturn = dfi.EscapedFieldName;
 
@@ -433,12 +436,12 @@ namespace DataAccess.Core
         public virtual string TranslateTypeToSql(DataFieldInfo dfi)
         {
             if (dfi.PrimaryKeyType != null) //if there is primary key, the field types MUST match
-                return TranslateTypeToSql(DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType).PrimaryKeys.First());
+                return TranslateTypeToSql(TypeParser.GetTypeInfo(dfi.PrimaryKeyType).PrimaryKeys.First());
             else
             {
                 if (dfi.DataFieldType != Attributes.FieldType.Default)
                 {
-                    return DataStore.Connection.DatastoreConverter.MapFieldType(dfi.DataFieldType, dfi);
+                    return _connection.DatastoreConverter.MapFieldType(dfi.DataFieldType, dfi);
                 }
                 else
                 {
@@ -454,7 +457,7 @@ namespace DataAccess.Core
                             targetType = Enum.GetUnderlyingType(targetType);
 
                         //there is one special case it makes sense to handle here, max length strings...
-                        return DataStore.Connection.DatastoreConverter.MapType(targetType, dfi);
+                        return _connection.DatastoreConverter.MapType(targetType, dfi);
                     }
                 }
             }
@@ -493,7 +496,7 @@ namespace DataAccess.Core
             for (int i = 0; i < parts.Length; i++)
             {
                 if (i > 0) appendTo.Append(".");
-                appendTo.Append(string.Concat(DataStore.Connection.LeftEscapeCharacter, parts[i], DataStore.Connection.RightEscapeCharacter));
+                appendTo.Append(string.Concat(_connection.LeftEscapeCharacter, parts[i], _connection.RightEscapeCharacter));
             }
         }
 
@@ -505,32 +508,6 @@ namespace DataAccess.Core
         protected virtual string GetParameterName(IDbCommand cmd)
         {
             return string.Concat("@", cmd.Parameters.Count + 1);
-        }
-
-        /// <summary>
-        /// Generates a delete command from an expression
-        /// </summary>
-        /// <param name="criteria">The expression that points to the item to remove</param>
-        /// <returns></returns>
-        public virtual IDbCommand GetDeleteCommand<T>(Expression<Func<T, bool>> criteria)
-        {
-            DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(typeof(T));
-            StringBuilder sb = new StringBuilder("DELETE FROM ");
-            sb.Append(ResolveTableName(ti));
-            sb.Append(" WHERE ");
-            IDbCommand cmd = DataStore.Connection.GetCommand();
-
-            IDeleteFormatter formatter = DataStore.Connection.GetDeleteFormatter(DataStore);
-            Dictionary<string, object> whereParams = new Dictionary<string, object>();
-            string whereString = formatter.FormatDelete(DataAccess.Core.Linq.Common.PartialEvaluator.Eval(criteria), out whereParams);
-
-            foreach (KeyValuePair<string, object> par in whereParams)
-                cmd.Parameters.Add(DataStore.Connection.GetParameter(par.Key, par.Value));
-
-            sb.Append(whereString);
-
-            cmd.CommandText = sb.ToString();
-            return cmd;
         }
     }
 }

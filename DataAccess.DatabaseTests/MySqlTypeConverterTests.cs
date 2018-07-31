@@ -1,7 +1,6 @@
 ﻿using DataAccess.Core.Interfaces;
 using DataAccess.MySql;
 using DataAccess.PostgreSQL;
-using DataAccess.SqlCompact;
 using DataAccess.SqlServer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -19,7 +18,7 @@ namespace DataAccess.DatabaseTests
         {
             IConvertToDatastore mapper = new MySqlServerDBConverter();
             string type = mapper.MapType(typeof(char), new Core.Data.DataFieldInfo() { DataFieldType = Core.Attributes.FieldType.UnicodeChar });
-            Assert.Equals("VARCHAR(1) CHARSET utf8", type);
+            Assert.AreEqual("VARCHAR(1) CHARSET utf8", type);
         }
 
         [TestMethod]
@@ -27,7 +26,7 @@ namespace DataAccess.DatabaseTests
         {
             IConvertToDatastore mapper = new MySqlServerDBConverter();
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { DataFieldType = Core.Attributes.FieldType.UnicodeText });
-            Assert.Equals("LONGTEXT CHARSET utf8", type);
+            Assert.AreEqual("LONGTEXT CHARSET utf8", type);
         }
 
         [TestMethod]
@@ -35,7 +34,7 @@ namespace DataAccess.DatabaseTests
         {
             IConvertToDatastore mapper = new MySqlServerDBConverter();
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { DataFieldType = Core.Attributes.FieldType.Text });
-            Assert.Equals("LONGTEXT", type);
+            Assert.AreEqual("LONGTEXT", type);
         }
 
         [TestMethod]
@@ -43,7 +42,7 @@ namespace DataAccess.DatabaseTests
         {
             IConvertToDatastore mapper = new MySqlServerDBConverter();
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { DataFieldType = Core.Attributes.FieldType.UnicodeString });
-            Assert.Equals("VARCHAR(200) CHARSET utf8", type);
+            Assert.AreEqual("VARCHAR(200) CHARSET utf8", type);
         }
 
         [TestMethod]
@@ -52,7 +51,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new MySqlServerDBConverter();
 
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("VARCHAR(200)", type);
+            Assert.AreEqual("VARCHAR(200)", type);
         }
 
         [TestMethod]
@@ -61,7 +60,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new MySqlServerDBConverter();
 
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { FieldLength = 400 });
-            Assert.Equals("VARCHAR(400)", type);
+            Assert.AreEqual("VARCHAR(400)", type);
         }
 
         [TestMethod]
@@ -70,7 +69,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new MySqlServerDBConverter();
 
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { FieldLength = Int32.MaxValue });
-            Assert.Equals("LONGTEXT", type);
+            Assert.AreEqual("LONGTEXT", type);
         }
 
         [TestMethod]
@@ -79,7 +78,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new MySqlServerDBConverter();
 
             string type = mapper.MapType(typeof(int), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("INT(11)", type);
+            Assert.AreEqual("INT(11)", type);
         }
 
         [TestMethod]
@@ -88,7 +87,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new MySqlServerDBConverter();
 
             string type = mapper.MapType(typeof(long), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("BIGINT(20)", type);
+            Assert.AreEqual("BIGINT(20)", type);
         }
 
         [TestMethod]
@@ -97,13 +96,13 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new MySqlServerDBConverter();
 
             string type = mapper.MapType(typeof(double), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("DOUBLE", type);
+            Assert.AreEqual("DOUBLE", type);
 
             type = mapper.MapType(typeof(float), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("DOUBLE", type);
+            Assert.AreEqual("DOUBLE", type);
 
             type = mapper.MapType(typeof(decimal), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("NUMERIC", type);
+            Assert.AreEqual("NUMERIC", type);
         }
 
         [TestMethod]
@@ -112,7 +111,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new MySqlServerDBConverter();
 
             string type = mapper.MapType(typeof(byte[]), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("LONGBLOB", type);
+            Assert.AreEqual("LONGBLOB", type);
         }
 
         [TestMethod]
@@ -121,7 +120,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new MySqlServerDBConverter();
 
             string type = mapper.MapType(typeof(bool), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("TINYINT(1)", type);
+            Assert.AreEqual("TINYINT(1)", type);
         }
 
         [TestMethod]
@@ -130,7 +129,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new MySqlServerDBConverter();
 
             string type = mapper.MapType(typeof(DateTime), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("DATETIME", type);
+            Assert.AreEqual("DATETIME", type);
         }
 
         [TestMethod]
@@ -139,7 +138,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new MySqlServerDBConverter();
 
             string type = mapper.MapType(typeof(TimeSpan), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("TIME", type);
+            Assert.AreEqual("TIME", type);
         }
 
         [TestMethod]
@@ -148,7 +147,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new MySqlServerDBConverter();
 
             string type = mapper.MapType(typeof(char), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("VARCHAR(1)", type);
+            Assert.AreEqual("VARCHAR(1)", type);
         }
 
         [TestMethod]
@@ -157,7 +156,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new MySqlServerDBConverter();
 
             string type = mapper.MapType(this.GetType(), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("VARCHAR(200)", type);
+            Assert.AreEqual("VARCHAR(200)", type);
         }
     }
 }

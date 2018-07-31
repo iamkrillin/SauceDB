@@ -28,7 +28,7 @@ namespace DataAccess.Advantage
             _conn = conn;
             CLRConverter = new StandardCLRConverter();
             DatastoreConverter = new AdvantageDatabaseConverter();
-            CommandGenerator = new AdvantageDatabaseCommandGenerator();
+            CommandGenerator = new AdvantageDatabaseCommandGenerator(this);
         }
 
         public AdvantageConnection(string datapath, string tabletype, string servertype)

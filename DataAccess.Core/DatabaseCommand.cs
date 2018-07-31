@@ -46,7 +46,7 @@ namespace DataAccess.Core
 
             if (parameters != null)
             {
-                DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(parameters.GetType(), false);
+                DatabaseTypeInfo ti = DataStore.Connection.CommandGenerator.TypeParser.GetTypeInfo(parameters.GetType(), false);
                 if (ti.IsDynamic)
                 {
                     IDictionary<string, object> items = (IDictionary<string, object>)parameters;

@@ -39,7 +39,7 @@ namespace DataAccess.DatabaseTests
         [TestMethod]
         public override void Test_Can_Get_Tables()
         {
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemTwoKeys));
+            DatabaseTypeInfo ti = dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(typeof(TestItemTwoKeys));
             IEnumerable<DBObject> tables = dstore.SchemaValidator.TableValidator.GetObjects();
             Assert.IsTrue(tables.Count() > 0);
             foreach (DBObject t in tables)
@@ -76,10 +76,6 @@ namespace DataAccess.DatabaseTests
             };
 
             dstore.LoadEntireTable<DBTypeTestObject>();
-        }
-
-        public override void Test_Can_Modify_Column_And_Keep_Default_Value()
-        {
         }
 
         public override void Test_Can_Modify_Column_Type()

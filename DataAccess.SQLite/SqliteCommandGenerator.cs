@@ -6,6 +6,7 @@ using DataAccess.Core;
 using System.Data;
 using DataAccess.Core.Data;
 using System.Data.SQLite;
+using DataAccess.Core.Interfaces;
 
 namespace DataAccess.SQLite
 {
@@ -14,19 +15,10 @@ namespace DataAccess.SQLite
     /// </summary>
     public class SqliteCommandGenerator : DatabaseCommandGenerator
     {
-        /// <summary>
-        /// Returns the name of a column
-        /// </summary>
-        /// <param name="PropertyName">The objects property to use</param>
-        /// <param name="type">The type</param>
-        /// <returns></returns>
-        public override string ResolveFieldName(string PropertyName, Type type)
+        public SqliteCommandGenerator(IDataConnection conn)
+            : base(conn)
         {
-            DatabaseTypeInfo ti = DataStore.TypeInformationParser.GetTypeInfo(type);
-            if (ti.IsView)
-                return ti.DataFields.Where(r => r.PropertyName.Equals(PropertyName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault().FieldName;
-            else
-                return base.ResolveFieldName(PropertyName, type);
+
         }
 
         /// <summary>
@@ -36,7 +28,7 @@ namespace DataAccess.SQLite
         /// <returns></returns>
         public override IDbCommand GetInsertCommand(object item)
         {
-            IEnumerable<DataFieldInfo> info = DataStore.TypeInformationParser.GetPrimaryKeys(item.GetType());
+            IEnumerable<DataFieldInfo> info = TypeParser.GetPrimaryKeys(item.GetType());
             IDbCommand cmd = base.GetInsertCommand(item);
             if (info.Count() == 1)
                 cmd.CommandText = cmd.CommandText.Replace(";", string.Format("; SELECT last_insert_rowid() as {0};", info.First().EscapedFieldName));
@@ -87,7 +79,7 @@ namespace DataAccess.SQLite
                 if (dfi.PrimaryKeyType != null)
                 {
                     if (fKey.Length > 0) fKey.Append(",");
-                    fKey.Append(GetForeignKeySql(dfi, ti, DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType)));
+                    fKey.Append(GetForeignKeySql(dfi, ti, TypeParser.GetTypeInfo(dfi.PrimaryKeyType)));
                 }
             }
 

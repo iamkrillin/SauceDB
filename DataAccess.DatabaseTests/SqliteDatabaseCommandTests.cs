@@ -1,6 +1,5 @@
 ﻿using DataAccess.Core.Interfaces;
 using DataAccess.DatabaseTests.Tests;
-using DataAccess.SqlCompact;
 using DataAccess.SQLite;
 using DataAccess.SqlServer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

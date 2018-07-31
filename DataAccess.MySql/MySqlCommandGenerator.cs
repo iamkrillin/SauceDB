@@ -7,6 +7,7 @@ using System.Data;
 using DataAccess.Core.Data;
 using System.Collections;
 using MySql.Data.MySqlClient;
+using DataAccess.Core.Interfaces;
 
 namespace DataAccess.MySql
 {
@@ -46,7 +47,8 @@ namespace DataAccess.MySql
         /// Initializes a new instance of the <see cref="MySqlCommandGenerator"/> class.
         /// </summary>
         /// <param name="engine">The engine.</param>
-        public MySqlCommandGenerator(StorageEngine engine)
+        public MySqlCommandGenerator(StorageEngine engine, IDataConnection conn)
+            : base(conn)
         {
             this.StorageEngine = engine;
         }
@@ -58,7 +60,7 @@ namespace DataAccess.MySql
         /// <returns></returns>
         public override IDbCommand GetInsertCommand(object item)
         {
-            IEnumerable<DataFieldInfo> info = DataStore.TypeInformationParser.GetPrimaryKeys(item.GetType());
+            IEnumerable<DataFieldInfo> info = TypeParser.GetPrimaryKeys(item.GetType());
             IDbCommand cmd = base.GetInsertCommand(item);
             if (info.Count() == 1 && !info.ElementAt(0).SetOnInsert)
                 cmd.CommandText = cmd.CommandText.Replace(";", string.Format("; SELECT LAST_INSERT_ID() as {0};", info.First().FieldName));
@@ -98,7 +100,7 @@ namespace DataAccess.MySql
 
                 if (dfi.PrimaryKeyType != null && StorageEngine == MySql.StorageEngine.InnoDB)
                 {
-                    DatabaseTypeInfo pkType = DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType);
+                    DatabaseTypeInfo pkType = TypeParser.GetTypeInfo(dfi.PrimaryKeyType);
                     contrain.AppendFormat(_createFKSQL, ResolveTableName(ti, false), pkType.UnescapedTableName, pkType.PrimaryKeys.First().EscapedFieldName, TranslateFkeyType(dfi.ForeignKeyType), dfi.EscapedFieldName);
                 }
             }
@@ -144,7 +146,7 @@ namespace DataAccess.MySql
 
                 if (dfi.PrimaryKeyType != null)
                 {
-                    DatabaseTypeInfo pkType = DataStore.TypeInformationParser.GetTypeInfo(dfi.PrimaryKeyType);
+                    DatabaseTypeInfo pkType = TypeParser.GetTypeInfo(dfi.PrimaryKeyType);
                     sb.Append(",");
                     sb.AppendFormat(_addFKSql, ResolveTableName(type, false), ResolveTableName(pkType, false), dfi.EscapedFieldName, pkType.PrimaryKeys.First().EscapedFieldName, TranslateFkeyType(dfi.ForeignKeyType));
                 }

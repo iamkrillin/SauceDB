@@ -1,6 +1,5 @@
 ﻿using DataAccess.Core.Interfaces;
 using DataAccess.PostgreSQL;
-using DataAccess.SqlCompact;
 using DataAccess.SqlServer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -18,7 +17,7 @@ namespace DataAccess.DatabaseTests
         {
             IConvertToDatastore mapper = new PostgreDBConverter();
             string type = mapper.MapType(typeof(char), new Core.Data.DataFieldInfo() { DataFieldType = Core.Attributes.FieldType.UnicodeChar });
-            Assert.Equals("character", type);
+            Assert.AreEqual("character", type);
         }
 
         [TestMethod]
@@ -26,7 +25,7 @@ namespace DataAccess.DatabaseTests
         {
             IConvertToDatastore mapper = new PostgreDBConverter();
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { DataFieldType = Core.Attributes.FieldType.UnicodeText });
-            Assert.Equals("text", type);
+            Assert.AreEqual("text", type);
         }
 
         [TestMethod]
@@ -34,7 +33,7 @@ namespace DataAccess.DatabaseTests
         {
             IConvertToDatastore mapper = new PostgreDBConverter();
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { DataFieldType = Core.Attributes.FieldType.Text });
-            Assert.Equals("text", type);
+            Assert.AreEqual("text", type);
         }
 
         [TestMethod]
@@ -42,7 +41,7 @@ namespace DataAccess.DatabaseTests
         {
             IConvertToDatastore mapper = new PostgreDBConverter();
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { DataFieldType = Core.Attributes.FieldType.UnicodeString });
-            Assert.Equals("character varying", type);
+            Assert.AreEqual("character varying", type);
         }
 
         [TestMethod]
@@ -51,7 +50,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new PostgreDBConverter();
 
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("character varying", type);
+            Assert.AreEqual("character varying", type);
         }
 
         [TestMethod]
@@ -60,7 +59,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new PostgreDBConverter();
 
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { FieldLength = 400 });
-            Assert.Equals("character varying", type);
+            Assert.AreEqual("character varying", type);
         }
 
         [TestMethod]
@@ -69,7 +68,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new PostgreDBConverter();
 
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { FieldLength = Int32.MaxValue });
-            Assert.Equals("character varying", type);
+            Assert.AreEqual("character varying", type);
         }
 
         [TestMethod]
@@ -78,7 +77,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new PostgreDBConverter();
 
             string type = mapper.MapType(typeof(int), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("INTEGER", type);
+            Assert.AreEqual("INTEGER", type);
         }
 
         [TestMethod]
@@ -87,7 +86,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new PostgreDBConverter();
 
             string type = mapper.MapType(typeof(long), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("bigint", type);
+            Assert.AreEqual("bigint", type);
         }
 
         [TestMethod]
@@ -96,13 +95,13 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new PostgreDBConverter();
 
             string type = mapper.MapType(typeof(double), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("real", type);
+            Assert.AreEqual("real", type);
 
             type = mapper.MapType(typeof(float), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("real", type);
+            Assert.AreEqual("real", type);
 
             type = mapper.MapType(typeof(decimal), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("NUMERIC", type);
+            Assert.AreEqual("NUMERIC", type);
         }
 
         [TestMethod]
@@ -111,7 +110,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new PostgreDBConverter();
 
             string type = mapper.MapType(typeof(byte[]), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("bytea[]", type);
+            Assert.AreEqual("bytea[]", type);
         }
 
         [TestMethod]
@@ -120,7 +119,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new PostgreDBConverter();
 
             string type = mapper.MapType(typeof(bool), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("boolean", type);
+            Assert.AreEqual("boolean", type);
         }
 
         [TestMethod]
@@ -129,7 +128,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new PostgreDBConverter();
 
             string type = mapper.MapType(typeof(DateTime), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("date", type);
+            Assert.AreEqual("date", type);
         }
 
         [TestMethod]
@@ -138,7 +137,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new PostgreDBConverter();
 
             string type = mapper.MapType(typeof(TimeSpan), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("INTERVAL", type);
+            Assert.AreEqual("INTERVAL", type);
         }
 
         [TestMethod]
@@ -147,7 +146,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new PostgreDBConverter();
 
             string type = mapper.MapType(typeof(char), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("character", type);
+            Assert.AreEqual("character", type);
         }
 
         [TestMethod]
@@ -156,7 +155,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new PostgreDBConverter();
 
             string type = mapper.MapType(this.GetType(), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("character varying", type);
+            Assert.AreEqual("character varying", type);
         }
     }
 }

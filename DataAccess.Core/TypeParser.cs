@@ -16,8 +16,11 @@ namespace DataAccess.Core
     /// A caching type information parser, the type will be parsed once and then stored for later retrieval,
     /// NOTE: Type parsing is expensive, so make sure the cache does not invalidate very often
     /// </summary>
-    public class TypeParser : ITypeInformationParser
+    public class TypeParser
     {
+        private DictionaryCacheProvider<Type, DatabaseTypeInfo> _cache = new DictionaryCacheProvider<Type, DatabaseTypeInfo>();
+        private IDataConnection _connection;
+
         /// <summary>
         /// Occurs when a type is parsed
         /// </summary>
@@ -31,35 +34,14 @@ namespace DataAccess.Core
             OnTypeParsed?.Invoke(this, ea);
         }
 
-        /// <summary>
-        /// The type information cache provider
-        /// </summary>
-        public ICacheProvider<Type, DatabaseTypeInfo> Cache { get; set; }
-
-        /// <summary>
-        /// The data store using this parser
-        /// </summary>
-        protected IDataStore _connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TypeParser"/> class.
-        /// </summary>
-        /// <param name="dstore">The data store using this parser</param>
-        /// <param name="CacheProvider">The cache provider.</param>
-        public TypeParser(IDataStore dstore, ICacheProvider<Type, DatabaseTypeInfo> CacheProvider)
+        public TypeParser(IDataConnection connection)
         {
-            _connection = dstore;
-            Cache = CacheProvider;
+            _connection = connection;
         }
 
-        /// <summary>
-        /// Will set up Dictionary Cache by default
-        /// </summary>
-        /// <param name="dstore"></param>
-        public TypeParser(IDataStore dstore)
-            : this(dstore, new DictionaryCacheProvider<Type, DatabaseTypeInfo>())
+        public void ClearCache()
         {
-
+            _cache.ClearCache();
         }
 
         /// <summary>
@@ -90,17 +72,18 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual DatabaseTypeInfo GetTypeInfo(Type type, bool bypassValidate = false)
         {
-            DatabaseTypeInfo toReturn = Cache.GetObject(type);
+            DatabaseTypeInfo toReturn = _cache.GetObject(type);
 
             if (toReturn == null)
             {
-                lock (Cache)
+                lock (_cache)
                 {
-                    toReturn = Cache.GetObject(type);
+                    toReturn = _cache.GetObject(type);
 
                     if (toReturn == null)
                     {
                         toReturn = new DatabaseTypeInfo(type);
+                        toReturn.IsDynamic = type.IsDynamic();
 
                         if (!type.IsSystemType())
                         {
@@ -118,14 +101,12 @@ namespace DataAccess.Core
 
         private void StoreTypeInfo(bool bypassValidate, Type type, DatabaseTypeInfo toAdd)
         {
-            FireOnTypeParsed(new TypeParsedEventArgs(toAdd));
-            lock (Cache)
-            {
-                if (!type.IsSystemType() && !toAdd.BypassValidation && !bypassValidate)
-                    _connection.SchemaValidator.ValidateType(toAdd);
+            FireOnTypeParsed(new TypeParsedEventArgs(toAdd, type, bypassValidate));
 
-                if (!Cache.ContainsKey(type))
-                    Cache.StoreObject(type, toAdd);
+            lock (_cache)
+            {
+                if (!_cache.ContainsKey(type))
+                    _cache.StoreObject(type, toAdd);
             }
         }
 
@@ -288,7 +269,7 @@ namespace DataAccess.Core
             if (string.IsNullOrEmpty(dfi.FieldName))
                 dfi.FieldName = pi.Name;
 
-            dfi.EscapedFieldName = string.Concat(_connection.Connection.LeftEscapeCharacter, dfi.FieldName, _connection.Connection.RightEscapeCharacter);
+            dfi.EscapedFieldName = string.Concat(_connection.LeftEscapeCharacter, dfi.FieldName, _connection.RightEscapeCharacter);
         }
 
         /// <summary>
@@ -383,16 +364,16 @@ namespace DataAccess.Core
             }
 
             if (string.IsNullOrEmpty(toAdd.UnEscapedSchema))
-                toAdd.UnEscapedSchema = _connection.Connection.DefaultSchema;
+                toAdd.UnEscapedSchema = _connection.DefaultSchema;
 
             if (string.IsNullOrEmpty(toAdd.UnescapedTableName))
                 toAdd.UnescapedTableName = GenTableName(type);
 
             //escape table name
-            toAdd.TableName = string.Concat(_connection.Connection.LeftEscapeCharacter, toAdd.UnescapedTableName, _connection.Connection.RightEscapeCharacter);
+            toAdd.TableName = string.Concat(_connection.LeftEscapeCharacter, toAdd.UnescapedTableName, _connection.RightEscapeCharacter);
 
             if (!string.IsNullOrEmpty(toAdd.UnEscapedSchema))
-                toAdd.Schema = string.Concat(_connection.Connection.LeftEscapeCharacter, toAdd.UnEscapedSchema, _connection.Connection.RightEscapeCharacter);
+                toAdd.Schema = string.Concat(_connection.LeftEscapeCharacter, toAdd.UnEscapedSchema, _connection.RightEscapeCharacter);
         }
 
         /// <summary>

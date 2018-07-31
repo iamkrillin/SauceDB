@@ -94,7 +94,7 @@ namespace DataAccess.PostgreSQL
         /// <param name="ConnectionString">The connection string.</param>
         public PostgreSQLServerConnection(string ConnectionString)
         {
-            _commandGenerator = new PostgreCommandGenerator();
+            _commandGenerator = new PostgreCommandGenerator(this);
             _connectionString = ConnectionString;
             _tConverter = new StandardCLRConverter();
             _dConverter = new PostgreDBConverter();

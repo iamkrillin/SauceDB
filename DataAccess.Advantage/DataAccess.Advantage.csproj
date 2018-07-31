@@ -44,7 +44,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Advantage.Data.Provider">
-      <HintPath>..\..\..\..\..\..\TFS\Misc\CRLImport\LocalPackages\Sauce\Advantage.Data.Provider.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\TFS\Dev\ScreenHubb\LocalPackages\SauceDB\Advantage.Data.Provider.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

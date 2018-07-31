@@ -311,7 +311,7 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_Parse_Object()
         {
-            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItem));
+            DatabaseTypeInfo ti = dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(typeof(TestItem));
             Assert.IsNotNull(ti);
 
             Assert.IsNotNull(ti.DataFields);
@@ -334,7 +334,7 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_parse_AdditionalInit()
         {
-            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemAdditionalInit));
+            DatabaseTypeInfo ti = dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(typeof(TestItemAdditionalInit));
             Assert.IsNotNull(ti);
             Assert.IsNotNull(ti.AdditionalInit);
             Assert.IsTrue(ti.AdditionalInit.Count == 1);
@@ -343,7 +343,7 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_parse_ByPass()
         {
-            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemBypassValidation));
+            DatabaseTypeInfo ti = dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(typeof(TestItemBypassValidation));
             Assert.IsNotNull(ti);
             Assert.IsTrue(ti.BypassValidation);
         }
@@ -351,7 +351,7 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_Parse_Foreign_Key()
         {
-            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemWithForeignKey));
+            DatabaseTypeInfo ti = dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(typeof(TestItemWithForeignKey));
             Assert.IsNotNull(ti);
             Assert.IsNotNull(ti.DataFields);
             var target = ti.DataFields.Where(R => R.PrimaryKeyType != null).FirstOrDefault();
@@ -361,7 +361,7 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_Parse_Key_Attribute()
         {
-            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemWithKeyAttribute));
+            DatabaseTypeInfo ti = dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(typeof(TestItemWithKeyAttribute));
             Assert.IsNotNull(ti);
             Assert.IsNotNull(ti.DataFields);
             var target = ti.DataFields.Where(R => R.PrimaryKey).FirstOrDefault();
@@ -371,11 +371,11 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_Parse_Table_Attribute()
         {
-            DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemNewTableName));
+            DatabaseTypeInfo ti = dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(typeof(TestItemNewTableName));
             Assert.IsNotNull(ti);
             Assert.IsTrue(ti.TableName.Contains("SomeNewTable"));
 
-            ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemNewSchema));
+            ti = dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(typeof(TestItemNewSchema));
             Assert.IsNotNull(ti);
             Assert.IsTrue(ti.Schema.Contains("NewSchema"));
         }
@@ -383,14 +383,14 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_get_primary_Keys()
         {
-            var nonPrimary = dstore.TypeInformationParser.GetPrimaryKeys(typeof(TestItemWithKeyAttribute)).Where(R => R.PrimaryKey).FirstOrDefault();
+            var nonPrimary = dstore.Connection.CommandGenerator.TypeParser.GetPrimaryKeys(typeof(TestItemWithKeyAttribute)).Where(R => R.PrimaryKey).FirstOrDefault();
             Assert.IsNotNull(nonPrimary);
         }
 
         [TestMethod]
         public virtual void Test_Can_Get_Type_Fields()
         {
-            IEnumerable<DataFieldInfo> items = dstore.TypeInformationParser.GetTypeFields(typeof(TestItem));
+            IEnumerable<DataFieldInfo> items = dstore.Connection.CommandGenerator.TypeParser.GetTypeFields(typeof(TestItem));
             Assert.IsNotNull(items);
             Assert.IsNotNull(items.Count() > 0);
         }
@@ -398,7 +398,7 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Ignored_Field_Is_Ignored()
         {
-            IEnumerable<DataFieldInfo> fields = dstore.TypeInformationParser.GetTypeFields(typeof(TestItemIgnoredField));
+            IEnumerable<DataFieldInfo> fields = dstore.Connection.CommandGenerator.TypeParser.GetTypeFields(typeof(TestItemIgnoredField));
             Assert.IsTrue(fields != null);
             Assert.IsTrue(fields.Count() == 2);
             var ignored = fields.Where(R => R.PropertyName.Equals("Ignored", StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
@@ -408,9 +408,9 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_Parse_View_Attribute()
         {
-            dstore.TypeInformationParser.GetTypeFields(typeof(ViewObject));
+            dstore.Connection.CommandGenerator.TypeParser.GetTypeFields(typeof(ViewObject));
 
-            IEnumerable<DataFieldInfo> fields = dstore.TypeInformationParser.GetTypeFields(typeof(ViewObject));
+            IEnumerable<DataFieldInfo> fields = dstore.Connection.CommandGenerator.TypeParser.GetTypeFields(typeof(ViewObject));
             Assert.IsTrue(fields != null);
             Assert.IsTrue(fields.Count() == 1);
         }
@@ -424,7 +424,7 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void CanCommitTransaction()
         {
-            dstore.TypeInformationParser.GetTypeInfo(typeof(TestItem));
+            dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(typeof(TestItem));
             TestItem ti;
             using (var context = dstore.StartTransaction())
             {
@@ -444,7 +444,7 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void CanRollbackTransaction()
         {
-            dstore.TypeInformationParser.GetTypeInfo(typeof(TestItem));
+            dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(typeof(TestItem));
             TestItem ti = new TestItem()
             {
                 Something = "foo"

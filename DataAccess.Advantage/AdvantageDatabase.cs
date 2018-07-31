@@ -18,21 +18,19 @@ namespace DataAccess.Advantage
 {
     public class AdvantageDatabase : DataStore
     {
-        public AdvantageDatabase(string datapath, string tabletype, string servertype)            
+        public AdvantageDatabase(string datapath, string tabletype, string servertype)      
+            : base(new AdvantageConnection(datapath, tabletype, servertype))
         {
             SchemaValidator = new NotifyValidator(this);
-            Connection = new AdvantageConnection(datapath, tabletype, servertype);
             this.ExecuteCommands = new AdvantageCommandExecutor();
-            this.TypeInformationParser = new TypeParser(this);
             this.ObjectFinder = new NoSchemaSupportObjectFinder();
         }
 
         public AdvantageDatabase(string connstring)
+            : base(new AdvantageConnection(connstring))
         {
             SchemaValidator = new NotifyValidator(this);
-            Connection = new AdvantageConnection(connstring);
             this.ExecuteCommands = new AdvantageCommandExecutor();
-            this.TypeInformationParser = new TypeParser(this);
             this.ObjectFinder = new NoSchemaSupportObjectFinder();
         }
 

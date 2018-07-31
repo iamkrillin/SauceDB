@@ -34,8 +34,8 @@ namespace DataAccess.SqlCompact
             ObjectFinder = new NoSchemaSupportObjectFinder();
         }
 
-        internal SqlCompactDataStore(IDataConnection Connection, IExecuteDatabaseCommand ExecuteCommands, ITypeInformationParser TypeInformationParser)
-            : base(Connection, ExecuteCommands, TypeInformationParser)
+        internal SqlCompactDataStore(IDataConnection Connection, IExecuteDatabaseCommand ExecuteCommands)
+            : base(Connection, ExecuteCommands)
         {
         }
 

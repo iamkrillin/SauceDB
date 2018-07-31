@@ -24,24 +24,11 @@ namespace DataAccess.Core
     /// </summary>
     public partial class DataStore : IDataStore
     {
-        private IDataConnection _conn;
-
         /// <summary>
         /// Gets or sets the DataConnection
         /// </summary>
         /// <value></value>
-        public IDataConnection Connection
-        {
-            get
-            {
-                return _conn;
-            }
-            set
-            {
-                _conn = value;
-                _conn.CommandGenerator.DataStore = this;
-            }
-        }
+        public IDataConnection Connection { get; private set; }
 
         /// <summary>
         /// Determines how to search for data store objects based on a CLR type
@@ -55,24 +42,10 @@ namespace DataAccess.Core
         public IExecuteDatabaseCommand ExecuteCommands { get; set; }
 
         /// <summary>
-        /// Gets or sets the type information parser.
-        /// </summary>
-        /// <value></value>
-        public ITypeInformationParser TypeInformationParser { get; set; }
-
-        /// <summary>
         /// Gets or sets the schema validator.
         /// </summary>
         /// <value>The schema validator.</value>
         public ISchemaValidator SchemaValidator { get; set; }
-
-        /// <summary>
-        /// Empty constructor, will not properly setup this class. to be used by sub classes only
-        /// </summary>
-        protected DataStore()
-        {
-
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DataStore"/> class.
@@ -81,10 +54,17 @@ namespace DataAccess.Core
         public DataStore(IDataConnection Connection)
         {
             this.Connection = Connection;
+            this.Connection.CommandGenerator.TypeParser.OnTypeParsed += TypeParser_OnTypeParsed;
+
             this.ExecuteCommands = new ExecuteCommands();
             this.SchemaValidator = new ModifySchemaValidator(this);
-            this.TypeInformationParser = new TypeParser(this);
             this.ObjectFinder = new SupportsSchemaObjectFinder();
+        }
+
+        private void TypeParser_OnTypeParsed(object sender, TypeParsedEventArgs e)
+        {
+            if (!e.Type.IsSystemType() && !e.Data.BypassValidation && !e.BypassValidation)
+                SchemaValidator.ValidateType(e.Data);
         }
 
         /// <summary>
@@ -93,11 +73,10 @@ namespace DataAccess.Core
         /// <param name="Connection">The data connection.</param>
         /// <param name="ExecuteComamands">The command executor.</param>
         /// <param name="TypeParser">The type parser.</param>
-        public DataStore(IDataConnection Connection, IExecuteDatabaseCommand ExecuteComamands, ITypeInformationParser TypeParser)
+        public DataStore(IDataConnection Connection, IExecuteDatabaseCommand ExecuteComamands)
             : this(Connection)
         {
             this.ExecuteCommands = ExecuteComamands;
-            this.TypeInformationParser = TypeParser;
         }
 
         /// <summary>
@@ -134,7 +113,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual object LoadObject(Type item, object key)
         {
-            DatabaseTypeInfo ti = TypeInformationParser.GetTypeInfo(item);
+            DatabaseTypeInfo ti = Connection.CommandGenerator.TypeParser.GetTypeInfo(item);
             if (ti.PrimaryKeys.Count == 1)
             {
                 object toReturn = CreateObjectSetKey(item, key, ti);
@@ -266,7 +245,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual object GetKeyForItemType(Type type, object item)
         {
-            IEnumerable<DataFieldInfo> fields = TypeInformationParser.GetPrimaryKeys(type);
+            IEnumerable<DataFieldInfo> fields = Connection.CommandGenerator.TypeParser.GetPrimaryKeys(type);
             if (fields.Count() > 1) throw new DataStoreException("This Type contains more than one key");
             if (fields.Count() < 1) throw new DataStoreException("This type does not contain a key");
             return fields.ElementAt(0).Getter(item);
@@ -369,7 +348,7 @@ namespace DataAccess.Core
         public virtual IQueryable<T> Query<T>()
         {
             IQueryable<T> toReturn = new Query<T>(Connection.GetQueryProvider(this));
-            DatabaseTypeInfo ti = TypeInformationParser.GetTypeInfo(typeof(T));
+            DatabaseTypeInfo ti = Connection.CommandGenerator.TypeParser.GetTypeInfo(typeof(T));
             if (ti.QueryPredicate != null)
             {
                 toReturn = ti.QueryPredicate.Invoke(toReturn);
@@ -422,7 +401,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         protected virtual IEnumerable<ReturnType> ExecuteCommandLoadList<ReturnType>(Type objectType, IDbCommand command)
         {
-            DatabaseTypeInfo ti = TypeInformationParser.GetTypeInfo(objectType);
+            DatabaseTypeInfo ti = Connection.CommandGenerator.TypeParser.GetTypeInfo(objectType);
             using (IQueryData dt = ExecuteCommands.ExecuteCommandQuery(command, Connection))
             {
                 if (dt.QuerySuccessful)
@@ -483,7 +462,7 @@ namespace DataAccess.Core
                     for (int i = 0; i < items.Count; i++)
                     {
                         rows.MoveNext();
-                        SetFieldData(TypeInformationParser.GetTypeInfo(t), rows.Current, items[i]);
+                        SetFieldData(Connection.CommandGenerator.TypeParser.GetTypeInfo(t), rows.Current, items[i]);
                     }
                     return true;
                 }
@@ -505,7 +484,7 @@ namespace DataAccess.Core
                 var en = r.GetQueryEnumerator();
                 if (en.MoveNext())
                 {
-                    SetFieldData(TypeInformationParser.GetTypeInfo(item.GetType()), en.Current, item);
+                    SetFieldData(Connection.CommandGenerator.TypeParser.GetTypeInfo(item.GetType()), en.Current, item);
                     return true;
                 }
                 else
@@ -536,8 +515,20 @@ namespace DataAccess.Core
         /// <param name="criteria"></param>
         public int DeleteObjects<T>(Expression<Func<T, bool>> criteria)
         {
-            IDbCommand command = Connection.CommandGenerator.GetDeleteCommand<T>(criteria);
-            return ExecuteCommands.ExecuteCommand(command, Connection);
+            StringBuilder sb = new StringBuilder("DELETE FROM ");
+            sb.Append(Connection.CommandGenerator.ResolveTableName(typeof(T)));
+            sb.Append(" WHERE ");
+            IDbCommand cmd = Connection.GetCommand();
+            IDeleteFormatter formatter = Connection.GetDeleteFormatter(this);
+            Dictionary<string, object> whereParams = new Dictionary<string, object>();
+            string whereString = formatter.FormatDelete(DataAccess.Core.Linq.Common.PartialEvaluator.Eval(criteria), out whereParams);
+
+            foreach (KeyValuePair<string, object> par in whereParams)
+                cmd.Parameters.Add(Connection.GetParameter(par.Key, par.Value));
+
+            sb.Append(whereString);
+            cmd.CommandText = sb.ToString();
+            return ExecuteCommands.ExecuteCommand(cmd, Connection);
         }
 
         /// <summary>
@@ -566,8 +557,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual IDataStore GetNewInstance()
         {
-            IDataStore dstore = new DataStore(Connection, ExecuteCommands, TypeInformationParser);
-            dstore.TypeInformationParser = new TypeParser(dstore);
+            IDataStore dstore = new DataStore(Connection, ExecuteCommands);
             dstore.SchemaValidator = SchemaValidator;
             dstore.ExecuteCommands = ExecuteCommands;
             dstore.ObjectFinder = ObjectFinder;
@@ -602,6 +592,126 @@ namespace DataAccess.Core
                     yield return item;
                 }
             }
-        }        
+        }
+
+        /// <summary>
+        /// Creates an object and inits the primary key field
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        protected virtual object CreateObjectSetKey(Type item, object key)
+        {
+            return CreateObjectSetKey(item, key, Connection.CommandGenerator.TypeParser.GetTypeInfo(item));
+        }
+
+        /// <summary>
+        /// Creates an object and inits the primary key field
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="ti">The type info.</param>
+        /// <returns></returns>
+        protected static object CreateObjectSetKey(Type item, object key, DatabaseTypeInfo ti)
+        {
+            object toReturn = item.GetConstructor(new Type[] { }).Invoke(new object[] { });
+            ti.PrimaryKeys[0].Setter(toReturn, key);
+            return toReturn;
+        }
+
+        /// <summary>
+        /// This event will fire anytime an object is being loaded
+        /// </summary>
+        public event EventHandler<ObjectInitializedEventArgs> ObjectLoaded;
+
+        /// <summary>
+        /// This event will fire just before an object is deleted
+        /// </summary>
+        public event EventHandler<ObjectDeletingEventArgs> ObjectDeleting;
+
+        /// <summary>
+        /// This event will fire just after an object is deleted
+        /// </summary>
+        public event EventHandler<ObjectDeletingEventArgs> ObjectDeleted;
+
+        /// <summary>
+        /// This event will fire just before an object is updated
+        /// </summary>
+        public event EventHandler<ObjectUpdatingEventArgs> ObjectUpdating;
+
+        /// <summary>
+        /// This event will fire just after an object is updated
+        /// </summary>
+        public event EventHandler<ObjectUpdatingEventArgs> ObjectUpdated;
+
+        /// <summary>
+        /// This event will fire just before an object is inserted
+        /// </summary>
+        public event EventHandler<ObjectInsertingEventArgs> ObjectInserting;
+
+        /// <summary>
+        /// This event will fire just after an object is inserted
+        /// </summary>
+        public event EventHandler<ObjectInsertingEventArgs> ObjectInserted;
+
+        internal void FireObjectLoaded(object item)
+        {
+            if (ObjectLoaded != null)
+                ObjectLoaded(this, new ObjectInitializedEventArgs(item));
+        }
+
+        internal void FireObjectInserted(object item, bool result)
+        {
+            if (result && ObjectInserted != null)
+                ObjectInserted(this, new ObjectInsertingEventArgs(item));
+        }
+
+        internal void FireObjectUpdated(object item, bool result)
+        {
+            if (ObjectUpdated != null && result)
+                ObjectUpdated(this, new ObjectUpdatingEventArgs(item));
+        }
+
+        internal void FireObjectDeleted(object item, bool result)
+        {
+            if (result && ObjectDeleted != null)
+                ObjectDeleted(this, new ObjectDeletingEventArgs(item));
+        }
+
+        internal bool CheckObjectUpdating(object item)
+        {
+            if (ObjectUpdating != null)
+            {
+                ObjectUpdatingEventArgs args = new ObjectUpdatingEventArgs(item);
+                ObjectUpdating(this, args);
+                if (args.Cancel)
+                    return false;
+            }
+            return true;
+        }
+
+        internal bool CheckObjectDeleting(object item)
+        {
+            if (ObjectDeleting != null)
+            {
+                ObjectDeletingEventArgs args = new ObjectDeletingEventArgs(item);
+                ObjectDeleting(this, args);
+                if (args.Cancel)
+                    return false;
+            }
+            return true;
+        }
+
+        internal bool CheckObjectInserting(object item)
+        {
+            if (ObjectInserting != null)
+            {
+                ObjectInsertingEventArgs args = new ObjectInsertingEventArgs(item);
+                ObjectInserting(this, args);
+                if (args.Cancel)
+                    return false;
+            }
+            return true;
+        }
     }
 }

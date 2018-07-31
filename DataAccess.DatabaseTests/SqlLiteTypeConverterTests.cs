@@ -1,5 +1,4 @@
 ﻿using DataAccess.Core.Interfaces;
-using DataAccess.SqlCompact;
 using DataAccess.SQLite;
 using DataAccess.SqlServer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -18,7 +17,7 @@ namespace DataAccess.DatabaseTests
         {
             IConvertToDatastore mapper = new SQLiteDBConverter();
             string type = mapper.MapType(typeof(char), new Core.Data.DataFieldInfo() { DataFieldType = Core.Attributes.FieldType.UnicodeChar });
-            Assert.Equals("VARCHAR", type);
+            Assert.AreEqual("VARCHAR", type);
         }
 
         [TestMethod]
@@ -26,7 +25,7 @@ namespace DataAccess.DatabaseTests
         {
             IConvertToDatastore mapper = new SQLiteDBConverter();
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { DataFieldType = Core.Attributes.FieldType.UnicodeText });
-            Assert.Equals("VARCHAR", type);
+            Assert.AreEqual("VARCHAR", type);
         }
 
         [TestMethod]
@@ -34,7 +33,7 @@ namespace DataAccess.DatabaseTests
         {
             IConvertToDatastore mapper = new SQLiteDBConverter();
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { DataFieldType = Core.Attributes.FieldType.Text });
-            Assert.Equals("VARCHAR", type);
+            Assert.AreEqual("VARCHAR", type);
         }
 
         [TestMethod]
@@ -42,7 +41,7 @@ namespace DataAccess.DatabaseTests
         {
             IConvertToDatastore mapper = new SQLiteDBConverter();
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { DataFieldType = Core.Attributes.FieldType.UnicodeString });
-            Assert.Equals("VARCHAR", type);
+            Assert.AreEqual("VARCHAR", type);
         }
 
         [TestMethod]
@@ -51,7 +50,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SQLiteDBConverter();
 
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("VARCHAR", type);
+            Assert.AreEqual("VARCHAR", type);
         }
 
         [TestMethod]
@@ -60,7 +59,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SQLiteDBConverter();
 
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { FieldLength = 400 });
-            Assert.Equals("VARCHAR", type);
+            Assert.AreEqual("VARCHAR", type);
         }
 
         [TestMethod]
@@ -69,7 +68,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SQLiteDBConverter();
 
             string type = mapper.MapType(typeof(string), new Core.Data.DataFieldInfo() { FieldLength = Int32.MaxValue });
-            Assert.Equals("VARCHAR", type);
+            Assert.AreEqual("VARCHAR", type);
         }
 
         [TestMethod]
@@ -78,7 +77,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SQLiteDBConverter();
 
             string type = mapper.MapType(typeof(int), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("INTEGER", type);
+            Assert.AreEqual("INTEGER", type);
         }
 
         [TestMethod]
@@ -87,7 +86,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SQLiteDBConverter();
 
             string type = mapper.MapType(typeof(long), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("INTEGER", type);
+            Assert.AreEqual("INTEGER", type);
         }
 
         [TestMethod]
@@ -96,13 +95,13 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SQLiteDBConverter();
 
             string type = mapper.MapType(typeof(double), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("DOUBLE", type);
+            Assert.AreEqual("DOUBLE", type);
 
             type = mapper.MapType(typeof(float), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("DOUBLE", type);
+            Assert.AreEqual("DOUBLE", type);
 
             type = mapper.MapType(typeof(decimal), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("DECIMAL", type);
+            Assert.AreEqual("DECIMAL", type);
         }
 
         [TestMethod]
@@ -111,7 +110,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SQLiteDBConverter();
 
             string type = mapper.MapType(typeof(byte[]), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("BLOB", type);
+            Assert.AreEqual("BLOB", type);
         }
 
         [TestMethod]
@@ -120,7 +119,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SQLiteDBConverter();
 
             string type = mapper.MapType(typeof(bool), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("BOOL", type);
+            Assert.AreEqual("BOOL", type);
         }
 
         [TestMethod]
@@ -129,7 +128,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SQLiteDBConverter();
 
             string type = mapper.MapType(typeof(DateTime), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("DATETIME", type);
+            Assert.AreEqual("DATETIME", type);
         }
 
         [TestMethod]
@@ -138,7 +137,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SQLiteDBConverter();
 
             string type = mapper.MapType(typeof(TimeSpan), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("VARCHAR", type);
+            Assert.AreEqual("VARCHAR", type);
         }
 
         [TestMethod]
@@ -147,7 +146,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SQLiteDBConverter();
 
             string type = mapper.MapType(typeof(char), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("VARCHAR", type);
+            Assert.AreEqual("VARCHAR", type);
         }
 
         [TestMethod]
@@ -156,7 +155,7 @@ namespace DataAccess.DatabaseTests
             IConvertToDatastore mapper = new SQLiteDBConverter();
 
             string type = mapper.MapType(this.GetType(), new Core.Data.DataFieldInfo() { });
-            Assert.Equals("VARCHAR", type);
+            Assert.AreEqual("VARCHAR", type);
         }
     }
 }

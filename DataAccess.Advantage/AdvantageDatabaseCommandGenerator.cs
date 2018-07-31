@@ -1,5 +1,6 @@
 ﻿using DataAccess.Core;
 using DataAccess.Core.Data;
+using DataAccess.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -10,6 +11,12 @@ namespace DataAccess.Advantage
 {
     public class AdvantageDatabaseCommandGenerator : DatabaseCommandGenerator
     {        
+        public AdvantageDatabaseCommandGenerator(IDataConnection conn)
+            : base(conn)
+        {
+
+        }
+
         public override IEnumerable<System.Data.IDbCommand> GetAddColumnCommnad(DataAccess.Core.Data.DatabaseTypeInfo type, DataAccess.Core.Data.DataFieldInfo dfi)
         {
             throw new NotImplementedException();

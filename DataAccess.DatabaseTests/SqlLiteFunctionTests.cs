@@ -102,8 +102,7 @@ namespace DataAccess.DatabaseTests
             dstore.InsertObject(new Foo() { Default = true });
             Assert.IsTrue(dstore.LoadObject<Foo>(1).Default);
 
-            dstore.GetCommand<int>().ExecuteDBCommand("create view foobar as select * from foos;");
-
+            dstore.GetCommand<int>().ExecuteCommand("create view foobar as select * from foos;");
             Assert.IsTrue(dstore.LoadObject<FooBar>(1).Default);
         }
     }

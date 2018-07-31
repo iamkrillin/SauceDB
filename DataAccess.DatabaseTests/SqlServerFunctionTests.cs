@@ -18,7 +18,7 @@ namespace DataAccess.DatabaseTests
     {
         public override IDataStore GetDataStore()
         {
-            return SqlServerConnection.GetDataStore("Data Source=sql;Initial Catalog=Sauce;User Id=AppLogin;Password=AppLogin;");
+            return SqlServerConnection.GetDataStore("Data Source=172.16.0.3;Initial Catalog=Sauce;User Id=AppLogin;Password=AppLogin;");
         }
 
         public override void Test_Can_Get_Escape_Sequences()

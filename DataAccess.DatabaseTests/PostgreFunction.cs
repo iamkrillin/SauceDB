@@ -49,20 +49,5 @@ namespace DataAccess.DatabaseTests
             Assert.IsTrue(items != null);
             Assert.IsTrue(items.Count() == 3);
         }
-
-        [TestMethod]
-        public override void Can_Do_Command_And_Set_Markers()
-        {
-            dstore.InsertObject(new TestItem() { Something = "foo" });
-            dstore.InsertObject(new TestItem() { Something = "bar" });
-            dstore.InsertObject(new TestItem() { Something = "foobar" });
-            var command = dstore.GetCommand<TestItem>();
-            command.SetCommandText("select {{selectlist}} from {{tablename}} where \"Something\" = @query", "{{selectlist}}", "{{tablename}}");
-            command.SetParameters(new { query = "foo" });
-
-            var items = command.ExecuteCommandGetList();
-            Assert.IsTrue(items != null);
-            Assert.IsTrue(items.Count() == 1);
-        }
     }
 }

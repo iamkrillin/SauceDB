@@ -64,7 +64,7 @@ namespace DataAccess.Core
                     if (curr.ParameterType.IsSystemType())
                         toReturn[i] = dstore.Connection.CLRConverter.ConvertToType(dt.GetDataForRowField(curr.Name), parminfo[i].ParameterType);
                     else
-                        toReturn[i] = BuildObject(dstore, dt, dstore.TypeInformationParser.GetTypeInfo(curr.ParameterType));
+                        toReturn[i] = BuildObject(dstore, dt, dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(curr.ParameterType));
                 }
                 else
                 {
@@ -72,7 +72,7 @@ namespace DataAccess.Core
                     if (dt.FieldHasMapping(ti.DataFields[i].FieldName) && curr.ParameterType.IsSystemType())
                         toReturn[i] = dstore.Connection.CLRConverter.ConvertToType(dt.GetDataForRowField(parminfo[i].Name), parminfo[i].ParameterType);
                     else
-                        toReturn[i] = BuildObject(dstore, dt, dstore.TypeInformationParser.GetTypeInfo(curr.ParameterType));
+                        toReturn[i] = BuildObject(dstore, dt, dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(curr.ParameterType));
                 }
             }
             return toReturn;
@@ -88,7 +88,7 @@ namespace DataAccess.Core
         {
             if (row != null)
             {
-                DatabaseTypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(dataItem.GetType());
+                DatabaseTypeInfo ti = dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(dataItem.GetType());
                 SetFieldData(dstore, ti, row, dataItem);
             }
         }
@@ -116,7 +116,7 @@ namespace DataAccess.Core
                         try
                         {
                             if (!dfi.PropertyType.IsSystemType() && !dfi.PropertyType.IsEnum)
-                                dfi.Setter(dataItem, BuildObject(dstore, row, dstore.TypeInformationParser.GetTypeInfo(dfi.PropertyType)));
+                                dfi.Setter(dataItem, BuildObject(dstore, row, dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(dfi.PropertyType)));
                             else
                             {
                                 object fieldValue = dstore.Connection.CLRConverter.ConvertToType(item, dfi.PropertyType);

@@ -29,7 +29,7 @@ namespace DataAccess.DatabaseTests
         [TestMethod]
         public override void Test_Can_Get_Tables()
         {
-            TypeInfo ti = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemTwoKeys));
+            DatabaseTypeInfo ti = dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(typeof(TestItemTwoKeys));
             IEnumerable<DBObject> tables = dstore.SchemaValidator.TableValidator.GetObjects();
             Assert.IsTrue(tables.Count() > 0);
             foreach (DBObject t in tables)
@@ -49,7 +49,7 @@ namespace DataAccess.DatabaseTests
 
         public override void Test_Can_Modify_Column_Type()
         {
-            TypeInfo ti1 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemPrimaryKey));
+            DatabaseTypeInfo ti1 = dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(typeof(TestItemPrimaryKey));
             Assert.IsTrue(ti1 != null);
 
             TestItemPrimaryKey tipk = new TestItemPrimaryKey();
@@ -59,7 +59,7 @@ namespace DataAccess.DatabaseTests
             dstore.InsertObject(tipk);
 
 
-            TypeInfo ti2 = dstore.TypeInformationParser.GetTypeInfo(typeof(TestItemPrimaryKeyDateFieldDifferentType));
+            DatabaseTypeInfo ti2 = dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(typeof(TestItemPrimaryKeyDateFieldDifferentType));
             Assert.IsTrue(ti2 != null);
         }
     }
