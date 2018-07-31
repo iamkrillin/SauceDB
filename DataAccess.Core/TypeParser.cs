@@ -26,14 +26,6 @@ namespace DataAccess.Core
         /// </summary>
         public event EventHandler<TypeParsedEventArgs> OnTypeParsed;
 
-        /// <summary>
-        /// Triggers the OnTypeParsed event.
-        /// </summary>
-        public virtual void FireOnTypeParsed(TypeParsedEventArgs ea)
-        {
-            OnTypeParsed?.Invoke(this, ea);
-        }
-
         public TypeParser(IDataConnection connection)
         {
             _connection = connection;
@@ -76,38 +68,28 @@ namespace DataAccess.Core
 
             if (toReturn == null)
             {
-                lock (_cache)
+                if (toReturn == null)
                 {
-                    toReturn = _cache.GetObject(type);
+                    toReturn = new DatabaseTypeInfo(type);
+                    toReturn.IsDynamic = type.IsDynamic();
 
-                    if (toReturn == null)
+                    if (!type.IsSystemType())
                     {
-                        toReturn = new DatabaseTypeInfo(type);
-                        toReturn.IsDynamic = type.IsDynamic();
+                        ParseBypass(type, toReturn);
+                        ParseDataInfo(type, toReturn);
+                    }
 
-                        if (!type.IsSystemType())
-                        {
-                            ParseBypass(type, toReturn);
-                            ParseDataInfo(type, toReturn);
-                        }
-
-                        StoreTypeInfo(bypassValidate, type, toReturn);
+                    lock (this)
+                    {
+                        if (_cache.StoreObject(type, toReturn))
+                            OnTypeParsed?.Invoke(this, new TypeParsedEventArgs(toReturn, type, bypassValidate));
+                        else
+                            toReturn = _cache.GetObject(type);
                     }
                 }
             }
 
             return toReturn;
-        }
-
-        private void StoreTypeInfo(bool bypassValidate, Type type, DatabaseTypeInfo toAdd)
-        {
-            FireOnTypeParsed(new TypeParsedEventArgs(toAdd, type, bypassValidate));
-
-            lock (_cache)
-            {
-                if (!_cache.ContainsKey(type))
-                    _cache.StoreObject(type, toAdd);
-            }
         }
 
         private void ParseDataInfo(Type type, DatabaseTypeInfo toAdd)

@@ -26,6 +26,7 @@ namespace DataAccess.SQLite
         public ResultSet ResultData { get; set; }
 
         public int RowCount { get { return ResultData.Rows; } }
+
         public Dictionary<string, int> QueryFields { get { return ResultData.QueryFields; } set { ResultData.QueryFields = value; } }
 
         /// <summary>
@@ -45,15 +46,6 @@ namespace DataAccess.SQLite
         public void AddFieldMapping(string field, int location)
         {
             ResultData.AddFieldMapping(field, location);
-        }
-
-        /// <summary>
-        /// Sets the field mappings.
-        /// </summary>
-        /// <param name="maps">The maps.</param>
-        public void SetFieldMappings(Dictionary<string, int> maps)
-        {
-            ResultData.SetFields(maps);
         }
 
         /// <summary>

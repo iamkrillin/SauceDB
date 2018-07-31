@@ -100,7 +100,8 @@ namespace DataAccess.SQLite.Results
         public object GetData(int field)
         {
             FieldData[field].Used = true;
-            return FieldData[field].Data;
+            object toReturn = FieldData[field].Data;
+            return toReturn;
         }
 
         public object GetData(string field)

@@ -52,11 +52,6 @@ namespace DataAccess.SQLite.Results
                 QueryFields.Add(field, location);
         }
 
-        public void SetFields(Dictionary<string, int> maps)
-        {
-            QueryFields = maps;
-        }
-
         public void NextRow()
         {
             if (_currentRow == null)

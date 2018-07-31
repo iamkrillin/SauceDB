@@ -136,8 +136,16 @@ namespace DataAccess.Core
                         }
                     }
                 }
+                else
+                {
+                    int i = 1;
+                    i++;
+
+                }
             }
-            if (info.AdditionalInit != null) info.AdditionalInit.ForEach(R => R.Invoke(dstore, dataItem));
+
+            if (info.AdditionalInit != null)
+                info.AdditionalInit.ForEach(R => R.Invoke(dstore, dataItem));
         }
 
         private static void SetDefaultValue(object dataItem, DataFieldInfo dfi)

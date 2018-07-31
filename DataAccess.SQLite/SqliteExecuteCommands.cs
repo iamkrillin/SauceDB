@@ -6,6 +6,7 @@ using System.Data;
 using DataAccess.Core.Interfaces;
 using DataAccess.Core.Events;
 using DataAccess.Core;
+using System.Collections.Concurrent;
 
 namespace DataAccess.SQLite
 {
@@ -14,8 +15,6 @@ namespace DataAccess.SQLite
     /// </summary>
     public class SqliteExecuteCommands : IExecuteDatabaseCommand
     {
-        private Dictionary<string, Dictionary<string, int>> _mappings = new Dictionary<string, Dictionary<string, int>>();
-
         /// <summary>
         /// This event will fire just before a command is executed
         /// </summary>
@@ -68,22 +67,15 @@ namespace DataAccess.SQLite
         {
             if (reader.Read())
             {
-                if (!_mappings.ContainsKey(command.CommandText))
+                DataTable schema = reader.GetSchemaTable();
+                if (schema != null)
                 {
-                    _mappings[command.CommandText] = new Dictionary<string, int>();
-                    DataTable schema = reader.GetSchemaTable();
-                    if (schema != null)
+                    for (int i = 0; i < schema.Rows.Count; i++)
                     {
-                        for (int i = 0; i < schema.Rows.Count; i++)
-                        {
-                            toReturn.AddFieldMapping(schema.Rows[i]["ColumnName"].ToString(), i);
-                        }
+                        toReturn.AddFieldMapping(schema.Rows[i]["ColumnName"].ToString(), i);
                     }
-
-                    _mappings[command.CommandText] = toReturn.GetMappings();
                 }
 
-                toReturn.SetFieldMappings(_mappings[command.CommandText]);
                 AddRecord(toReturn, reader);
 
                 while (reader.Read())
@@ -137,9 +129,9 @@ namespace DataAccess.SQLite
 
             using (IDbConnection conn = connection.GetConnection())
             {
-                if(conn.State != ConnectionState.Open)
+                if (conn.State != ConnectionState.Open)
                     conn.Open();
-                
+
                 command.Connection = conn;
                 command.CommandTimeout = 10000;
 
@@ -154,7 +146,7 @@ namespace DataAccess.SQLite
                 finally
                 {
                     command.Dispose();
-                    conn.Close();                    
+                    conn.Close();
                 }
             }
 

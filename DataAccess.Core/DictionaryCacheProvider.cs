@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DataAccess.Core.Interfaces;
+using System.Collections.Concurrent;
 
 namespace DataAccess.Core
 {
@@ -13,13 +14,13 @@ namespace DataAccess.Core
     /// <typeparam name="StoreType"></typeparam>
     public class DictionaryCacheProvider<KeyType, StoreType>
     {
-        private Dictionary<KeyType, StoreType> _cache;
+        private ConcurrentDictionary<KeyType, StoreType> _cache;
 
         /// <summary>
         /// </summary>
         public DictionaryCacheProvider()
         {
-            _cache = new Dictionary<KeyType, StoreType>();
+            _cache = new ConcurrentDictionary<KeyType, StoreType>();
         }
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace DataAccess.Core
         {
             StoreType toReturn = default(StoreType);
             if (_cache.ContainsKey(key))
-                toReturn = _cache[key];
+                _cache.TryGetValue(key, out toReturn);
 
             return toReturn;
         }
@@ -41,9 +42,9 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="toStore">what to store.</param>
-        public void StoreObject(KeyType key, StoreType toStore)
+        public bool StoreObject(KeyType key, StoreType toStore)
         {
-            _cache.Add(key, toStore);
+            return _cache.TryAdd(key, toStore);
         }
 
         /// <summary>

@@ -7,6 +7,8 @@ using DataAccess.DatabaseTests.DataObjects;
 using DataAccess.Core;
 using DataAccess.Core.Data;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Concurrent;
+using System.Threading;
 
 namespace DataAccess.DatabaseTests.Tests
 {
@@ -535,6 +537,35 @@ namespace DataAccess.DatabaseTests.Tests
                     ctx.Commit();
                 }
             }
+        }
+
+        [TestMethod]
+        public void Test_Read_Is_Thread_Safe()
+        {
+            for (var i = 0; i < 50; i++)
+                dstore.InsertObject(new ChildClassWIithParentPrivateInitMethod() { Name = "foo" });
+
+            ConcurrentBag<ChildClassWIithParentPrivateInitMethod> infos = new ConcurrentBag<ChildClassWIithParentPrivateInitMethod>();
+            List<Thread> threads = new List<Thread>();
+            int numThreads = 50;
+            int numGets = 20;
+
+            for (var i = 0; i < numThreads; i++)
+            {
+                threads.Add(new Thread(() =>
+                {
+                    for (var x = 0; x < numGets; x++)
+                        dstore.LoadEntireTable<ChildClassWIithParentPrivateInitMethod>().ToList().ForEach(r => infos.Add(r));
+                }));
+            }
+
+            threads.ForEach(r => r.Start());
+
+            while (threads.Count(r => r.ThreadState == ThreadState.Running) > 0)
+                Thread.Sleep(250);
+
+            foreach(ChildClassWIithParentPrivateInitMethod item in infos)
+                Assert.IsTrue(item.ID != 0);
         }
     }
 }

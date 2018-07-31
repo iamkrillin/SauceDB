@@ -280,7 +280,6 @@ namespace DataAccess.DatabaseTests.Tests
             };
 
             dstore.LoadEntireTable<DBTypeTestObject>();
-
         }
 
         [TestMethod, ExpectedException(typeof(DataStoreException))]
@@ -373,7 +372,6 @@ namespace DataAccess.DatabaseTests.Tests
         public virtual void Test_Honors_Field_Length()
         {
             Assert.IsTrue(dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(typeof(TestItemSmallString)).DataFields[1].FieldLength == 5);
-
             dstore.InsertObject(new TestItemSmallString() { SmallString = "hi" }); //should work with no error
         }
     }
