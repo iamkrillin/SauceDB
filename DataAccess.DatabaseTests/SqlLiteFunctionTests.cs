@@ -11,6 +11,7 @@ using DataAccess.DatabaseTests.DataObjects;
 using System.IO;
 using DataAccess.Core.Attributes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading;
 
 namespace DataAccess.DatabaseTests
 {
@@ -104,6 +105,36 @@ namespace DataAccess.DatabaseTests
 
             dstore.GetCommand<int>().ExecuteCommand("create view foobar as select * from foos;");
             Assert.IsTrue(dstore.LoadObject<FooBar>(1).Default);
+        }
+
+        [TestMethod]
+        public void Test_Can_Insert_With_Multiple_Threads()
+        {
+            List<Thread> _threads = new List<Thread>();
+
+            for (int i = 0; i < 100; i++)
+            {
+                Thread thread = new Thread(() =>
+                {
+                    for (int x = 0; x < 1000; x++)
+                    {
+                        dstore.InsertObject(new Foo() { Default = true });
+                    }
+                });
+
+                _threads.Add(thread);
+                thread.Start();
+            }
+
+            while (_threads.Count() > 0)
+            {
+                Thread thrd = _threads[0];
+
+                if (!thrd.IsAlive)
+                    _threads.Remove(thrd);
+
+                Thread.Sleep(500);
+            }
         }
     }
 }

@@ -24,10 +24,13 @@ namespace DataAccess.SQLite
         /// The data set
         /// </summary>
         public ResultSet ResultData { get; set; }
-
         public int RowCount { get { return ResultData.Rows; } }
 
-        public Dictionary<string, int> QueryFields { get { return ResultData.QueryFields; } set { ResultData.QueryFields = value; } }
+        public Dictionary<string, int> QueryFields
+        {
+            get { return ResultData.QueryFields; }
+            set { ResultData.QueryFields = value; }
+        }
 
         /// <summary>
         /// Default constructor
@@ -147,7 +150,6 @@ namespace DataAccess.SQLite
             ResultData.CurrentRow.ResetUsed();
         }
 
-
         public IEnumerator<IQueryRow> GetQueryEnumerator()
         {
             return new SqliteQueryEnumerator(this);
@@ -155,6 +157,7 @@ namespace DataAccess.SQLite
 
         public void Dispose()
         {
+
         }
     }
 }

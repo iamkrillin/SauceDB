@@ -42,7 +42,7 @@ namespace DataAccess.Migrations
             _views = _dstore.SchemaValidator.ViewValidator;
             if (_views == null) _views = new ViewValidator(_dstore);
 
-            DatabaseTypeInfo ti = _dstore.TypeInformationParser.GetTypeInfo(typeof(RanMigration));
+            DatabaseTypeInfo ti = _dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(typeof(RanMigration));
 
             if (_dstore.SchemaValidator.TableValidator == null || !_dstore.SchemaValidator.TableValidator.CanAddColumns)
                 _tables.ValidateObject(ti);
@@ -58,14 +58,14 @@ namespace DataAccess.Migrations
         protected virtual void UpdateColumn(Expression expression)
         {
             ColumnExpression exp = new ExpressionParser().ParseExpression(expression);
-            DatabaseTypeInfo ti = _dstore.TypeInformationParser.GetTypeInfo(exp.Object);
+            DatabaseTypeInfo ti = _dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(exp.Object);
             Console.WriteLine("Preparing to Update Column {0} On {1}", exp.Column, _dstore.GetTableName(exp.Object));
             _tables.ModifyColumn(ti.DataFields.Where(r => r.PropertyName.Equals(exp.Column)).First(), ti);
         }
 
         protected virtual void RemoveColumnFromTable(ColumnData columnData)
         {
-            DatabaseTypeInfo ti = _dstore.TypeInformationParser.GetTypeInfo(columnData.Table);
+            DatabaseTypeInfo ti = _dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(columnData.Table);
             Console.WriteLine("Preparing to Remove Column {0} From {1}", columnData.Column, _dstore.GetTableName(columnData.Table));
             _tables.RemoveColumn(new DataFieldInfo() { FieldName = columnData.Column }, ti);
         }
@@ -73,26 +73,26 @@ namespace DataAccess.Migrations
         protected virtual void AddColumnToTable(Expression expression)
         {
             ColumnExpression exp = new ExpressionParser().ParseExpression(expression);
-            DatabaseTypeInfo ti = _dstore.TypeInformationParser.GetTypeInfo(exp.Object);
+            DatabaseTypeInfo ti = _dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(exp.Object);
             Console.WriteLine("Preparing to Add Column {0} To {1}", exp.Column, _dstore.GetTableName(exp.Object));
             DataFieldInfo toAdd = ti.DataFields.Where(r => r.PropertyName.Equals(exp.Column)).First();
 
             if (toAdd.PrimaryKeyType != null)//need to check for foreign keys and make sure those tables exist..
-                _tables.ValidateObject(_dstore.TypeInformationParser.GetTypeInfo(toAdd.PrimaryKeyType));
+                _tables.ValidateObject(_dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(toAdd.PrimaryKeyType));
 
             _tables.AddColumn(toAdd, ti);
         }
 
         protected virtual void AddTable(Type type)
         {
-            DatabaseTypeInfo ti = _dstore.TypeInformationParser.GetTypeInfo(type);
+            DatabaseTypeInfo ti = _dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(type);
             Console.WriteLine("Adding Table {0}", _dstore.GetTableName(type));
 
             //need to check for foreign keys and make sure those tables exist..
             foreach (DataFieldInfo v in ti.DataFields)
             {
                 if (v.PrimaryKeyType != null)
-                    _tables.ValidateObject(_dstore.TypeInformationParser.GetTypeInfo(v.PrimaryKeyType));
+                    _tables.ValidateObject(_dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(v.PrimaryKeyType));
             }
 
             _tables.CreateNewTable(ti); //this will also run the ontablecreate stuff w00t
