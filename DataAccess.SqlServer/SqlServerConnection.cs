@@ -308,11 +308,14 @@ namespace DataAccess.SqlServer
             {
                 DataFieldInfo fi = ti.DataFields.Where(R => R.FieldName.Equals(c.Name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
 
-                Type target = fi.PropertyType;
-                if (target.IsGenericType && target.GetGenericTypeDefinition() == typeof(Nullable<>))
-                    target = target.GetGenericArguments()[0];
+                if (fi != null)
+                {
+                    Type target = fi.PropertyType;
+                    if (target.IsGenericType && target.GetGenericTypeDefinition() == typeof(Nullable<>))
+                        target = target.GetGenericArguments()[0];
 
-                dt.Columns.Add(new DataColumn(fi.FieldName, target) { AllowDBNull = true });
+                    dt.Columns.Add(new DataColumn(fi.FieldName, target) { AllowDBNull = true });
+                }
             }
         }
 
