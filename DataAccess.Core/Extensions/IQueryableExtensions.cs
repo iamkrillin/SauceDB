@@ -33,6 +33,7 @@ namespace System.Linq
                     pages++;
             }
 
+            toreturn.NumRecords = numitems;
             toreturn.NumPages = pages;
             toreturn.Data = data.Skip((page - 1) * numPerPage).Take(numPerPage);
             return toreturn;

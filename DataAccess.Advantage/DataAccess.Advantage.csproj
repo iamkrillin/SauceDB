@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DataAccess.Advantage</RootNamespace>
     <AssemblyName>DataAccess.Advantage</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -45,7 +45,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Advantage.Data.Provider">
-      <HintPath>..\..\..\..\..\..\TFS\Dev\ScreenHubb\LocalPackages\SauceDB\Advantage.Data.Provider.dll</HintPath>
+      <HintPath>..\Advantage.Data.Provider.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

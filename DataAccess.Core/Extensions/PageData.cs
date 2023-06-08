@@ -11,11 +11,15 @@ namespace DataAccess.Core.Extensions
     /// <typeparam name="T"></typeparam>
     public class PageData<T>
     {
-
         /// <summary>
         ///The number of pages
         /// </summary>
         public int NumPages { get; set; }
+
+        /// <summary>
+        /// The total record count for the data set
+        /// </summary>
+        public int NumRecords { get; set; }
 
 
         /// <summary>
