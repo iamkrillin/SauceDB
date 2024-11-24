@@ -72,9 +72,6 @@
     <ProjectReference Include="..\DataAccess.SqlServer\DataAccess.SqlServer.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TestData\TestCSV.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.28.3" />
     <PackageReference Include="K4os.Compression.LZ4" Version="1.3.8" />
     <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.3.8" />
