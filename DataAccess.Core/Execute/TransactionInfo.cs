@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 
@@ -14,12 +15,12 @@ namespace DataAccess.Core.Execute
         /// <summary>
         /// Gets or sets the connection.
         /// </summary>        
-        public IDbConnection Connection { get; set; }
+        public DbConnection Connection { get; set; }
         
         /// <summary>
         /// Gets or sets the transaction.
         /// </summary>
-        public IDbTransaction Transaction { get; set; }
+        public DbTransaction Transaction { get; set; }
 
 
         /// <summary>
@@ -27,8 +28,7 @@ namespace DataAccess.Core.Execute
         /// </summary>
         public void Dispose()
         {
-            if (Transaction != null)
-                Transaction.Dispose();
+            Transaction?.Dispose();
 
             if (Connection != null)
             {

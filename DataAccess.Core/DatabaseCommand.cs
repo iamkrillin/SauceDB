@@ -3,8 +3,10 @@ using DataAccess.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core
 {
@@ -13,7 +15,7 @@ namespace DataAccess.Core
     /// </summary>
     public class DatabaseCommand<T>
     {
-        protected IDbCommand Command;
+        protected DbCommand Command;
         public IDataStore DataStore { get; set; }
 
         public DatabaseCommand(IDataStore dstore)
@@ -31,7 +33,7 @@ namespace DataAccess.Core
             Command.CommandText = cmd;
         }
 
-        protected IDbCommand GetPrepared()
+        protected DbCommand GetPrepared()
         {
             return Command;
         }
@@ -70,17 +72,17 @@ namespace DataAccess.Core
         /// Executes a command and return the number of rows updated
         /// </summary>
         /// <returns></returns>
-        protected virtual int ExecuteCommand()
+        protected virtual async Task<int> ExecuteCommand()
         {
             Command.CommandType = CommandType.Text;
-            return DataStore.ExecuteCommand(Command);
+            return await DataStore.ExecuteCommand(Command);
         }
 
         /// <summary>
         /// Executes the current command and gets a list of objects
         /// </summary>
         /// <returns></returns>
-        protected virtual IEnumerable<T> ExecuteCommandGetList()
+        protected virtual IAsyncEnumerable<T> ExecuteCommandGetList()
         {
             Command.CommandType = CommandType.Text;
             return DataStore.ExecuteCommandLoadList<T>(Command);
@@ -93,7 +95,7 @@ namespace DataAccess.Core
         protected virtual List<T> ExecuteAsStoredProcedureGetList()
         {
             Command.CommandType = CommandType.StoredProcedure;
-            return DataStore.ExecuteCommandLoadList<T>(Command).ToList();
+            return DataStore.ExecuteCommandLoadList<T>(Command).ToBlockingEnumerable().ToList();
         }
 
         /// <summary>
@@ -115,7 +117,7 @@ namespace DataAccess.Core
         /// <param name="command">The command text</param>
         /// <param name="parameters">The parameters</param>
         /// <returns></returns>
-        public virtual IEnumerable<T> ExecuteQuery(string command, object parameters = null)
+        public virtual IAsyncEnumerable<T> ExecuteQuery(string command, object parameters = null)
         {
             SetCommandText(command);
             SetParameters(parameters);
@@ -128,11 +130,11 @@ namespace DataAccess.Core
         /// /// <param name="command">The command text</param>
         /// <param name="parameters">The parameters</param>
         /// <returns></returns>
-        public virtual int ExecuteCommand(string command, object parameters = null)
+        public virtual async Task<int> ExecuteCommand(string command, object parameters = null)
         {
             SetCommandText(command);
             SetParameters(parameters);
-            return DataStore.ExecuteCommand(this.Command);
+            return await DataStore.ExecuteCommand(this.Command);
         }
     }
 }

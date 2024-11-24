@@ -9,6 +9,7 @@ using DataAccess.Core.Data;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace DataAccess.DatabaseTests.Tests
 {
@@ -35,7 +36,7 @@ namespace DataAccess.DatabaseTests.Tests
         }
 
         [TestMethod]
-        public virtual void Test_Can_Insert_Many_Items()
+        public virtual async Task Test_Can_Insert_Many_Items()
         {
             int numItems = 20;
             List<TestBulkItem> items = new List<TestBulkItem>();
@@ -50,23 +51,23 @@ namespace DataAccess.DatabaseTests.Tests
                 });
             }
 
-            dstore.InsertObjects(items);
+            await dstore.InsertObjects(items);
 
-            List<TestBulkItem> loaded = dstore.LoadEntireTable<TestBulkItem>().ToList();
+            List<TestBulkItem> loaded = dstore.LoadEntireTable<TestBulkItem>().ToBlockingEnumerable().ToList();
             Assert.IsTrue(loaded.Count == numItems);
         }
 
         [TestMethod]
-        public virtual void Test_Can_Load_Object_With_Enums()
+        public virtual async Task Test_Can_Load_Object_With_Enums()
         {
-            Assert.IsTrue(dstore.InsertObject(new TestItemWithEnum()
+            Assert.IsTrue(await dstore.InsertObject(new TestItemWithEnum()
             {
                 ValueOne = Data.Var1,
                 ValueTwo = Data.Var2,
                 AnotherValue = 12
             }));
 
-            TestItemWithEnum loaded = dstore.LoadObject<TestItemWithEnum>(1);
+            TestItemWithEnum loaded = await dstore.LoadObject<TestItemWithEnum>(1);
             Assert.IsNotNull(loaded);
             Assert.IsTrue(loaded.ValueOne == Data.Var1);
             Assert.IsTrue(loaded.ValueTwo.Value == Data.Var2);
@@ -120,45 +121,45 @@ namespace DataAccess.DatabaseTests.Tests
         public abstract void Test_Can_Get_Escape_Sequences();
 
         [TestMethod]
-        public virtual void Test_Can_Load_Object()
+        public virtual async Task Test_Can_Load_Object()
         {
             Test_Can_Insert_Object();
             TestItem ti = new TestItem();
             ti.id = 1;
 
-            Assert.IsTrue(dstore.LoadObject(ti));
+            Assert.IsTrue(await dstore.LoadObject(ti));
             Assert.IsTrue(!string.IsNullOrEmpty(ti.Something));
             Assert.IsTrue(ti.Something.Equals("SomethingNew", StringComparison.InvariantCultureIgnoreCase));
         }
 
         [TestMethod]
-        public virtual void Test_Can_Load_Object_By_Key_Templeted()
+        public virtual async Task Test_Can_Load_Object_By_Key_Templeted()
         {
             TestItem newObject = new TestItem();
             newObject.Something = "A Test String";
-            Assert.IsTrue(dstore.InsertObject(newObject));
+            Assert.IsTrue(await dstore.InsertObject(newObject));
 
-            TestItem ti = dstore.LoadObject<TestItem>(newObject.id);
+            TestItem ti = await dstore.LoadObject<TestItem>(newObject.id);
 
-            Assert.IsTrue(dstore.LoadObject(ti));
+            Assert.IsTrue(await dstore.LoadObject(ti));
             Assert.IsTrue(!string.IsNullOrEmpty(ti.Something));
             Assert.IsTrue(ti.id == 1);
             Assert.IsTrue(ti.Something.Equals("A Test String", StringComparison.InvariantCultureIgnoreCase));
 
-            ti = dstore.LoadObject<TestItem>(1);
+            ti = await dstore.LoadObject<TestItem>(1);
 
-            Assert.IsTrue(dstore.LoadObject(ti));
+            Assert.IsTrue(await dstore.LoadObject(ti));
             Assert.IsTrue(!string.IsNullOrEmpty(ti.Something));
             Assert.IsTrue(ti.id == 1);
             Assert.IsTrue(ti.Something.Equals("A Test String", StringComparison.InvariantCultureIgnoreCase));
         }
 
         [TestMethod]
-        public virtual void Test_Can_Insert_Object()
+        public virtual async Task Test_Can_Insert_Object()
         {
             TestItem ti = new TestItem();
             ti.Something = "SomethingNew";
-            Assert.IsTrue(dstore.InsertObject(ti));
+            Assert.IsTrue(await dstore.InsertObject(ti));
         }
 
         [TestMethod]
@@ -183,19 +184,20 @@ namespace DataAccess.DatabaseTests.Tests
         }
 
         [TestMethod]
-        public virtual void Test_Can_Delete_Item()
+        public virtual async Task Test_Can_Delete_Item()
         {
-            Test_Can_Insert_Object();
-            List<TestItem> items = dstore.LoadEntireTable<TestItem>().OrderBy(R => R.id).ToList();
-            Assert.IsTrue(dstore.DeleteObject(items.Last()));
-            Assert.IsNull(dstore.LoadObject<TestItem>(items.Last().id));
+            await Test_Can_Insert_Object();
+            List<TestItem> items = dstore.LoadEntireTable<TestItem>().ToBlockingEnumerable().OrderBy(R => R.id).ToList();
+            Assert.IsTrue(await dstore.DeleteObject(items.Last()));
+            Assert.IsNull(await dstore.LoadObject<TestItem>(items.Last().id));
         }
 
         [TestMethod]
-        public virtual void Test_Can_Load_Entire_Table()
+        public virtual async Task Test_Can_Load_Entire_Table()
         {
-            IEnumerable<object> items = dstore.LoadEntireTable(typeof(TestItem));
+            IEnumerable<object> items = dstore.LoadEntireTable(typeof(TestItem)).ToBlockingEnumerable();
             Assert.IsTrue(items != null);
+            
             foreach (object o in items)
             {
                 Assert.IsTrue(o != null);
@@ -203,9 +205,9 @@ namespace DataAccess.DatabaseTests.Tests
         }
 
         [TestMethod]
-        public virtual void Test_Can_Load_Entire_Table_Templeted()
+        public virtual async Task Test_Can_Load_Entire_Table_Templeted()
         {
-            IEnumerable<TestItem> items = dstore.LoadEntireTable<TestItem>();
+            IEnumerable<TestItem> items = dstore.LoadEntireTable<TestItem>().ToBlockingEnumerable();
             Assert.IsTrue(items != null);
             foreach (TestItem o in items)
             {
@@ -216,88 +218,88 @@ namespace DataAccess.DatabaseTests.Tests
         }
 
         [TestMethod]
-        public virtual void Test_Is_new()
+        public virtual async Task Test_Is_new()
         {
-            Test_Can_Insert_Object();
-            IEnumerable<TestItem> items = dstore.LoadEntireTable<TestItem>();
-            Assert.IsTrue(!dstore.IsNew(items.ElementAt(0)));
+            await Test_Can_Insert_Object();
+            IEnumerable<TestItem> items = dstore.LoadEntireTable<TestItem>().ToBlockingEnumerable();
+            Assert.IsTrue(!await dstore.IsNew(items.ElementAt(0)));
         }
 
         [TestMethod]
-        public virtual void Test_Can_Insert_Multiple_Items()
+        public virtual async Task Test_Can_Insert_Multiple_Items()
         {
             List<TestItem> items = new List<TestItem>();
+            
             for (int i = 0; i < 10; i++)
-            {
                 items.Add(new TestItem() { Something = Guid.NewGuid().ToString() });
-            }
-            Assert.IsTrue(dstore.InsertObjects(items));
+
+            Assert.IsTrue(await dstore.InsertObjects(items));
         }
 
         [TestMethod]
-        public virtual void Test_Can_Save_Object()
+        public virtual async Task Test_Can_Save_Object()
         {
             TestItemAdditionalInit newItem = new TestItemAdditionalInit();
             newItem.Something = "a";
-            dstore.SaveObject(newItem);
+            await dstore.SaveObject(newItem);
 
             Assert.IsTrue(newItem.id > 0);
-            Assert.IsNotNull(dstore.LoadObject<TestItemAdditionalInit>(1));
+            Assert.IsNotNull(await dstore.LoadObject<TestItemAdditionalInit>(1));
         }
 
         [TestMethod]
-        public virtual void Test_Additional_Init_Is_Called()
+        public virtual async Task Test_Additional_Init_Is_Called()
         {
             TestItemAdditionalInit newItem = new TestItemAdditionalInit();
             newItem.Something = "a";
-            dstore.InsertObject(newItem);
+            await dstore.InsertObject(newItem);
 
-            Assert.IsTrue(dstore.LoadObject(newItem));
+            Assert.IsTrue(await dstore.LoadObject(newItem));
             Assert.IsTrue(!string.IsNullOrEmpty(newItem.Something));
             Assert.IsTrue(newItem.Something.Equals("a", StringComparison.InvariantCultureIgnoreCase));
             Assert.IsTrue(newItem.Calculated == 15);
         }
 
         [TestMethod]
-        public virtual void Test_Additional_Init_With_DataStore_Parm_Is_Called()
+        public virtual async Task Test_Additional_Init_With_DataStore_Parm_Is_Called()
         {
             TestItemAdditionalInitWithParm newItem = new TestItemAdditionalInitWithParm();
             newItem.Something = "a";
-            dstore.InsertObject(newItem);
+            await dstore.InsertObject(newItem);
 
-            Assert.IsTrue(dstore.LoadObject(newItem));
+            Assert.IsTrue(await dstore.LoadObject(newItem));
             Assert.IsTrue(!string.IsNullOrEmpty(newItem.Something));
             Assert.IsTrue(newItem.Something.Equals("a", StringComparison.InvariantCultureIgnoreCase));
             Assert.IsTrue(newItem.Calculated > 0);
         }
 
         [TestMethod, ExpectedException(typeof(DataStoreException))]
-        public virtual void Test_Additional_Init_With_Bad_Parm_Fails()
+        public virtual async Task Test_Additional_Init_With_Bad_Parm_Fails()
         {
             TestItemAdditionalInitWithBadParm newItem = new TestItemAdditionalInitWithBadParm();
             newItem.Something = "a";
-            dstore.InsertObject(newItem);
+            await dstore.InsertObject(newItem);
 
-            Assert.IsTrue(dstore.LoadObject(newItem));
+            Assert.IsTrue(await dstore.LoadObject(newItem));
             Assert.IsTrue(!string.IsNullOrEmpty(newItem.Something));
             Assert.IsTrue(newItem.Something.Equals("a", StringComparison.InvariantCultureIgnoreCase));
             Assert.IsTrue(newItem.Calculated > 0);
         }
 
         [TestMethod]
-        public virtual void Test_Can_Update_Item()
+        public virtual async Task Test_Can_Update_Item()
         {
-            Test_Can_Insert_Object();
-            IList<TestItem> items = dstore.LoadEntireTable<TestItem>().OrderBy(R => R.id).ToList();
+            await Test_Can_Insert_Object();
+            IList<TestItem> items = dstore.LoadEntireTable<TestItem>().ToBlockingEnumerable().OrderBy(R => R.id).ToList();
             Assert.IsTrue(items.Count > 0);
             TestItem ti = items.Last();
 
             string value = ti.Something;
             ti.Something = Guid.NewGuid().ToString();
 
-            Assert.IsTrue(dstore.UpdateObject(ti));
+            Assert.IsTrue(await dstore.UpdateObject(ti));
 
-            dstore.LoadObject(ti);
+            await dstore.LoadObject(ti);
             Assert.IsTrue(ti.Something != value);
         }
 
@@ -424,7 +426,7 @@ namespace DataAccess.DatabaseTests.Tests
         }
 
         [TestMethod]
-        public virtual void CanCommitTransaction()
+        public virtual async Task CanCommitTransaction()
         {
             dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(typeof(TestItem));
             TestItem ti;
@@ -435,16 +437,16 @@ namespace DataAccess.DatabaseTests.Tests
                     Something = "foo"
                 };
 
-                context.Instance.InsertObject(ti);
+                await context.Instance.InsertObject(ti);
                 context.Commit();
             }
 
-            IEnumerable<TestItem> items = dstore.LoadEntireTable<TestItem>();
+            IEnumerable<TestItem> items = dstore.LoadEntireTable<TestItem>().ToBlockingEnumerable();
             Assert.IsTrue(items.Count() == 1);
         }
 
         [TestMethod]
-        public virtual void CanRollbackTransaction()
+        public virtual async Task CanRollbackTransaction()
         {
             dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(typeof(TestItem));
             TestItem ti = new TestItem()
@@ -452,98 +454,102 @@ namespace DataAccess.DatabaseTests.Tests
                 Something = "foo"
             };
 
-            dstore.InsertObject(ti);
-            Assert.IsTrue(dstore.LoadObject<TestItem>(ti.id).Something == ti.Something);
+            await dstore.InsertObject(ti);
+            var item = await dstore.LoadObject<TestItem>(ti.id);
+            
+            Assert.IsTrue(item.Something == ti.Something);
 
             using (var context = dstore.StartTransaction())
             {
                 ti.Something = "bar";
-                context.Instance.UpdateObject(ti);
+                await context.Instance.UpdateObject(ti);
                 context.Rollback();
             }
 
-            IEnumerable<TestItem> items = dstore.LoadEntireTable<TestItem>().ToList();
+            IEnumerable<TestItem> items = dstore.LoadEntireTable<TestItem>().ToBlockingEnumerable().ToList();
             Assert.IsTrue(items.Count() == 1);
             Assert.IsTrue(items.First().Something == "foo");
         }
 
         [TestMethod]
-        public virtual void Can_Do_Command_With_Parameter_Object()
+        public virtual async Task Can_Do_Command_With_Parameter_Object()
         {
-            dstore.InsertObject(new TestItem() { Something = "foo" });
-            dstore.InsertObject(new TestItem() { Something = "bar" });
-            dstore.InsertObject(new TestItem() { Something = "foobar" });
+            await dstore.InsertObject(new TestItem() { Something = "foo" });
+            await dstore.InsertObject(new TestItem() { Something = "bar" });
+            await dstore.InsertObject(new TestItem() { Something = "foobar" });
 
-            var items = dstore.GetCommand<TestItem>().ExecuteQuery("select * from TestItems where Something = @query", new { query = "foo" });
+            var items = dstore.GetCommand<TestItem>().ExecuteQuery("select * from TestItems where Something = @query", new { query = "foo" }).ToBlockingEnumerable();
             Assert.IsTrue(items != null);
             Assert.IsTrue(items.Count() == 1);
         }
 
         [TestMethod]
-        public virtual void Can_Do_Command_Without_Parameter_Object()
+        public virtual async Task Can_Do_Command_Without_Parameter_Object()
         {
-            dstore.InsertObject(new TestItem() { Something = "foo" });
-            dstore.InsertObject(new TestItem() { Something = "bar" });
-            dstore.InsertObject(new TestItem() { Something = "foobar" });
+            await dstore.InsertObject(new TestItem() { Something = "foo" });
+            await dstore.InsertObject(new TestItem() { Something = "bar" });
+            await dstore.InsertObject(new TestItem() { Something = "foobar" });
 
-            var items = dstore.GetCommand<TestItem>().ExecuteQuery("select * from TestItems");
+            var items = dstore.GetCommand<TestItem>().ExecuteQuery("select * from TestItems").ToBlockingEnumerable();
             Assert.IsTrue(items != null);
             Assert.IsTrue(items.Count() == 3);
         }
 
         [TestMethod]
-        public virtual void Private_Additional_Init_Is_Called()
+        public virtual async Task Private_Additional_Init_Is_Called()
         {
-            dstore.InsertObject(new TestItemPrivateInitMethod() { Name = "foo" });
-            Assert.IsTrue(dstore.LoadObject<TestItemPrivateInitMethod>(1).Length == 3);
+            await dstore.InsertObject(new TestItemPrivateInitMethod() { Name = "foo" });
+            var item = await dstore.LoadObject<TestItemPrivateInitMethod>(1);
+            Assert.IsTrue(item.Length == 3);
         }
 
         [TestMethod]
-        public virtual void Additional_Init_Is_Called_When_On_Parent_Class()
+        public virtual async Task Additional_Init_Is_Called_When_On_Parent_Class()
         {
-            dstore.InsertObject(new ChildClassWIithParentPrivateInitMethod() { Name = "foo" });
-            Assert.IsTrue(dstore.LoadObject<ChildClassWIithParentPrivateInitMethod>(1).Length == 3);
+            await dstore.InsertObject(new ChildClassWIithParentPrivateInitMethod() { Name = "foo" });
+            var item = await dstore.LoadObject<ChildClassWIithParentPrivateInitMethod>(1);
+            Assert.IsTrue(item.Length == 3);
         }
 
         [TestMethod]
-        public void Test_Update_Is_Closing_Connections()
+        public async Task Test_Update_Is_Closing_Connections()
         {
-            dstore.InsertObject(new ChildClassWIithParentPrivateInitMethod() { Name = "foo" });
+            await dstore.InsertObject(new ChildClassWIithParentPrivateInitMethod() { Name = "foo" });
             for (int i = 0; i < 5000; i++)
             {
-                dstore.UpdateObject(new ChildClassWIithParentPrivateInitMethod() { Name = i.ToString(), ID = 1 });
+                await dstore.UpdateObject(new ChildClassWIithParentPrivateInitMethod() { Name = i.ToString(), ID = 1 });
             }
         }
 
         [TestMethod]
-        public void Test_Insert_Is_Closing_Connections()
+        public async Task Test_Insert_Is_Closing_Connections()
         {
-            dstore.InsertObject(new ChildClassWIithParentPrivateInitMethod() { Name = "foo" });
+            await dstore.InsertObject(new ChildClassWIithParentPrivateInitMethod() { Name = "foo" });
             for (int i = 0; i < 5000; i++)
             {
-                dstore.InsertObject(new ChildClassWIithParentPrivateInitMethod() { Name = i.ToString() });
+                await dstore.InsertObject(new ChildClassWIithParentPrivateInitMethod() { Name = i.ToString() });
             }
         }
 
         [TestMethod]
-        public void Test_Transaction_Is_Closing_Connections()
+        public async Task Test_Transaction_Is_Closing_Connections()
         {
-            dstore.InsertObject(new ChildClassWIithParentPrivateInitMethod() { Name = "foo" });
+            await dstore.InsertObject(new ChildClassWIithParentPrivateInitMethod() { Name = "foo" });
             for (int i = 0; i < 5000; i++)
             {
                 using (TransactionContext ctx = dstore.StartTransaction())
                 {
-                    ctx.Instance.InsertObject(new ChildClassWIithParentPrivateInitMethod() { Name = i.ToString() });
+                    await ctx.Instance.InsertObject(new ChildClassWIithParentPrivateInitMethod() { Name = i.ToString() });
                     ctx.Commit();
                 }
             }
         }
 
         [TestMethod]
-        public void Test_Read_Is_Thread_Safe()
+        public async Task Test_Read_Is_Thread_Safe()
         {
             for (var i = 0; i < 50; i++)
-                dstore.InsertObject(new ChildClassWIithParentPrivateInitMethod() { Name = "foo" });
+                await dstore.InsertObject(new ChildClassWIithParentPrivateInitMethod() { Name = "foo" });
 
             ConcurrentBag<ChildClassWIithParentPrivateInitMethod> infos = new ConcurrentBag<ChildClassWIithParentPrivateInitMethod>();
             List<Thread> threads = new List<Thread>();
@@ -555,7 +561,7 @@ namespace DataAccess.DatabaseTests.Tests
                 threads.Add(new Thread(() =>
                 {
                     for (var x = 0; x < numGets; x++)
-                        dstore.LoadEntireTable<ChildClassWIithParentPrivateInitMethod>().ToList().ForEach(r => infos.Add(r));
+                        dstore.LoadEntireTable<ChildClassWIithParentPrivateInitMethod>().ToBlockingEnumerable().ToList().ForEach(r => infos.Add(r));
                 }));
             }
 

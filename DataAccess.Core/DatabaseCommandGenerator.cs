@@ -8,6 +8,7 @@ using DataAccess.Core.Interfaces;
 using System.Collections;
 using System.Linq.Expressions;
 using DataAccess.Core.Linq.Common.Language;
+using System.Data.Common;
 
 namespace DataAccess.Core
 {
@@ -24,7 +25,7 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="ti">The type to create a table for</param>
         /// <returns></returns>
-        public abstract IEnumerable<IDbCommand> GetAddTableCommand(DatabaseTypeInfo ti);
+        public abstract IEnumerable<DbCommand> GetAddTableCommand(DatabaseTypeInfo ti);
 
         /// <summary>
         /// Returns a command for removing a column from a table
@@ -32,7 +33,7 @@ namespace DataAccess.Core
         /// <param name="type">The type to remove the column from</param>
         /// <param name="dfi">The column to remove</param>
         /// <returns></returns>
-        public abstract IDbCommand GetRemoveColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi);
+        public abstract DbCommand GetRemoveColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi);
 
         /// <summary>
         /// Returns a command for adding a column to a table
@@ -40,14 +41,14 @@ namespace DataAccess.Core
         /// <param name="type">The type to add the column to</param>
         /// <param name="dfi">The column to add</param>
         /// <returns></returns>
-        public abstract IEnumerable<IDbCommand> GetAddColumnCommnad(DatabaseTypeInfo type, DataFieldInfo dfi);
+        public abstract IEnumerable<DbCommand> GetAddColumnCommnad(DatabaseTypeInfo type, DataFieldInfo dfi);
 
         /// <summary>
         /// Returns a command appropriate for adding a schema
         /// </summary>
         /// <param name="ti"></param>
         /// <returns></returns>
-        public abstract IDbCommand GetAddSchemaCommand(DatabaseTypeInfo ti);
+        public abstract DbCommand GetAddSchemaCommand(DatabaseTypeInfo ti);
 
         /// <summary>
         /// Returns a command for modifying a column to the specified type
@@ -56,7 +57,7 @@ namespace DataAccess.Core
         /// <param name="dfi">The column to modify</param>
         /// <param name="targetFieldType">The type to change the field to</param>
         /// <returns></returns>
-        public abstract IEnumerable<IDbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType);
+        public abstract IEnumerable<DbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType);
 
         public DatabaseCommandGenerator(IDataConnection connection)
         {
@@ -69,9 +70,9 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="item">The type to load</param>
         /// <returns></returns>
-        public virtual IDbCommand LoadEntireTableCommand(Type item)
+        public virtual DbCommand LoadEntireTableCommand(Type item)
         {
-            IDbCommand command = _connection.GetCommand();
+            DbCommand command = _connection.GetCommand();
             command.CommandText = string.Format("SELECT {0} FROM {1};", GetSelectList(item), ResolveTableName(item));
             return command;
         }
@@ -82,7 +83,7 @@ namespace DataAccess.Core
         /// <param name="type">The type to modify</param>
         /// <param name="dfi">The column to modify</param>
         /// <returns></returns>
-        public virtual IEnumerable<IDbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi)
+        public virtual IEnumerable<DbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             return GetModifyColumnCommand(type, dfi, TranslateTypeToSql(dfi));
         }
@@ -97,7 +98,7 @@ namespace DataAccess.Core
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < parms.Count; i++)
             {
-                if (i > 0) sb.Append(",");
+                if (i > 0) sb.Append(',');
                 sb.AppendFormat(parms[i].Field);
             }
 
@@ -116,7 +117,7 @@ namespace DataAccess.Core
 
             for (int i = 0; i < parms.Count; i++)
             {
-                if (i > 0) sb.Append(",");
+                if (i > 0) sb.Append(',');
                 if (parms[i].Parameter.Value == null)
                 {
                     sb.Append("NULL");
@@ -135,10 +136,10 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="item">The object to insert</param>
         /// <returns></returns>
-        public virtual IDbCommand GetInsertCommand(object item)
+        public virtual DbCommand GetInsertCommand(object item)
         {
             DatabaseTypeInfo ti = TypeParser.GetTypeInfo(item.GetType());
-            IDbCommand cmd = null;
+            DbCommand cmd = null;
             if (item != null)
             {
                 cmd = _connection.GetCommand();
@@ -155,9 +156,9 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="items">The objects to insert</param>
         /// <returns></returns>
-        public virtual IDbCommand GetInsertCommand(IList items)
+        public virtual DbCommand GetInsertCommand(IList items)
         {
-            IDbCommand cmd = null;
+            DbCommand cmd = null;
 
             //remove null items
             while (items.Contains(null))
@@ -174,11 +175,14 @@ namespace DataAccess.Core
                 {
                     object item = items[i];
                     List<ParameterData> parms = GetObjectParameters((ti.DataFields.Count * i), item, ti);
-                    if (fieldList == null) fieldList = BuildFieldList(parms);
-                    if (parmbuilder.Length > 0) parmbuilder.Append(",");
-                    parmbuilder.Append("(");
+                    fieldList ??= BuildFieldList(parms);
+                    
+                    if (parmbuilder.Length > 0) 
+                        parmbuilder.Append(',');
+                    
+                    parmbuilder.Append('(');
                     parmbuilder.Append(AppendParameters(parms, cmd));
-                    parmbuilder.Append(")");
+                    parmbuilder.Append(')');
                 }
 
                 cmd.CommandText = string.Concat("INSERT INTO ", ResolveTableName(ti), "(", fieldList, ") VALUES", parmbuilder.ToString(), ";");
@@ -191,10 +195,10 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="item">The object to update</param>
         /// <returns></returns>
-        public virtual IDbCommand GetUpdateCommand(object item)
+        public virtual DbCommand GetUpdateCommand(object item)
         {
             DatabaseTypeInfo data = TypeParser.GetTypeInfo(item.GetType());
-            IDbCommand toReturn = _connection.GetCommand();
+            DbCommand toReturn = _connection.GetCommand();
             StringBuilder fieldList = new StringBuilder("UPDATE ");
             fieldList.Append(ResolveTableName(data));
             fieldList.Append(" SET ");
@@ -204,7 +208,7 @@ namespace DataAccess.Core
             {
                 if (!dfi.PrimaryKey && dfi.SetOnInsert)
                 {
-                    if (addComma) fieldList.Append(",");
+                    if (addComma) fieldList.Append(',');
                     object value = dfi.Getter(item);
 
                     if (value != null)
@@ -222,7 +226,7 @@ namespace DataAccess.Core
             }
 
             fieldList.Append(" WHERE ");
-            for (int i = 0; i < data.PrimaryKeys.Count(); i++)
+            for (int i = 0; i < data.PrimaryKeys.Count; i++)
             {
                 DataFieldInfo dField = data.PrimaryKeys.ElementAt(i);
                 if (i > 0) fieldList.Append(" AND ");
@@ -245,7 +249,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         protected virtual List<ParameterData> GetObjectParameters(int startingIndex, object item, DatabaseTypeInfo TypeInfo)
         {
-            List<ParameterData> toReturn = new List<ParameterData>();
+            List<ParameterData> toReturn = [];
             foreach (DataFieldInfo info in TypeInfo.DataFields)
             {
                 if (info.SetOnInsert)
@@ -265,11 +269,11 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="item">The item to load (primary key needs to be set)</param>
         /// <returns></returns>
-        public virtual IDbCommand GetSelectCommand(object item)
+        public virtual DbCommand GetSelectCommand(object item)
         {
             Type t = item.GetType();
             DatabaseTypeInfo ti = TypeParser.GetTypeInfo(t);
-            IDbCommand cmd = _connection.GetCommand();
+            DbCommand cmd = _connection.GetCommand();
 
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("SELECT {0} FROM {1} WHERE ", GetSelectList(t), ResolveTableName(ti));
@@ -297,13 +301,13 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="item">The item to remove</param>
         /// <returns></returns>
-        public virtual IDbCommand GetDeleteCommand(object item)
+        public virtual DbCommand GetDeleteCommand(object item)
         {
             DatabaseTypeInfo ti = TypeParser.GetTypeInfo(item.GetType());
             StringBuilder sb = new StringBuilder("DELETE FROM ");
             sb.Append(ResolveTableName(ti));
             sb.Append(" WHERE ");
-            IDbCommand cmd = _connection.GetCommand();
+            DbCommand cmd = _connection.GetCommand();
             foreach (DataFieldInfo dfi in ti.PrimaryKeys)
             {
                 string pName = GetParameterName(cmd);
@@ -349,7 +353,7 @@ namespace DataAccess.Core
                 foreach (DataFieldInfo dfi in ti.DataFields)
                 {
                     if (!dfi.LoadField) continue;
-                    if (sb.Length > 0) sb.Append(",");
+                    if (sb.Length > 0) sb.Append(',');
                     sb.Append(ResolveFieldName(dfi.PropertyName, type));
                 }
 
@@ -472,17 +476,13 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual string TranslateFkeyType(ForeignKeyType foreignKeyType)
         {
-            switch (foreignKeyType)
+            return foreignKeyType switch
             {
-                case ForeignKeyType.Cascade:
-                    return "Cascade";
-                case ForeignKeyType.NoAction:
-                    return "No Action";
-                case ForeignKeyType.SetNull:
-                    return "Set Null";
-                default:
-                    return "";
-            }
+                ForeignKeyType.Cascade => "Cascade",
+                ForeignKeyType.NoAction => "No Action",
+                ForeignKeyType.SetNull => "Set Null",
+                _ => "",
+            };
         }
 
         /// <summary>

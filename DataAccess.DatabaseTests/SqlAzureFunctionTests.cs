@@ -5,6 +5,7 @@ using DataAccess.SqlServer;
 using DataAccess.DatabaseTests.DataObjects;
 using Microsoft.SqlServer.Types;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 namespace DataAccess.DatabaseTests
 {
@@ -31,23 +32,23 @@ namespace DataAccess.DatabaseTests
         }
 
         [TestMethod]
-        public void Test_Can_Insert_Spacial_Type()
+        public async Task Test_Can_Insert_Spacial_Type()
         {
-            Assert.IsTrue(dstore.InsertObject(new TestItemWithGeography() 
+            Assert.IsTrue(await dstore.InsertObject(new TestItemWithGeography() 
             {
                 Location = SqlGeography.Point(1, 1, 4326)
             }));
         }
 
         [TestMethod]
-        public void Test_Can_CRUD_Spacial_Type()
+        public async Task Test_Can_CRUD_Spacial_Type()
         {
-            Assert.IsTrue(dstore.InsertObject(new TestItemWithGeography()
+            Assert.IsTrue(await dstore.InsertObject(new TestItemWithGeography()
             {
                 Location = SqlGeography.Point(1, 1, 4326)
             }));
 
-            TestItemWithGeography loaded = dstore.LoadObject<TestItemWithGeography>(1);
+            TestItemWithGeography loaded = await dstore.LoadObject<TestItemWithGeography>(1);
             Assert.IsNotNull(loaded);
             Assert.IsNotNull(loaded.Location);
         }

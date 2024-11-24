@@ -7,6 +7,7 @@ using DataAccess.Core.Data.Results;
 using System.Collections;
 using System.Data;
 using DataAccess.Core.Interfaces;
+using System.Data.Common;
 
 namespace DataAccess.Core.Data
 {
@@ -17,7 +18,7 @@ namespace DataAccess.Core.Data
     {
         public bool _recordLoaded = false;
         protected IDbConnection connection;
-        protected IDbCommand command;
+        protected DbCommand command;
         protected IDataReader reader;
         public Dictionary<string, int> QueryFields { get; set; }
 
@@ -47,7 +48,7 @@ namespace DataAccess.Core.Data
         /// </summary>
         /// <param name="r">The r.</param>
         /// <param name="command">The command.</param>
-        public QueryData(System.Data.IDbConnection r, System.Data.IDbCommand command)
+        public QueryData(System.Data.IDbConnection r, DbCommand command)
             : this()
         {
             this.connection = r;

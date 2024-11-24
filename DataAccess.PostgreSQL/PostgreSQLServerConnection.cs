@@ -14,6 +14,8 @@ using System.Reflection;
 using DataAccess.Core.Conversion;
 using DataAccess.Core.Data.Results;
 using DataAccess.Core.Extensions;
+using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace DataAccess.PostgreSQL
 {
@@ -104,7 +106,7 @@ namespace DataAccess.PostgreSQL
         /// Gets the connection.
         /// </summary>
         /// <returns></returns>
-        public IDbConnection GetConnection()
+        public DbConnection GetConnection()
         {
             return new NpgsqlConnection(_connectionString);
         }
@@ -113,7 +115,7 @@ namespace DataAccess.PostgreSQL
         /// Gets a data command for this connection type
         /// </summary>
         /// <returns></returns>
-        public IDbCommand GetCommand()
+        public DbCommand GetCommand()
         {
             return new NpgsqlCommand();
         }
@@ -199,10 +201,10 @@ namespace DataAccess.PostgreSQL
         /// </summary>
         /// <param name="items"></param>
         /// <param name="dstore"></param>
-        public void DoBulkInsert(IList items, IDataStore dstore)
+        public async Task DoBulkInsert(IList items, IDataStore dstore)
         {
             while (items.Count > 0)
-                dstore.InsertObjects(items.GetSmallerList(100));
+                await dstore.InsertObjects(items.GetSmallerList(100));
         }
 
         /// <summary>
@@ -220,16 +222,16 @@ namespace DataAccess.PostgreSQL
         /// </summary>
         /// <param name="dstore"></param>
         /// <returns></returns>
-        public IEnumerable<DBObject> GetSchemaTables(IDataStore dstore)
+        public async IAsyncEnumerable<DBObject> GetSchemaTables(IDataStore dstore)
         {
-            IDbCommand tblCmd = GetCommand();
+            DbCommand tblCmd = GetCommand();
             tblCmd.CommandText = _getTablesCommand;
 
-            IDbCommand clmCmd = GetCommand();
+            DbCommand clmCmd = GetCommand();
             clmCmd.CommandText = _getColumnsCommand;
 
-            using (IQueryData tables = dstore.ExecuteCommands.ExecuteCommandQuery(tblCmd, dstore.Connection))
-            using (IQueryData columns = dstore.ExecuteCommands.ExecuteCommandQuery(clmCmd, dstore.Connection))
+            using (IQueryData tables = await dstore.ExecuteCommands.ExecuteCommandQuery(tblCmd, dstore.Connection))
+            using (IQueryData columns = await dstore.ExecuteCommands.ExecuteCommandQuery(clmCmd, dstore.Connection))
             {
                 List<IQueryRow> rows = columns.GetQueryEnumerator().ToList();
                 foreach (IQueryRow table in tables)
@@ -244,16 +246,16 @@ namespace DataAccess.PostgreSQL
         /// </summary>
         /// <param name="dstore"></param>
         /// <returns></returns>
-        public IEnumerable<DBObject> GetSchemaViews(IDataStore dstore)
+        public async IAsyncEnumerable<DBObject> GetSchemaViews(IDataStore dstore)
         {
-            IDbCommand tblCmd = GetCommand();
+            DbCommand tblCmd = GetCommand();
             tblCmd.CommandText = _getViewCommand;
 
-            IDbCommand clmCmd = GetCommand();
+            DbCommand clmCmd = GetCommand();
             clmCmd.CommandText = _getViewColumnsCommand;
 
-            using (IQueryData objects = dstore.ExecuteCommands.ExecuteCommandQuery(tblCmd, dstore.Connection))
-            using (IQueryData columns = dstore.ExecuteCommands.ExecuteCommandQuery(clmCmd, dstore.Connection))
+            using (IQueryData objects = await dstore.ExecuteCommands.ExecuteCommandQuery(tblCmd, dstore.Connection))
+            using (IQueryData columns = await dstore.ExecuteCommands.ExecuteCommandQuery(clmCmd, dstore.Connection))
             {
                 List<IQueryRow> rows = columns.GetQueryEnumerator().ToList();
                 foreach (IQueryRow o in objects)

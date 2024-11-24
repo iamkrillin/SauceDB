@@ -6,6 +6,8 @@ using System.Data;
 using DataAccess.Core.Data;
 using DataAccess.Core.Events;
 using DataAccess.Core.Execute;
+using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core.Interfaces
 {
@@ -30,7 +32,7 @@ namespace DataAccess.Core.Interfaces
         /// <param name="command">The command to execute</param>
         /// <param name="connection">The connection to use</param>
         /// <returns></returns>
-        IQueryData ExecuteCommandQuery(IDbCommand command, IDataConnection connection);
+        Task<IQueryData> ExecuteCommandQuery(DbCommand command, IDataConnection connection);
 
         /// <summary>
         /// This method will take a connection that is already open and run a query on it
@@ -38,15 +40,15 @@ namespace DataAccess.Core.Interfaces
         /// <param name="command"></param>
         /// <param name="connection"></param>
         /// <returns></returns>
-        IQueryData ExecuteCommandQueryAction(IDbCommand command, IDataConnection connection, IDbConnection r);
+        Task<IQueryData> ExecuteCommandQueryAction(DbCommand command, IDataConnection connection, DbConnection r);
 
         /// <summary>
         /// Executes a command on the data store
         /// </summary>
         /// <param name="command">The command to execute</param>
         /// <param name="connection">The connection to use</param>
-        int ExecuteCommand(IDbCommand command, IDataConnection connection);
+        Task<int> ExecuteCommand(DbCommand command, IDataConnection connection);
 
-        void InitCommand(IDbCommand command, IDbConnection conn);
+        void InitCommand(DbCommand command, DbConnection conn);
     }
 }

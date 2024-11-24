@@ -7,6 +7,8 @@ using DataAccess.Core.Interfaces;
 using DataAccess.Core.Events;
 using DataAccess.Core;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
+using System.Data.Common;
 
 namespace DataAccess.SQLite
 {
@@ -37,19 +39,20 @@ namespace DataAccess.SQLite
         /// <param name="command">The command to execute</param>
         /// <param name="connection">The connection to use</param>
         /// <returns></returns>
-        public virtual IQueryData ExecuteCommandQuery(IDbCommand command, IDataConnection connection)
+        public virtual async Task<IQueryData> ExecuteCommandQuery(DbCommand command, IDataConnection connection)
         {
-            return ExecuteCommand<IQueryData>(command, connection, () =>
-                {
-                    return ExecuteCommandQueryAction(command, connection, null);
-                });
+            return await ExecuteCommand<IQueryData>(command, connection, async () =>
+            {
+                return await ExecuteCommandQueryAction(command, connection, null);
+            });
         }
 
-        public IQueryData ExecuteCommandQueryAction(IDbCommand command, IDataConnection connection, IDbConnection r)
+        public async Task<IQueryData> ExecuteCommandQueryAction(DbCommand command, IDataConnection connection, DbConnection r)
         {
             SqLiteQueryData toReturn = new SqLiteQueryData();
             FireExecutingEvent(command, connection);
-            using (IDataReader reader = command.ExecuteReader())
+
+            using (IDataReader reader = await command.ExecuteReaderAsync())
                 MapReturnData(command, toReturn, reader);
 
             FireExecutedEvent(command, connection);
@@ -63,7 +66,7 @@ namespace DataAccess.SQLite
         /// <param name="command">The command.</param>
         /// <param name="toReturn">To return.</param>
         /// <param name="reader">The reader.</param>
-        protected void MapReturnData(IDbCommand command, SqLiteQueryData toReturn, IDataReader reader)
+        protected void MapReturnData(DbCommand command, SqLiteQueryData toReturn, IDataReader reader)
         {
             if (reader.Read())
             {
@@ -98,14 +101,14 @@ namespace DataAccess.SQLite
         /// </summary>
         /// <param name="command">The command.</param>
         /// <param name="connection">The connection.</param>
-        protected void FireExecutingEvent(IDbCommand command, IDataConnection connection)
+        protected void FireExecutingEvent(DbCommand command, IDataConnection connection)
         {
-            if (CommandExecuting != null) CommandExecuting(this, new CommandExecutingEventArgs(command, connection));
+            CommandExecuting?.Invoke(this, new CommandExecutingEventArgs(command, connection));
         }
 
-        protected void FireExecutedEvent(IDbCommand command, IDataConnection connection)
+        protected void FireExecutedEvent(DbCommand command, IDataConnection connection)
         {
-            if (CommandExecuted != null) CommandExecuted(this, new CommandExecutingEventArgs(command, connection));
+            CommandExecuted?.Invoke(this, new CommandExecutingEventArgs(command, connection));
         }
 
         /// <summary>
@@ -113,31 +116,31 @@ namespace DataAccess.SQLite
         /// </summary>
         /// <param name="command">The command to execute</param>
         /// <param name="connection">The connection to use</param>
-        public virtual int ExecuteCommand(IDbCommand command, IDataConnection connection)
+        public virtual async Task<int> ExecuteCommand(DbCommand command, IDataConnection connection)
         {
-            return ExecuteCommand<int>(command, connection, () =>
-                {
-                    return command.ExecuteNonQuery();
-                });
+            return await ExecuteCommand<int>(command, connection, async () =>
+            {
+                return await command.ExecuteNonQueryAsync();
+            });
         }
 
-        protected virtual T ExecuteCommand<T>(IDbCommand command, IDataConnection connection, Func<T> action)
+        protected virtual async Task<T> ExecuteCommand<T>(DbCommand command, IDataConnection connection, Func<Task<T>> action)
         {
-            T toReturn = default(T);
+            T toReturn = default;
             foreach (IDbDataParameter parm in command.Parameters)
                 connection.DatastoreConverter.CoerceValue(parm);
 
-            using (IDbConnection conn = connection.GetConnection())
+            using (DbConnection conn = connection.GetConnection())
             {
                 if (conn.State != ConnectionState.Open)
-                    conn.Open();
+                    await conn.OpenAsync();
 
                 command.Connection = conn;
                 command.CommandTimeout = 10000;
 
                 try
                 {
-                    toReturn = action();
+                    toReturn = await action();
                 }
                 catch (Exception e)
                 {
@@ -153,7 +156,7 @@ namespace DataAccess.SQLite
             return toReturn;
         }
 
-        public void InitCommand(IDbCommand command, IDbConnection conn)
+        public void InitCommand(DbCommand command, DbConnection conn)
         {
         }
     }

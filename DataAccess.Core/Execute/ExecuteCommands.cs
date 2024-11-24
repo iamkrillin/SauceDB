@@ -6,6 +6,8 @@ using DataAccess.Core.Data;
 using System.Data;
 using DataAccess.Core.Interfaces;
 using DataAccess.Core.Events;
+using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core.Execute
 {
@@ -21,39 +23,31 @@ namespace DataAccess.Core.Execute
         public event EventHandler<CommandExecutingEventArgs> CommandExecuted;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExecuteCommands" /> class.
-        /// </summary>
-        public ExecuteCommands()
-        {
-
-        }
-
-        /// <summary>
         /// Executes a command and returns the result
         /// </summary>
         /// <param name="command">The command to execute</param>
         /// <param name="connection">The connection to use</param>
         /// <returns></returns>
-        public virtual IQueryData ExecuteCommandQuery(IDbCommand command, IDataConnection connection)
+        public virtual async Task<IQueryData> ExecuteCommandQuery(DbCommand command, IDataConnection connection)
         {
-            return ExecuteCommand<IQueryData>(command, connection, r =>
-                {
-                    return ExecuteCommandQueryAction(command, connection, r);
-                });
+            return await ExecuteCommand(command, connection, async r =>
+            {
+                return await ExecuteCommandQueryAction(command, connection, r);
+            });
         }
 
-        public virtual IQueryData ExecuteCommandQueryAction(IDbCommand command, IDataConnection connection, IDbConnection r)
+        public virtual async Task<IQueryData> ExecuteCommandQueryAction(DbCommand command, IDataConnection connection, DbConnection r)
         {
             QueryData toReturn = new QueryData(r, command);
             return toReturn;
         }
 
-        private static void CloseConnection(IDbConnection r)
+        private static async Task CloseConnection(DbConnection r)
         {
             if (r != null)
             {
-                r.Close();
-                r.Dispose();
+                await r.CloseAsync();
+                await r.DisposeAsync();
             }
         }
 
@@ -62,12 +56,12 @@ namespace DataAccess.Core.Execute
         /// </summary>
         /// <param name="command">The command.</param>
         /// <param name="connection">The connection.</param>
-        protected void FireExecutingEvent(IDbCommand command, IDataConnection connection, IDbConnection conn)
+        protected void FireExecutingEvent(DbCommand command, IDataConnection connection, DbConnection conn)
         {
             CommandExecuting?.Invoke(this, new CommandExecutingEventArgs(command, connection, conn));
         }
 
-        protected void FireExecutedEvent(IDbCommand command, IDataConnection connection, IDbConnection conn)
+        protected void FireExecutedEvent(DbCommand command, IDataConnection connection, DbConnection conn)
         {
             CommandExecuted?.Invoke(this, new CommandExecutingEventArgs(command, connection, conn));
         }
@@ -77,53 +71,56 @@ namespace DataAccess.Core.Execute
         /// </summary>
         /// <param name="command">The command to execute</param>
         /// <param name="connection">The connection to use</param>
-        public virtual int ExecuteCommand(IDbCommand command, IDataConnection connection)
+        public virtual async Task<int> ExecuteCommand(DbCommand command, IDataConnection connection)
         {
-            return ExecuteCommand<int>(command, connection, r =>
-                {
-                    var result = command.ExecuteNonQuery();
-                    CloseConnection(r);
+            return await ExecuteCommand(command, connection, async r =>
+            {
+                var result = await command.ExecuteNonQueryAsync();
+                await CloseConnection(r);
 
-                    return result;
-                });
+                return result;
+            });
         }
 
-        protected virtual T ExecuteCommand<T>(IDbCommand command, IDataConnection connection, Func<IDbConnection, T> action)
+        protected virtual async Task<T> ExecuteCommand<T>(DbCommand command, IDataConnection connection, Func<DbConnection, Task<T>> action)
         {
-            T toReturn = default(T);
+            T toReturn = default;
             foreach (IDbDataParameter parm in command.Parameters)
                 connection.DatastoreConverter.CoerceValue(parm);
 
-            IDbConnection conn = OpenConnection(connection);
+            DbConnection conn = await OpenConnection(connection);
             InitCommand(command, conn);
 
             try
             {
                 FireExecutingEvent(command, connection, conn);
-                toReturn = action(conn);
+                toReturn = await action(conn);
                 FireExecutedEvent(command, connection, conn);
             }
             catch (Exception e)
             {
                 if (conn.State == ConnectionState.Open)
                 {
-                    command.Dispose();
-                    conn.Close();
+                    await command.DisposeAsync();
+                    await conn.CloseAsync();
                 }
+
                 throw new QueryException(e, command);
             }
+
             return toReturn;
         }
 
-        public virtual IDbConnection OpenConnection(IDataConnection connection)
+        public virtual async Task<DbConnection> OpenConnection(IDataConnection connection)
         {
-            IDbConnection conn = connection.GetConnection();
+            DbConnection conn = connection.GetConnection();
             if (conn.State != ConnectionState.Open)
-                conn.Open();
+                await conn.OpenAsync();
+
             return conn;
         }
 
-        public virtual void InitCommand(IDbCommand command, IDbConnection conn)
+        public virtual void InitCommand(DbCommand command, DbConnection conn)
         {
             command.Connection = conn;
             command.CommandTimeout = 10000;

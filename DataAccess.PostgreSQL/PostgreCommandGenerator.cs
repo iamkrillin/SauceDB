@@ -8,6 +8,7 @@ using DataAccess.Core.Data;
 using Npgsql;
 using System.Reflection;
 using DataAccess.Core.Interfaces;
+using System.Data.Common;
 
 namespace DataAccess.PostgreSQL
 {
@@ -31,7 +32,7 @@ namespace DataAccess.PostgreSQL
         /// </summary>
         /// <param name="ti">The type to create a table for</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetAddTableCommand(DatabaseTypeInfo ti)
+        public override IEnumerable<DbCommand> GetAddTableCommand(DatabaseTypeInfo ti)
         {
             StringBuilder sb = new StringBuilder();
             StringBuilder pFields = new StringBuilder();
@@ -84,9 +85,9 @@ namespace DataAccess.PostgreSQL
         /// </summary>
         /// <param name="item">The object to insert</param>
         /// <returns></returns>
-        public override IDbCommand GetInsertCommand(object item)
+        public override DbCommand GetInsertCommand(object item)
         {
-            IDbCommand cmd = base.GetInsertCommand(item);
+            DbCommand cmd = base.GetInsertCommand(item);
             cmd.CommandText = cmd.CommandText.Replace(";", " returning *;");
             return cmd;
         }
@@ -97,7 +98,7 @@ namespace DataAccess.PostgreSQL
         /// <param name="type">The type to remove the column from</param>
         /// <param name="dfi">The column to remove</param>
         /// <returns></returns>
-        public override IDbCommand GetRemoveColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi)
+        public override DbCommand GetRemoveColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             NpgsqlCommand command = new NpgsqlCommand();
             command.CommandText = string.Format("ALTER TABLE {0} DROP COLUMN {1};", ResolveTableName(type, false), dfi.FieldName);
@@ -110,7 +111,7 @@ namespace DataAccess.PostgreSQL
         /// <param name="type">The type to add the column to</param>
         /// <param name="dfi">The column to add</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetAddColumnCommnad(DatabaseTypeInfo type, DataFieldInfo dfi)
+        public override IEnumerable<DbCommand> GetAddColumnCommnad(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             if (dfi.PrimaryKey)
                 throw new DataStoreException("Adding a primary key to an existing table is not supported");
@@ -140,7 +141,7 @@ namespace DataAccess.PostgreSQL
         /// <param name="dfi">The column to modify</param>
         /// <param name="targetFieldType">The type to change the field to</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
+        public override IEnumerable<DbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
         {
             targetFieldType = targetFieldType.Replace("varchar", "character varying");
             NpgsqlCommand cmd = new NpgsqlCommand();
@@ -173,7 +174,7 @@ namespace DataAccess.PostgreSQL
         /// </summary>
         /// <param name="ti"></param>
         /// <returns></returns>
-        public override IDbCommand GetAddSchemaCommand(DatabaseTypeInfo ti)
+        public override DbCommand GetAddSchemaCommand(DatabaseTypeInfo ti)
         {
             return null;
         }

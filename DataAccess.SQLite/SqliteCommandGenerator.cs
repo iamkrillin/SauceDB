@@ -7,6 +7,7 @@ using System.Data;
 using DataAccess.Core.Data;
 using System.Data.SQLite;
 using DataAccess.Core.Interfaces;
+using System.Data.Common;
 
 namespace DataAccess.SQLite
 {
@@ -26,10 +27,10 @@ namespace DataAccess.SQLite
         /// </summary>
         /// <param name="item">The object to insert</param>
         /// <returns></returns>
-        public override IDbCommand GetInsertCommand(object item)
+        public override DbCommand GetInsertCommand(object item)
         {
             IEnumerable<DataFieldInfo> info = TypeParser.GetPrimaryKeys(item.GetType());
-            IDbCommand cmd = base.GetInsertCommand(item);
+            DbCommand cmd = base.GetInsertCommand(item);
             if (info.Count() == 1)
                 cmd.CommandText = cmd.CommandText.Replace(";", string.Format("; SELECT last_insert_rowid() as {0};", info.First().EscapedFieldName));
 
@@ -41,7 +42,7 @@ namespace DataAccess.SQLite
         /// </summary>
         /// <param name="ti">The type to create a table for</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetAddTableCommand(DatabaseTypeInfo ti)
+        public override IEnumerable<DbCommand> GetAddTableCommand(DatabaseTypeInfo ti)
         {
             StringBuilder sb = new StringBuilder();
             StringBuilder pFields = new StringBuilder();
@@ -96,7 +97,7 @@ namespace DataAccess.SQLite
 
         private string GetForeignKeySql(DataFieldInfo field, DatabaseTypeInfo targetTable, DatabaseTypeInfo pkeyTable)
         {
-            return string.Format(" FOREIGN KEY({0}) REFERENCES {1}({2}) ON DELETE {3} ON UPDATE {3}", field.EscapedFieldName, ResolveTableName(pkeyTable, false), pkeyTable.PrimaryKeys.First().EscapedFieldName, TranslateFkeyType(field.ForeignKeyType));
+            return $" FOREIGN KEY({field.EscapedFieldName}) REFERENCES {ResolveTableName(pkeyTable, false)}({pkeyTable.PrimaryKeys.First().EscapedFieldName}) ON DELETE {TranslateFkeyType(field.ForeignKeyType)} ON UPDATE {TranslateFkeyType(field.ForeignKeyType)}";
         }
 
         /// <summary>
@@ -105,7 +106,7 @@ namespace DataAccess.SQLite
         /// <param name="type">The type to remove the column from</param>
         /// <param name="dfi">The column to remove</param>
         /// <returns></returns>
-        public override IDbCommand GetRemoveColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi)
+        public override DbCommand GetRemoveColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             throw new DataStoreException("This is not supported by SQLite");
         }
@@ -116,17 +117,14 @@ namespace DataAccess.SQLite
         /// <param name="type">The type to add the column to</param>
         /// <param name="dfi">The column to add</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetAddColumnCommnad(DatabaseTypeInfo type, DataFieldInfo dfi)
+        public override IEnumerable<DbCommand> GetAddColumnCommnad(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             if (dfi.PrimaryKey)
                 throw new DataStoreException("Adding a primary key to an existing table is not supported");
             else
             {
                 SQLiteCommand scmd = new SQLiteCommand();
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("ALTER TABLE {0} ADD COLUMN {1} {2}", ResolveTableName(type, false), dfi.EscapedFieldName, TranslateTypeToSql(dfi));
-
-                scmd.CommandText = sb.ToString();
+                scmd.CommandText = $"ALTER TABLE {ResolveTableName(type, false)} ADD COLUMN {dfi.EscapedFieldName} {TranslateTypeToSql(dfi)}";
                 yield return scmd;
             }
         }
@@ -138,7 +136,7 @@ namespace DataAccess.SQLite
         /// <param name="dfi">The column to modify</param>
         /// <param name="targetFieldType">The type to change the field to</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
+        public override IEnumerable<DbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
         {
             throw new Exception("this is not supported right now");
         }
@@ -148,7 +146,7 @@ namespace DataAccess.SQLite
         /// </summary>
         /// <param name="ti"></param>
         /// <returns></returns>
-        public override IDbCommand GetAddSchemaCommand(DatabaseTypeInfo ti)
+        public override DbCommand GetAddSchemaCommand(DatabaseTypeInfo ti)
         {
             return null;
         }

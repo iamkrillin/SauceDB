@@ -5,6 +5,8 @@ using System.Text;
 using System.Data;
 using DataAccess.Core.Data;
 using System.Collections;
+using System.Threading.Tasks;
+using System.Data.Common;
 
 namespace DataAccess.Core.Interfaces
 {
@@ -32,13 +34,13 @@ namespace DataAccess.Core.Interfaces
         /// Gets the connection.
         /// </summary>
         /// <returns></returns>
-        IDbConnection GetConnection();
+        DbConnection GetConnection();
 
         /// <summary>
         /// Gets a data command for this connection type
         /// </summary>
         /// <returns></returns>
-        IDbCommand GetCommand();
+        DbCommand GetCommand();
 
         /// <summary>
         /// Gets a data parameter for this connection type
@@ -53,14 +55,14 @@ namespace DataAccess.Core.Interfaces
         /// </summary>
         /// <param name="dstore"></param>
         /// <returns></returns>
-        IEnumerable<DBObject> GetSchemaTables(IDataStore dstore);
+        IAsyncEnumerable<DBObject> GetSchemaTables(IDataStore dstore);
 
         /// <summary>
         /// Returns a list of views from the datastore
         /// </summary>
         /// <param name="dstore"></param>
         /// <returns></returns>
-        IEnumerable<DBObject> GetSchemaViews(IDataStore dstore);
+        IAsyncEnumerable<DBObject> GetSchemaViews(IDataStore dstore);
 
         /// <summary>
         /// the data stores escape character (left side)
@@ -95,6 +97,6 @@ namespace DataAccess.Core.Interfaces
         /// </summary>
         /// <param name="items"></param>
         /// <param name="dstore"></param>
-        void DoBulkInsert(IList items, IDataStore dstore);
+        Task DoBulkInsert(IList items, IDataStore dstore);
     }
 }

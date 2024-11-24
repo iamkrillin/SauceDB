@@ -8,6 +8,7 @@ using DataAccess.Core.Data;
 using System.Data.SqlClient;
 using DataAccess.DatabaseTests.DataObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 namespace DataAccess.DatabaseTests.Tests
 {
@@ -184,17 +185,17 @@ namespace DataAccess.DatabaseTests.Tests
         }
 
         [TestMethod]
-        public virtual void Test_Can_Delete_With_Expression()
+        public virtual async Task Test_Can_Delete_With_Expression()
         {
-            dStore.InsertObject(new TestItemPrimaryKey() { Name = "Puppy", ID = Guid.NewGuid().ToString() });
-            dStore.InsertObject(new TestItemPrimaryKey() { Name = "Puffin", ID = Guid.NewGuid().ToString() });
-            dStore.InsertObject(new TestItemPrimaryKey() { Name = "Porcupine", ID = Guid.NewGuid().ToString() });
-            dStore.InsertObject(new TestItemPrimaryKey() { Name = "Peacock ", ID = Guid.NewGuid().ToString() });
-            dStore.InsertObject(new TestItemPrimaryKey() { Name = "Platypus", ID = Guid.NewGuid().ToString() });
-            dStore.InsertObject(new TestItemPrimaryKey() { Name = "Doggy", ID = Guid.NewGuid().ToString() });
-            dStore.InsertObject(new TestItemPrimaryKey() { Name = "Kitten", ID = Guid.NewGuid().ToString() });
+            await dStore.InsertObject(new TestItemPrimaryKey() { Name = "Puppy", ID = Guid.NewGuid().ToString() });
+            await dStore.InsertObject(new TestItemPrimaryKey() { Name = "Puffin", ID = Guid.NewGuid().ToString() });
+            await dStore.InsertObject(new TestItemPrimaryKey() { Name = "Porcupine", ID = Guid.NewGuid().ToString() });
+            await dStore.InsertObject(new TestItemPrimaryKey() { Name = "Peacock ", ID = Guid.NewGuid().ToString() });
+            await dStore.InsertObject(new TestItemPrimaryKey() { Name = "Platypus", ID = Guid.NewGuid().ToString() });
+            await dStore.InsertObject(new TestItemPrimaryKey() { Name = "Doggy", ID = Guid.NewGuid().ToString() });
+            await dStore.InsertObject(new TestItemPrimaryKey() { Name = "Kitten", ID = Guid.NewGuid().ToString() });
 
-            int items = dStore.DeleteObjects<TestItemPrimaryKey>(r => r.Name == "Doggy");
+            int items = await dStore.DeleteObjects<TestItemPrimaryKey>(r => r.Name == "Doggy");
             Assert.IsTrue(items == 1);
         }
 

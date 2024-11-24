@@ -2,12 +2,9 @@
 using DataAccess.Core.Conversion;
 using DataAccess.Core.Data;
 using DataAccess.Core.Interfaces;
+using Microsoft.Data.SqlClient;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
 
 namespace DataAccess.SqlServer
 {
@@ -39,7 +36,7 @@ namespace DataAccess.SqlServer
         {
             string name = type.Name.ToUpper();
 
-            if (name.ToUpper() == "DATETIMEOFFSET")
+            if (name.Equals("DATETIMEOFFSET", StringComparison.CurrentCultureIgnoreCase))
                 return "DATETIMEOFFSET(" + ResolveLength(dfi.FieldLength, "7") + ")";
             else if (type.Namespace.Equals("Microsoft.SqlServer.Types"))
                 return type.Name.Replace("Sql", "");

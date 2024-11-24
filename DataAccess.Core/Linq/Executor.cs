@@ -5,34 +5,31 @@ using System.Text;
 using System.Data;
 using DataAccess.Core.Linq.Common.Mapping;
 using DataAccess.Core.Linq.Common;
+using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core.Linq
 {
     /// <summary>
     /// 
     /// </summary>
-    public class Executor : QueryExecutor
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="Executor"/> class.
+    /// </remarks>
+    /// <param name="provider">The provider.</param>
+    public class Executor(DBQueryProvider provider) : QueryExecutor
     {
         /// <summary>
         /// Gets the provider.
         /// </summary>
-        public DBQueryProvider Provider { get; private set; }
+        public DBQueryProvider Provider { get; private set; } = provider;
         /// <summary>
         /// Gets a value indicating whether [buffer result rows].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [buffer result rows]; otherwise, <c>false</c>.
         /// </value>
-        protected virtual bool BufferResultRows { get { return false; } }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Executor"/> class.
-        /// </summary>
-        /// <param name="provider">The provider.</param>
-        public Executor(DBQueryProvider provider)
-        {
-            this.Provider = provider;
-        }
+        protected virtual bool BufferResultRows => false;
 
         /// <summary>
         /// Converts the specified value.
@@ -80,9 +77,9 @@ namespace DataAccess.Core.Linq
         /// <param name="entity">The entity.</param>
         /// <param name="paramValues">The param values.</param>
         /// <returns></returns>
-        public override IEnumerable<T> Execute<T>(QueryCommand command, Func<FieldReader, T> fnProjector, MappingEntity entity, object[] paramValues)
+        public override IAsyncEnumerable<T> Execute<T>(QueryCommand command, Func<FieldReader, T> fnProjector, MappingEntity entity, object[] paramValues)
         {
-            IDbCommand cmd = this.GetCommand(command, paramValues);
+            DbCommand cmd = this.GetCommand(command, paramValues);
             return Provider.Store.ExecuteCommandLoadList<T>(cmd);
         }
 
@@ -92,10 +89,10 @@ namespace DataAccess.Core.Linq
         /// <param name="query">The query.</param>
         /// <param name="paramValues">The param values.</param>
         /// <returns></returns>
-        protected virtual IDbCommand GetCommand(QueryCommand query, object[] paramValues)
+        protected virtual DbCommand GetCommand(QueryCommand query, object[] paramValues)
         {
             // create command object (and fill in parameters)
-            IDbCommand cmd = this.Provider.Store.Connection.GetCommand();
+            DbCommand cmd = this.Provider.Store.Connection.GetCommand();
             cmd.CommandText = query.CommandText;
             SetParameterValues(query, cmd, paramValues);
             return cmd;
@@ -113,7 +110,7 @@ namespace DataAccess.Core.Linq
             {
                 for (int i = 0, n = query.Parameters.Count; i < n; i++)
                 {
-                    IDbDataParameter parm = Provider.Store.Connection.GetParameter(query.Parameters[i].Name, paramValues != null ? paramValues[i] : null);
+                    IDbDataParameter parm = Provider.Store.Connection.GetParameter(query.Parameters[i].Name, paramValues?[i]);
                     command.Parameters.Add(parm);
                 }
             }
@@ -137,9 +134,9 @@ namespace DataAccess.Core.Linq
         /// <param name="query">The query.</param>
         /// <param name="paramValues">The param values.</param>
         /// <returns></returns>
-        public override int ExecuteCommand(QueryCommand query, object[] paramValues)
+        public override async Task<int> ExecuteCommand(QueryCommand query, object[] paramValues)
         {
-            return Provider.Store.ExecuteCommand(GetCommand(query, paramValues));
+            return await Provider.Store.ExecuteCommand(GetCommand(query, paramValues));
         }
     }
 }

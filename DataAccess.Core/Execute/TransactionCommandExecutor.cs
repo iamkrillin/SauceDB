@@ -6,58 +6,50 @@ using System.Text;
 using DataAccess.Core.Data;
 using DataAccess.Core.Interfaces;
 using DataAccess.Core.Events;
+using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core.Execute
 {
     /// <summary>
     /// Executes command within a transaction
     /// </summary>
-    public class TransactionCommandExecutor : IExecuteDatabaseCommand
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="TransactionCommandExecutor" /> class.
+    /// </remarks>
+    /// <param name="info">The transacation info.</param>
+    /// <param name="storeExecutor">The executor used by the data store</param>
+    public class TransactionCommandExecutor(TransactionInfo info, IExecuteDatabaseCommand storeExecutor) : object(), IExecuteDatabaseCommand
     {
-        private TransactionInfo _info;
         public event EventHandler<Events.CommandExecutingEventArgs> CommandExecuting;
         public event EventHandler<Events.CommandExecutingEventArgs> CommandExecuted;
 
-        private IExecuteDatabaseCommand _base;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TransactionCommandExecutor" /> class.
-        /// </summary>
-        /// <param name="info">The transacation info.</param>
-        /// <param name="storeExecutor">The executor used by the data store</param>
-        public TransactionCommandExecutor(TransactionInfo info, IExecuteDatabaseCommand storeExecutor)
-            : base()
-        {
-            _info = info;
-            _base = storeExecutor;
-        }
-
-        protected void FireExecutingEvent(IDbCommand command, IDataConnection connection, IDbConnection conn)
+        protected void FireExecutingEvent(DbCommand command, IDataConnection connection, DbConnection conn)
         {
             CommandExecuting?.Invoke(this, new CommandExecutingEventArgs(command, connection, conn));
         }
 
-        protected void FireExecutedEvent(IDbCommand command, IDataConnection connection, IDbConnection conn)
+        protected void FireExecutedEvent(DbCommand command, IDataConnection connection, DbConnection conn)
         {
             CommandExecuted?.Invoke(this, new CommandExecutingEventArgs(command, connection, conn));
         }
 
-        protected T ExecuteCommand<T>(IDbCommand command, IDataConnection connection, Func<IDbConnection, T> action)
+        protected async Task<T> ExecuteCommand<T>(DbCommand command, IDataConnection connection, Func<DbConnection, Task<T>> action)
         {
-            command.Connection = _info.Connection;
-            command.Transaction = _info.Transaction;
+            command.Connection = info.Connection;
+            command.Transaction = info.Transaction;
 
-            T toReturn = default(T);
+            T toReturn = default;
             foreach (IDbDataParameter parm in command.Parameters)
                 connection.DatastoreConverter.CoerceValue(parm);
 
-            InitCommand(command, _info.Connection);
+            InitCommand(command, info.Connection);
 
             try
             {
-                FireExecutingEvent(command, connection, _info.Connection);
-                toReturn = action(_info.Connection);
-                FireExecutedEvent(command, connection, _info.Connection);
+                FireExecutingEvent(command, connection, info.Connection);
+                toReturn = await action(info.Connection);
+                FireExecutedEvent(command, connection, info.Connection);
             }
             catch (Exception e)
             {
@@ -71,31 +63,30 @@ namespace DataAccess.Core.Execute
             return toReturn;
         }
 
-        public virtual IQueryData ExecuteCommandQueryAction(IDbCommand command, IDataConnection connection, IDbConnection r)
+        public virtual async Task<IQueryData> ExecuteCommandQueryAction(DbCommand command, IDataConnection connection, DbConnection r)
         {
-            return _base.ExecuteCommandQueryAction(command, connection, r);
+            return await storeExecutor.ExecuteCommandQueryAction(command, connection, r);
         }
 
-        public virtual IQueryData ExecuteCommandQuery(IDbCommand command, IDataConnection connection)
+        public virtual async Task<IQueryData> ExecuteCommandQuery(DbCommand command, IDataConnection connection)
         {
-            return ExecuteCommand<IQueryData>(command, connection, r =>
+            return await ExecuteCommand(command, connection, r =>
             {
-                return _base.ExecuteCommandQueryAction(command, connection, r);
+                return storeExecutor.ExecuteCommandQueryAction(command, connection, r);
             });
         }
 
-        public virtual int ExecuteCommand(IDbCommand command, IDataConnection connection)
+        public virtual async Task<int> ExecuteCommand(DbCommand command, IDataConnection connection)
         {
-            return ExecuteCommand<int>(command, connection, r =>
+            return await ExecuteCommand(command, connection, async r =>
             {
-
-                return command.ExecuteNonQuery();
+                return await command.ExecuteNonQueryAsync();
             });
         }
 
-        public virtual void InitCommand(IDbCommand command, IDbConnection conn)
+        public virtual void InitCommand(DbCommand command, DbConnection conn)
         {
-            _base.InitCommand(command, conn);
+            storeExecutor.InitCommand(command, conn);
         }
     }
 }

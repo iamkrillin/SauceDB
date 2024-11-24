@@ -10,6 +10,7 @@ using System.Data;
 using DataAccess.Core.Schema;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 namespace DataAccess.DatabaseTests.Tests
 {
@@ -246,21 +247,21 @@ namespace DataAccess.DatabaseTests.Tests
         [TestMethod]
         public virtual void Test_Can_Do_On_Table_Create()
         {
-            IEnumerable<TestItemOnTableCreated> items = dstore.LoadEntireTable<TestItemOnTableCreated>();
-            Assert.IsTrue(items.Count() > 0);
+            IAsyncEnumerable<TestItemOnTableCreated> items = dstore.LoadEntireTable<TestItemOnTableCreated>();
+            Assert.IsTrue(items.ToBlockingEnumerable().Count() > 0);
         }
 
         [TestMethod, ExpectedException(typeof(DataStoreException))]
         public virtual void Test_Exception_When_On_Table_Create_Is_Not_Static()
         {
-            IEnumerable<TestItemOnTableCreatedNonStatic> items = dstore.LoadEntireTable<TestItemOnTableCreatedNonStatic>();
-            Assert.IsTrue(items.Count() > 0);
+            IAsyncEnumerable<TestItemOnTableCreatedNonStatic> items = dstore.LoadEntireTable<TestItemOnTableCreatedNonStatic>();
+            Assert.IsTrue(items.ToBlockingEnumerable().Count() > 0);
         }
 
         [TestMethod]
         public virtual void Test_Can_Create_Table_With_No_Primary_Key()
         {
-            IEnumerable<ClassNoPrimaryKey> items = dstore.LoadEntireTable<ClassNoPrimaryKey>();
+            IEnumerable<ClassNoPrimaryKey> items = dstore.LoadEntireTable<ClassNoPrimaryKey>().ToBlockingEnumerable();
         }
 
         [TestMethod]

@@ -11,6 +11,8 @@ using System.Collections;
 using DataAccess.Core.Data;
 using DataAccess.Core.Conversion;
 using DataAccess.Core.Data.Results;
+using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace DataAccess.SQLite
 {
@@ -28,36 +30,36 @@ namespace DataAccess.SQLite
         /// <summary>
         /// Converts data on the way out that is Datastore -&gt; CLR
         /// </summary>
-        public IConvertToCLR CLRConverter { get { return _tConverter; } }
+        public IConvertToCLR CLRConverter => _tConverter;
 
         /// <summary>
         /// Coverts data on the way in that is, CLR -&gt; Datastore
         /// </summary>
-        public IConvertToDatastore DatastoreConverter { get { return _dConverter; } }
+        public IConvertToDatastore DatastoreConverter => _dConverter;
 
         /// <summary>
         /// The command generator for this data store
         /// </summary>
         /// <value></value>
-        public ICommandGenerator CommandGenerator { get { return _commandGenerator; } }
+        public ICommandGenerator CommandGenerator => _commandGenerator;
 
         /// <summary>
         /// the data stores escape character (left side)
         /// </summary>
         /// <value></value>
-        public string LeftEscapeCharacter { get { return "\""; } }
+        public string LeftEscapeCharacter => "\"";
 
         /// <summary>
         /// the data stores escape character (right side)
         /// </summary>
         /// <value></value>
-        public string RightEscapeCharacter { get { return "\""; } }
+        public string RightEscapeCharacter => "\"";
 
         /// <summary>
         /// The default schema for this data store
         /// </summary>
         /// <value></value>
-        public string DefaultSchema { get { return ""; } }
+        public string DefaultSchema => "";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlLiteDataConnection"/> class.
@@ -65,7 +67,7 @@ namespace DataAccess.SQLite
         /// <param name="filename">The filename</param>
         public SqlLiteDataConnection(string filename)
         {
-            _connectionString = string.Format("Data Source={0}; Version=3;", filename);
+            _connectionString = $"Data Source={filename}; Version=3;";
             _tConverter = new StandardCLRConverter();
             _commandGenerator = new SqliteCommandGenerator(this);
             _dConverter = new SQLiteDBConverter();
@@ -75,7 +77,7 @@ namespace DataAccess.SQLite
         /// Gets the connection.
         /// </summary>
         /// <returns></returns>
-        public IDbConnection GetConnection()
+        public DbConnection GetConnection()
         {
             return new SQLiteConnection(_connectionString);
         }
@@ -84,7 +86,7 @@ namespace DataAccess.SQLite
         /// Gets a data command for this connection type
         /// </summary>
         /// <returns></returns>
-        public IDbCommand GetCommand()
+        public DbCommand GetCommand()
         {
             return new SQLiteCommand();
         }
@@ -135,10 +137,10 @@ namespace DataAccess.SQLite
         /// </summary>
         /// <param name="items"></param>
         /// <param name="dstore"></param>
-        public void DoBulkInsert(IList items, IDataStore dstore)
+        public async Task DoBulkInsert(IList items, IDataStore dstore)
         {
             while (items.Count > 0)
-                dstore.InsertObjects(items.GetSmallerList(100));
+                await dstore.InsertObjects(items.GetSmallerList(100));
         }
 
         /// <summary>
@@ -157,11 +159,11 @@ namespace DataAccess.SQLite
         /// </summary>
         /// <param name="dstore"></param>
         /// <returns></returns>
-        public IEnumerable<DBObject> GetSchemaTables(IDataStore dstore)
+        public async IAsyncEnumerable<DBObject> GetSchemaTables(IDataStore dstore)
         {
             SQLiteCommand getTables = new SQLiteCommand();
             getTables.CommandText = "select name from sqlite_master where type = 'table'";
-            using (IQueryData tables = dstore.ExecuteCommands.ExecuteCommandQuery(getTables, dstore.Connection))
+            using (IQueryData tables = await dstore.ExecuteCommands.ExecuteCommandQuery(getTables, dstore.Connection))
             {
                 foreach (IQueryRow tab in tables)
                 {
@@ -172,7 +174,7 @@ namespace DataAccess.SQLite
                         t.Columns = new List<Column>();
 
                         getColumns.CommandText = string.Concat("pragma table_info(", t.Name, ");");
-                        using (IQueryData columns = dstore.ExecuteCommands.ExecuteCommandQuery(getColumns, dstore.Connection))
+                        using (IQueryData columns = await dstore.ExecuteCommands.ExecuteCommandQuery(getColumns, dstore.Connection))
                         {
                             foreach (IQueryRow col in columns)
                             {
@@ -196,12 +198,12 @@ namespace DataAccess.SQLite
         /// </summary>
         /// <param name="dstore"></param>
         /// <returns></returns>
-        public IEnumerable<DBObject> GetSchemaViews(IDataStore dstore)
+        public async IAsyncEnumerable<DBObject> GetSchemaViews(IDataStore dstore)
         {
             List<DBObject> toReturn = new List<DBObject>();
             SQLiteCommand getTables = new SQLiteCommand();
             getTables.CommandText = "select name from sqlite_master where type = 'view'";
-            using (IQueryData tables = dstore.ExecuteCommands.ExecuteCommandQuery(getTables, dstore.Connection))
+            using (IQueryData tables = await dstore.ExecuteCommands.ExecuteCommandQuery(getTables, dstore.Connection))
             {
                 foreach (IQueryRow tab in tables)
                 {
@@ -212,7 +214,7 @@ namespace DataAccess.SQLite
                         t.Columns = new List<Column>();
 
                         getColumns.CommandText = string.Concat("pragma table_info(", t.Name, ");");
-                        using (IQueryData columns = dstore.ExecuteCommands.ExecuteCommandQuery(getColumns, dstore.Connection))
+                        using (IQueryData columns = await dstore.ExecuteCommands.ExecuteCommandQuery(getColumns, dstore.Connection))
                         {
                             foreach (IQueryRow col in columns)
                             {

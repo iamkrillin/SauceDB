@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2042
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35514.174 d17.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Implementation", "Implementation", "{FD531B3D-9779-4DAF-BCE8-FF3D45FEAF3C}"
 EndProject
@@ -9,14 +9,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0AE48BF2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5103E9CD-6A2A-4AD0-B4D1-B57504261FCF}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		License.txt = License.txt
 		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
 		TestSettings1.testsettings = TestSettings1.testsettings
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "References", "References", "{34D6B17C-7F83-4BD1-AC31-6E04660C876E}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{23A2FAA9-E51F-4479-BF2A-77E930A6A5BD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess.SqlServer", "DataAccess.SqlServer\DataAccess.SqlServer.csproj", "{A31F417E-791C-4374-B6D3-785B6C24A133}"
 EndProject
@@ -29,8 +28,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess.PostgreSQL", "DataAccess.PostgreSQL\DataAccess.PostgreSQL.csproj", "{F39DD494-29EF-4F9C-BA62-8DBC5BF25A36}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess.DatabaseTests", "DataAccess.DatabaseTests\DataAccess.DatabaseTests.csproj", "{563BA308-B3A8-43C7-BEE7-1914A12ACB44}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGetPackages", "NuGetPackages\NuGetPackages.csproj", "{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess.Advantage", "DataAccess.Advantage\DataAccess.Advantage.csproj", "{FEE1249B-7A44-4728-AF81-A27D82B480B3}"
 EndProject
@@ -401,60 +398,6 @@ Global
 		{563BA308-B3A8-43C7-BEE7-1914A12ACB44}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{563BA308-B3A8-43C7-BEE7-1914A12ACB44}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{563BA308-B3A8-43C7-BEE7-1914A12ACB44}.Release|x86.ActiveCfg = Release|Any CPU
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.Debug|iPhone.ActiveCfg = Debug|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.Debug|iPhoneSimulator.ActiveCfg = Debug|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.Debug|x86.ActiveCfg = Debug|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.Debug|x86.Build.0 = Debug|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.MONO|Any CPU.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.MONO|iPhone.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.MONO|iPhoneSimulator.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.MONO|Mixed Platforms.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.MONO|Mixed Platforms.Build.0 = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.MONO|x86.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.MONO|x86.Build.0 = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PlublishWithSymbolsNoTestsNoAddin|Any CPU.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PlublishWithSymbolsNoTestsNoAddin|iPhone.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PlublishWithSymbolsNoTestsNoAddin|iPhoneSimulator.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PlublishWithSymbolsNoTestsNoAddin|Mixed Platforms.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PlublishWithSymbolsNoTestsNoAddin|Mixed Platforms.Build.0 = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PlublishWithSymbolsNoTestsNoAddin|x86.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PlublishWithSymbolsNoTestsNoAddin|x86.Build.0 = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbols|Any CPU.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbols|iPhone.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbols|iPhoneSimulator.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbols|Mixed Platforms.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbols|x86.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbols|x86.Build.0 = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbolsNoTests|Any CPU.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbolsNoTests|Any CPU.Build.0 = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbolsNoTests|iPhone.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbolsNoTests|iPhone.Build.0 = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbolsNoTests|iPhoneSimulator.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbolsNoTests|iPhoneSimulator.Build.0 = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbolsNoTests|Mixed Platforms.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbolsNoTests|Mixed Platforms.Build.0 = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbolsNoTests|x86.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbolsNoTests|x86.Build.0 = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbolsWithoutTests|Any CPU.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbolsWithoutTests|Any CPU.Build.0 = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbolsWithoutTests|iPhone.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbolsWithoutTests|iPhone.Build.0 = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbolsWithoutTests|iPhoneSimulator.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbolsWithoutTests|iPhoneSimulator.Build.0 = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbolsWithoutTests|Mixed Platforms.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbolsWithoutTests|Mixed Platforms.Build.0 = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbolsWithoutTests|x86.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.PublishWithSymbolsWithoutTests|x86.Build.0 = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.Release|Any CPU.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.Release|iPhone.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.Release|iPhoneSimulator.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.Release|Mixed Platforms.Build.0 = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.Release|x86.ActiveCfg = Release|x86
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60}.Release|x86.Build.0 = Release|x86
 		{FEE1249B-7A44-4728-AF81-A27D82B480B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FEE1249B-7A44-4728-AF81-A27D82B480B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FEE1249B-7A44-4728-AF81-A27D82B480B3}.Debug|iPhone.ActiveCfg = Debug|Any CPU
@@ -575,14 +518,13 @@ Global
 		{BC486641-E761-48CE-B9A4-F4DBB9E3C6CD} = {FD531B3D-9779-4DAF-BCE8-FF3D45FEAF3C}
 		{B78C7FC2-857C-4049-9A08-E1FFC8E44E2F} = {FD531B3D-9779-4DAF-BCE8-FF3D45FEAF3C}
 		{F39DD494-29EF-4F9C-BA62-8DBC5BF25A36} = {FD531B3D-9779-4DAF-BCE8-FF3D45FEAF3C}
-		{82DFA36E-87D4-4FFB-955F-E3E82D0F3A60} = {23A2FAA9-E51F-4479-BF2A-77E930A6A5BD}
 		{FEE1249B-7A44-4728-AF81-A27D82B480B3} = {FD531B3D-9779-4DAF-BCE8-FF3D45FEAF3C}
 		{57139405-3A84-4D2A-B540-89FDCC61EA9F} = {FD531B3D-9779-4DAF-BCE8-FF3D45FEAF3C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPath = packages\TransientFaultHandling.Core.5.1.1209.1\lib\NET4
-		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8;packages\EnterpriseLibrary.TransientFaultHandling.Data.6.0.1304.1\lib\NET45
 		SolutionGuid = {4CDB503A-375B-4607-83C1-E67BF2C4956D}
+		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8;packages\EnterpriseLibrary.TransientFaultHandling.Data.6.0.1304.1\lib\NET45
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\TransientFaultHandling.Core.5.1.1209.1\lib\NET4
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = DataAccess.SqlServer\DataAccess.SqlServer.csproj

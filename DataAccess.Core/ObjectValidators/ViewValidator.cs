@@ -5,23 +5,19 @@ using System.Text;
 using DataAccess.Core.Interfaces;
 using System.Data;
 using DataAccess.Core.Data;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core.ObjectValidators
 {
     /// <summary>
     /// Does view validation
     /// </summary>
-    public class ViewValidator : ObjectValidator
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="ViewValidator"/> class.
+    /// </remarks>
+    /// <param name="dstore">The dstore.</param>
+    public class ViewValidator(IDataStore dstore) : ObjectValidator(dstore)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ViewValidator"/> class.
-        /// </summary>
-        /// <param name="dstore">The dstore.</param>
-        public ViewValidator(IDataStore dstore)
-            : base(dstore)
-        {
-
-        }
 
         /// <summary>
         /// Validates an objects info against the datastore
@@ -43,7 +39,7 @@ namespace DataAccess.Core.ObjectValidators
         /// <param name="obj">The obj.</param>
         protected virtual void ValidateExistingView(DatabaseTypeInfo ti, DBObject obj)
         {
-            List<string> Missing = new List<string>();
+            List<string> Missing = [];
 
             foreach (DataFieldInfo dfi in ti.DataFields)
             {
@@ -58,7 +54,7 @@ namespace DataAccess.Core.ObjectValidators
                 for (int i = 0; i < Missing.Count; i++)
                 {
                     if (i > 0)
-                        sb.Append(",");
+                        sb.Append(',');
                     sb.AppendFormat(" {0}", Missing[i]);
                 }
 
@@ -91,7 +87,7 @@ namespace DataAccess.Core.ObjectValidators
             {
                 lock (Objects)
                 {
-                    Objects.AddRange(_dstore.Connection.GetSchemaViews(_dstore));
+                    Objects.AddRange(_dstore.Connection.GetSchemaViews(_dstore).ToBlockingEnumerable());
                 }
             }
 

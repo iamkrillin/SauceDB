@@ -12,6 +12,7 @@ using System.IO;
 using DataAccess.Core.Attributes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace DataAccess.DatabaseTests
 {
@@ -98,13 +99,16 @@ namespace DataAccess.DatabaseTests
         }
 
         [TestMethod]
-        public void Test_Can_Load_With_Keyword()
+        public async Task Test_Can_Load_With_Keyword()
         {
-            dstore.InsertObject(new Foo() { Default = true });
-            Assert.IsTrue(dstore.LoadObject<Foo>(1).Default);
+            await dstore.InsertObject(new Foo() { Default = true });
+            var item = await dstore.LoadObject<Foo>(1);
+            Assert.IsTrue(item.Default);
 
-            dstore.GetCommand<int>().ExecuteCommand("create view foobar as select * from foos;");
-            Assert.IsTrue(dstore.LoadObject<FooBar>(1).Default);
+            await dstore.GetCommand<int>().ExecuteCommand("create view foobar as select * from foos;");
+            var item2 = await dstore.LoadObject<FooBar>(1);
+
+            Assert.IsTrue(item.Default);
         }
 
         [TestMethod]

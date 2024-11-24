@@ -10,6 +10,8 @@ using DataAccess.Core.Events;
 using DataAccess.Core.Data;
 using DataAccess.Core.Linq.Common;
 using DataAccess.Core.Linq.Mapping;
+using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core.Interfaces
 {
@@ -57,7 +59,7 @@ namespace DataAccess.Core.Interfaces
         /// Executes a command
         /// </summary>
         /// <param name="command">The command to execute</param>
-        IQueryData ExecuteQuery(IDbCommand command);
+        Task<IQueryData> ExecuteQuery(DbCommand command);
 
         /// <summary>
         /// Gets or sets the DataConnection
@@ -85,7 +87,7 @@ namespace DataAccess.Core.Interfaces
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns></returns>
-        bool InsertObject(object item);
+        Task<bool> InsertObject(object item);
 
         /// <summary>
         /// Loads an object
@@ -93,7 +95,7 @@ namespace DataAccess.Core.Interfaces
         /// <typeparam name="T">The type to load</typeparam>
         /// <param name="PrimaryKey">The primary key.</param>
         /// <returns></returns>
-        T LoadObject<T>(object PrimaryKey);
+        Task<T> LoadObject<T>(object PrimaryKey);
 
         /// <summary>
         /// Loads an object
@@ -101,40 +103,40 @@ namespace DataAccess.Core.Interfaces
         /// <param name="dtoType">The type to load.</param>
         /// <param name="PrimaryKey">The primary key.</param>
         /// <returns></returns>
-        object LoadObject(Type dtoType, object PrimaryKey);
+        Task<object> LoadObject(Type dtoType, object PrimaryKey);
 
         /// <summary>
         /// Deletes an object
         /// </summary>
         /// <param name="item">The item to remove</param>
         /// <returns></returns>
-        bool DeleteObject(object item);
+        Task<bool> DeleteObject(object item);
 
         /// <summary>
         /// Deletes an object
         /// </summary>
         /// <param name="pkey">The key to delete on</param>
         /// <returns></returns>
-        bool DeleteObject<T>(object pkey);
+        Task<bool> DeleteObject<T>(object pkey);
 
         /// <summary>
         /// Deletes objects based on an expression
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="criteria"></param>
-        int DeleteObjects<T>(Expression<Func<T, bool>> criteria);
+        Task<int> DeleteObjects<T>(Expression<Func<T, bool>> criteria);
 
         /// <summary>
         /// Loads an entire table
         /// </summary>
         /// <param name="item">The type to load</param>
-        IEnumerable<object> LoadEntireTable(Type item);
+        IAsyncEnumerable<object> LoadEntireTable(Type item);
 
         /// <summary>
         /// Loads an entire table
         /// </summary>
         /// <typeparam name="T">The type to load</typeparam>
-        IEnumerable<T> LoadEntireTable<T>();
+        IAsyncEnumerable<T> LoadEntireTable<T>();
 
         /// <summary>
         /// Returns the resolved table name for a type
@@ -156,7 +158,7 @@ namespace DataAccess.Core.Interfaces
         /// <param name="objectType">The type to load in the list</param>
         /// <param name="command">The command to execute</param>
         /// <returns></returns>
-        IEnumerable<object> ExecuteCommandLoadList(Type objectType, IDbCommand command);
+        IAsyncEnumerable<object> ExecuteCommandLoadList(Type objectType, DbCommand command);
 
         /// <summary>
         /// Executes a command and loads a list
@@ -164,7 +166,7 @@ namespace DataAccess.Core.Interfaces
         /// <typeparam name="T">The type to load in the list</typeparam>
         /// <param name="command">The command to execute</param>
         /// <returns></returns>
-        IEnumerable<T> ExecuteCommandLoadList<T>(IDbCommand command);        
+        IAsyncEnumerable<T> ExecuteCommandLoadList<T>(DbCommand command);        
 
         /// <summary>
         /// Execute a command an loads an object
@@ -172,7 +174,7 @@ namespace DataAccess.Core.Interfaces
         /// <typeparam name="T">The type to load</typeparam>
         /// <param name="command">The command to execute</param>
         /// <returns></returns>
-        T ExecuteCommandLoadObject<T>(IDbCommand command);
+        Task<T> ExecuteCommandLoadObject<T>(DbCommand command);
 
         /// <summary>
         /// Returns a helper for dealing with the db directly
@@ -194,35 +196,35 @@ namespace DataAccess.Core.Interfaces
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        bool LoadObject(object item);
+        Task<bool> LoadObject(object item);
 
         /// <summary>
         /// Inserts a list of items into the data store
         /// </summary>
         /// <param name="items">The items to insert</param>
         /// <returns></returns>
-        bool InsertObjects(IList items);
+        Task<bool> InsertObjects(IList items);
 
         /// <summary>
         /// Determines if an object already exists in the data store, based on the primary key
         /// </summary>
         /// <param name="item">The object to check</param>
         /// <returns></returns>
-        bool IsNew(object item);
+        Task<bool> IsNew(object item);
 
         /// <summary>
         /// Will do an insert or update as appropriate to persist your data
         /// Note: This method will determine what operation is required by calling IsNew()
         /// </summary>
         /// <param name="item">The item to persist</param>
-        bool SaveObject(object item);
+        Task<bool> SaveObject(object item);
 
         /// <summary>
         /// Updates an object on the data store, primary key must be set
         /// </summary>
         /// <param name="item">The item to update</param>
         /// <returns></returns>
-        bool UpdateObject(object item);
+        Task<bool> UpdateObject(object item);
 
         /// <summary>
         /// Updates all items in the list, primary keys must be set
@@ -230,13 +232,13 @@ namespace DataAccess.Core.Interfaces
         /// <typeparam name="T"></typeparam>
         /// <param name="items"></param>
         /// <returns>The items that failed to update</returns>
-        IEnumerable<T> UpdateObjects<T>(IEnumerable<T> items);
+        IAsyncEnumerable<T> UpdateObjects<T>(IEnumerable<T> items);
 
         /// <summary>
         /// Executes a command on the data store
         /// </summary>
         /// <param name="command">The command to execute</param>
-        int ExecuteCommand(IDbCommand command);
+       Task<int> ExecuteCommand(DbCommand command);
 
         /// <summary>
         /// This function will return an IQueryable appropriate for using with LINQ

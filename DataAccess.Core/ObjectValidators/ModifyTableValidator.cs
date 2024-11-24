@@ -6,23 +6,20 @@ using DataAccess.Core.Interfaces;
 using System.Data;
 using DataAccess.Core.Data;
 using DataAccess.Core.Events;
+using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core.ObjectValidators
 {
     /// <summary>
     /// Validates tables on the datastore
     /// </summary>
-    public class ModifyTableValidator : ObjectValidator, IValidateTables
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="ModifyTableValidator"/> class.
+    /// </remarks>
+    /// <param name="dstore">The dstore.</param>
+    public class ModifyTableValidator(IDataStore dstore) : ObjectValidator(dstore), IValidateTables
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ModifyTableValidator"/> class.
-        /// </summary>
-        /// <param name="dstore">The dstore.</param>
-        public ModifyTableValidator(IDataStore dstore)
-            : base(dstore)
-        {
-
-        }
 
         /// <summary>
         /// Validates an objects info against the datastore
@@ -64,7 +61,7 @@ namespace DataAccess.Core.ObjectValidators
         /// <param name="t">The t.</param>
         protected virtual void ValidateExistingTable(DatabaseTypeInfo typeInfo, DBObject t)
         {
-            List<Column> valid = new List<Column>();
+            List<Column> valid = [];
             bool dirty = false;
 
             foreach (DataFieldInfo dfi in typeInfo.DataFields)
@@ -141,7 +138,7 @@ namespace DataAccess.Core.ObjectValidators
             {
                 CheckSchema(ti);
 
-                foreach (IDbCommand cmd in _dstore.Connection.CommandGenerator.GetAddTableCommand(ti))
+                foreach (DbCommand cmd in _dstore.Connection.CommandGenerator.GetAddTableCommand(ti))
                     _dstore.ExecuteCommands.ExecuteCommand(cmd, _dstore.Connection);
 
                 FireCreated(ti);
@@ -165,7 +162,7 @@ namespace DataAccess.Core.ObjectValidators
                 bool result = false;
                 if (ti.DataFields.Count > 0)
                 {
-                    foreach (IDbCommand cmd in _dstore.Connection.CommandGenerator.GetAddColumnCommnad(ti, field))
+                    foreach (DbCommand cmd in _dstore.Connection.CommandGenerator.GetAddColumnCommnad(ti, field))
                         _dstore.ExecuteCommands.ExecuteCommand(cmd, _dstore.Connection);
 
                     FireModified(ti, "Added {0} to {1}", field.FieldName, ti.TableName);
@@ -192,7 +189,7 @@ namespace DataAccess.Core.ObjectValidators
                 bool result = false;
                 if (ti.DataFields.Count > 0)
                 {
-                    IDbCommand cmd = _dstore.Connection.CommandGenerator.GetRemoveColumnCommand(ti, field);
+                    DbCommand cmd = _dstore.Connection.CommandGenerator.GetRemoveColumnCommand(ti, field);
                     _dstore.ExecuteCommands.ExecuteCommand(cmd, _dstore.Connection);
                     FireModified(ti, "Removed Column {0} from {1}", field.FieldName, ti.TableName);
                     result = true;
@@ -214,7 +211,7 @@ namespace DataAccess.Core.ObjectValidators
         {
             if (CanUpdateColumns)
             {
-                foreach (IDbCommand cmd in _dstore.Connection.CommandGenerator.GetModifyColumnCommand(typeInfo, dfi))
+                foreach (DbCommand cmd in _dstore.Connection.CommandGenerator.GetModifyColumnCommand(typeInfo, dfi))
                     _dstore.ExecuteCommands.ExecuteCommand(cmd, _dstore.Connection);
 
                 FireModified(typeInfo, "Added {0} to {1}", dfi.FieldName, typeInfo.TableName);
@@ -236,7 +233,7 @@ namespace DataAccess.Core.ObjectValidators
             {
                 lock (Objects)
                 {
-                    Objects.AddRange(_dstore.Connection.GetSchemaTables(_dstore));
+                    Objects.AddRange(_dstore.Connection.GetSchemaTables(_dstore).ToBlockingEnumerable());
                 }
             }
 
@@ -251,7 +248,7 @@ namespace DataAccess.Core.ObjectValidators
         {
             if (!ti.UnEscapedSchema.Equals(_dstore.Connection.DefaultSchema, StringComparison.InvariantCultureIgnoreCase))
             {
-                IDbCommand cmd = _dstore.Connection.CommandGenerator.GetAddSchemaCommand(ti);
+                DbCommand cmd = _dstore.Connection.CommandGenerator.GetAddSchemaCommand(ti);
 
                 if(cmd != null)
                     _dstore.ExecuteCommands.ExecuteCommand(cmd, _dstore.Connection);

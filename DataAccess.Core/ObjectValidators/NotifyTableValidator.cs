@@ -6,24 +6,19 @@ using DataAccess.Core.Interfaces;
 using System.Data;
 using DataAccess.Core.Data;
 using DataAccess.Core.Events;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core.ObjectValidators
 {
     /// <summary>
     /// Validates tables on the datastore
     /// </summary>
-    public class NotifyTableValidator : ObjectValidator
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="ModifyTableValidator"/> class.
+    /// </remarks>
+    /// <param name="dstore">The dstore.</param>
+    public class NotifyTableValidator(IDataStore dstore) : ObjectValidator(dstore)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ModifyTableValidator"/> class.
-        /// </summary>
-        /// <param name="dstore">The dstore.</param>
-        public NotifyTableValidator(IDataStore dstore)
-            : base(dstore)
-        {
-
-        }
-
         /// <summary>
         /// Validates an objects info against the datastore
         /// </summary>
@@ -54,7 +49,7 @@ namespace DataAccess.Core.ObjectValidators
         /// <param name="t">The t.</param>
         protected virtual void ValidateExistingTable(DatabaseTypeInfo typeInfo, DBObject t)
         {
-            List<Column> valid = new List<Column>();
+            List<Column> valid = [];
 
             foreach (DataFieldInfo dfi in typeInfo.DataFields)
             {
@@ -80,7 +75,7 @@ namespace DataAccess.Core.ObjectValidators
             {
                 lock (Objects)
                 {
-                    Objects.AddRange(_dstore.Connection.GetSchemaTables(_dstore));
+                    Objects.AddRange(_dstore.Connection.GetSchemaTables(_dstore).ToBlockingEnumerable());
                 }
             }
             return Objects;

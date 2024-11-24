@@ -7,6 +7,7 @@ using DataAccess.Core.Interfaces;
 using DataAccess.PostgreSQL;
 using DataAccess.DatabaseTests.DataObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 namespace DataAccess.DatabaseTests
 {
@@ -27,25 +28,25 @@ namespace DataAccess.DatabaseTests
 
 
         [TestMethod]
-        public override void Can_Do_Command_With_Parameter_Object()
+        public override async Task Can_Do_Command_With_Parameter_Object()
         {
-            dstore.InsertObject(new TestItem() { Something = "foo" });
-            dstore.InsertObject(new TestItem() { Something = "bar" });
-            dstore.InsertObject(new TestItem() { Something = "foobar" });
+            await dstore.InsertObject(new TestItem() { Something = "foo" });
+            await dstore.InsertObject(new TestItem() { Something = "bar" });
+            await dstore.InsertObject(new TestItem() { Something = "foobar" });
 
-            var items = dstore.GetCommand<TestItem>().ExecuteQuery("select * from TestItems where \"Something\" = @query", new { query = "foo" });
+            var items = dstore.GetCommand<TestItem>().ExecuteQuery("select * from TestItems where \"Something\" = @query", new { query = "foo" }).ToBlockingEnumerable();
             Assert.IsTrue(items != null);
             Assert.IsTrue(items.Count() == 1);
         }
 
         [TestMethod]
-        public override void Can_Do_Command_Without_Parameter_Object()
+        public override async Task Can_Do_Command_Without_Parameter_Object()
         {
-            dstore.InsertObject(new TestItem() { Something = "foo" });
-            dstore.InsertObject(new TestItem() { Something = "bar" });
-            dstore.InsertObject(new TestItem() { Something = "foobar" });
+            await dstore.InsertObject(new TestItem() { Something = "foo" });
+            await dstore.InsertObject(new TestItem() { Something = "bar" });
+            await dstore.InsertObject(new TestItem() { Something = "foobar" });
 
-            var items = dstore.GetCommand<TestItem>().ExecuteQuery("select * from TestItems");
+            var items = dstore.GetCommand<TestItem>().ExecuteQuery("select * from TestItems").ToBlockingEnumerable();
             Assert.IsTrue(items != null);
             Assert.IsTrue(items.Count() == 3);
         }

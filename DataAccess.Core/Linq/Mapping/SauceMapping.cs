@@ -14,19 +14,12 @@ namespace DataAccess.Core.Linq.Mapping
     /// <summary>
     /// Provides table and column mapping using sauce rules
     /// </summary>
-    public class SauceMapping
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="SauceMapping"/> class.
+    /// </remarks>
+    /// <param name="dStore">The d store.</param>
+    public class SauceMapping(IDataStore dStore)
     {
-        private IDataStore _dstore;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SauceMapping"/> class.
-        /// </summary>
-        /// <param name="dStore">The d store.</param>
-        public SauceMapping(IDataStore dStore)
-        {
-            _dstore = dStore;
-        }
-
         /// <summary>
         /// Gets the table id.
         /// </summary>
@@ -34,7 +27,7 @@ namespace DataAccess.Core.Linq.Mapping
         /// <returns></returns>
         public string GetTableId(Type type)
         {
-            return _dstore.GetTableName(type);
+            return dStore.GetTableName(type);
         }
 
         /// <summary>
@@ -56,7 +49,7 @@ namespace DataAccess.Core.Linq.Mapping
         public MappingEntity GetEntity(Type elementType, string tableId)
         {
             if (tableId == null)
-                tableId = _dstore.GetTableName(elementType);
+                tableId = dStore.GetTableName(elementType);
             return new BasicMappingEntity(elementType, tableId);
         }
 
@@ -113,7 +106,7 @@ namespace DataAccess.Core.Linq.Mapping
         /// </returns>
         public bool IsMapped(MappingEntity entity, MemberInfo member)
         {
-            DatabaseTypeInfo ti = _dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(entity.EntityType);
+            DatabaseTypeInfo ti = dStore.Connection.CommandGenerator.TypeParser.GetTypeInfo(entity.EntityType);
             DataFieldInfo field = ti.DataFields.Where(R => R.PropertyName.Equals(member.Name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             return field != null && field.LoadField;
         }
@@ -128,7 +121,7 @@ namespace DataAccess.Core.Linq.Mapping
         /// </returns>
         public bool IsPrimaryKey(MappingEntity entity, MemberInfo member)
         {
-            DatabaseTypeInfo ti = _dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(entity.EntityType);
+            DatabaseTypeInfo ti = dStore.Connection.CommandGenerator.TypeParser.GetTypeInfo(entity.EntityType);
             return ti.PrimaryKeys.Where(R => R.PropertyName.Equals(member.Name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault() != null;
         }
 
@@ -142,7 +135,8 @@ namespace DataAccess.Core.Linq.Mapping
         {
             object firstKey = null;
             List<object> keys = null;
-            DatabaseTypeInfo ti = _dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(entity.EntityType);
+            DatabaseTypeInfo ti = dStore.Connection.CommandGenerator.TypeParser.GetTypeInfo(entity.EntityType);
+
             foreach (DataFieldInfo v in ti.PrimaryKeys)
             {
                 if (firstKey == null)
@@ -152,16 +146,14 @@ namespace DataAccess.Core.Linq.Mapping
                 else
                 {
                     if (keys == null)
-                    {
-                        keys = new List<object>();
-                        keys.Add(firstKey);
-                    }
+                        keys = [firstKey];
+                    
                     keys.Add(v.Getter(instance));
                 }
             }
             if (keys != null)
             {
-                return new CompoundKey(keys.ToArray());
+                return new CompoundKey([.. keys]);
             }
             return firstKey;
         }
@@ -196,7 +188,7 @@ namespace DataAccess.Core.Linq.Mapping
             }
             var predLambda = Expression.Lambda(pred, p);
 
-            return Expression.Call(typeof(Queryable), "SingleOrDefault", new Type[] { entity.ElementType }, source, predLambda);
+            return Expression.Call(typeof(Queryable), "SingleOrDefault", [entity.ElementType], source, predLambda);
         }
 
         /// <summary>
@@ -240,7 +232,7 @@ namespace DataAccess.Core.Linq.Mapping
         /// <returns></returns>
         public string GetColumnName(MappingEntity entity, MemberInfo member)
         {
-            DatabaseTypeInfo ti = _dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(entity.EntityType);
+            DatabaseTypeInfo ti = dStore.Connection.CommandGenerator.TypeParser.GetTypeInfo(entity.EntityType);
             DataFieldInfo field = ti.DataFields.Where(R => R.PropertyName.Equals(member.Name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             return field != null ? field.EscapedFieldName : "";
         }
@@ -252,7 +244,7 @@ namespace DataAccess.Core.Linq.Mapping
         /// <returns></returns>
         public string GetColumnName(MemberInfo memberInfo)
         {
-            DatabaseTypeInfo ti = _dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(memberInfo.DeclaringType);
+            DatabaseTypeInfo ti = dStore.Connection.CommandGenerator.TypeParser.GetTypeInfo(memberInfo.DeclaringType);
             DataFieldInfo field = ti.DataFields.Where(R => R.PropertyName.Equals(memberInfo.Name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             return field != null ? field.EscapedFieldName : "";
         }
@@ -276,18 +268,15 @@ namespace DataAccess.Core.Linq.Mapping
         public virtual bool CanBeEvaluatedLocally(Expression expression)
         {
             // any operation on a query can't be done locally
-            ConstantExpression cex = expression as ConstantExpression;
-            if (cex != null)
+            if (expression is ConstantExpression cex)
             {
-                IQueryable query = cex.Value as IQueryable;
-                if (query != null && query.Provider == this)
+                if (cex.Value is IQueryable query && query.Provider == this)
                     return false;
             }
-            MethodCallExpression mc = expression as MethodCallExpression;
-            if (mc != null && (mc.Method.DeclaringType == typeof(Enumerable) || mc.Method.DeclaringType == typeof(Queryable)))
-            {
+
+            if (expression is MethodCallExpression mc && (mc.Method.DeclaringType == typeof(Enumerable) || mc.Method.DeclaringType == typeof(Queryable)))
                 return false;
-            }
+            
             if (expression.NodeType == ExpressionType.Convert && expression.Type == typeof(object))
                 return true;
             return expression.NodeType != ExpressionType.Parameter && expression.NodeType != ExpressionType.Lambda;

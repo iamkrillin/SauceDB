@@ -10,22 +10,17 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using DataAccess.Core.Linq.Common;
 using DataAccess.Core.Linq.Common.Mapping;
 
 namespace DataAccess.Core.Linq.Common
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public interface ICreateExecutor
     {
         QueryExecutor CreateExecutor();
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
     public abstract class QueryExecutor
     {
         // called from compiled execution plan
@@ -36,6 +31,7 @@ namespace DataAccess.Core.Linq.Common
         /// <param name="type">The type.</param>
         /// <returns></returns>
         public abstract object Convert(object value, Type type);
+
         /// <summary>
         /// Executes the specified command.
         /// </summary>
@@ -45,13 +41,14 @@ namespace DataAccess.Core.Linq.Common
         /// <param name="entity">The entity.</param>
         /// <param name="paramValues">The param values.</param>
         /// <returns></returns>
-        public abstract IEnumerable<T> Execute<T>(QueryCommand command, Func<FieldReader, T> fnProjector, MappingEntity entity, object[] paramValues);
+        public abstract IAsyncEnumerable<T> Execute<T>(QueryCommand command, Func<FieldReader, T> fnProjector, MappingEntity entity, object[] paramValues);
+        
         /// <summary>
         /// Executes the command.
         /// </summary>
         /// <param name="query">The query.</param>
         /// <param name="paramValues">The param values.</param>
         /// <returns></returns>
-        public abstract int ExecuteCommand(QueryCommand query, object[] paramValues);
+        public abstract Task<int> ExecuteCommand(QueryCommand query, object[] paramValues);
     }
 }

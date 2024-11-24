@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data;
 using DataAccess.Core.Data;
-using System.Data.SqlClient;
 using DataAccess.Core.Interfaces;
 using DataAccess.Core;
 using System.Collections;
-using DataAccess.Core.Linq;
-using DataAccess.Core.Linq.Mapping;
 using DataAccess.SqlServer.Linq;
 using System.Reflection;
-using DataAccess.Core.Data.Results;
 using DataAccess.Core.Extensions;
+using Microsoft.Data.SqlClient;
+using System.Threading.Tasks;
+using System.Data.Common;
 
 namespace DataAccess.SqlServer
 {
@@ -22,10 +20,12 @@ namespace DataAccess.SqlServer
     /// </summary>
     public class SqlServerConnection : IDataConnection
     {
+#pragma warning disable CA2211 // Non-constant fields should not be visible
         protected static string _GetTableColumns;
         protected static string _GetTables;
         protected static string _GetViews;
         protected static string _GetViewsColumns;
+#pragma warning restore CA2211 // Non-constant fields should not be visible
 
         static SqlServerConnection()
         {
@@ -44,37 +44,36 @@ namespace DataAccess.SqlServer
         /// <summary>
         /// Converts data on the way out that is Datastore -&gt; CLR
         /// </summary>
-        public IConvertToCLR CLRConverter { get { return _tConverter; } }
+        public IConvertToCLR CLRConverter => _tConverter;
 
         /// <summary>
         /// Coverts data on the way in that is, CLR -&gt; Datastore
         /// </summary>
-        public IConvertToDatastore DatastoreConverter { get { return _dConverter; } }
-
+        public IConvertToDatastore DatastoreConverter => _dConverter;
 
         /// <summary>
         /// The command generator for this data store
         /// </summary>
         /// <value></value>
-        public ICommandGenerator CommandGenerator { get { return _commandGenerator; } }
+        public ICommandGenerator CommandGenerator => _commandGenerator;
 
         /// <summary>
         /// the data stores escape character (left side)
         /// </summary>
         /// <value></value>
-        public string LeftEscapeCharacter { get { return "["; } }
+        public string LeftEscapeCharacter => "[";
 
         /// <summary>
         /// the data stores escape character (right side)
         /// </summary>
         /// <value></value>
-        public string RightEscapeCharacter { get { return "]"; } }
+        public string RightEscapeCharacter => "]";
 
         /// <summary>
         /// The default schema for this data store
         /// </summary>
         /// <value></value>
-        public string DefaultSchema { get { return "dbo"; } }
+        public string DefaultSchema => "dbo";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlServerConnection"/> class with a connection string appropriate for sql server 2k8
@@ -84,7 +83,7 @@ namespace DataAccess.SqlServer
         /// <param name="User">The user.</param>
         /// <param name="Password">The password.</param>
         public SqlServerConnection(string Server, string Catalog, string User, string Password)
-            : this(string.Format("Data Source={0};Initial Catalog={1};User Id={2};Password={3};", Server, Catalog, User, Password))
+            : this($"Data Source={Server};Initial Catalog={Catalog};User Id={User};Password={Password};")
         {
 
         }
@@ -107,7 +106,7 @@ namespace DataAccess.SqlServer
         /// <param name="Server"></param>
         /// <param name="Catalog"></param>
         public SqlServerConnection(string Server, string Catalog)
-            : this(string.Format("Data Source={0};Initial Catalog={1};Integrated Security=true;", Server, Catalog))
+            : this($"Data Source={Server};Initial Catalog={Catalog};Integrated Security=true;")
         {
 
         }
@@ -127,7 +126,7 @@ namespace DataAccess.SqlServer
         /// Gets the connection.
         /// </summary>
         /// <returns></returns>
-        public virtual IDbConnection GetConnection()
+        public virtual DbConnection GetConnection()
         {
             return new SqlConnection(_connectionString);
         }
@@ -136,7 +135,7 @@ namespace DataAccess.SqlServer
         /// Gets a data command for this connection type
         /// </summary>
         /// <returns></returns>
-        public virtual IDbCommand GetCommand()
+        public virtual DbCommand GetCommand()
         {
             return new SqlCommand();
         }
@@ -218,7 +217,7 @@ namespace DataAccess.SqlServer
         public void TruncateTable(Type t, IDataStore dstore)
         {
             SqlCommand command = new SqlCommand();
-            command.CommandText = string.Format("TRUNCATE TABLE {0}", dstore.GetTableName(t));
+            command.CommandText = $"TRUNCATE TABLE {dstore.GetTableName(t)}";
             dstore.ExecuteCommand(command);
         }
 
@@ -227,14 +226,14 @@ namespace DataAccess.SqlServer
         /// </summary>
         /// <param name="items">The items to insert</param>
         /// <param name="dstore">The data store to use when executing</param>
-        public void DoBulkInsert(IList items, IDataStore dstore)
+        public async Task DoBulkInsert(IList items, IDataStore dstore)
         {
-            ArrayList toUse = new ArrayList();
+            ArrayList toUse = [];
             toUse.AddRange(items);
-            DoBulkCopy(toUse, dstore);
+            await DoBulkCopy(toUse, dstore);
         }
 
-        private void DoBulkCopy(IList items, IDataStore dstore)
+        private async Task DoBulkCopy(ArrayList items, IDataStore dstore)
         {
             if (items.Count > 0)
             {
@@ -246,7 +245,7 @@ namespace DataAccess.SqlServer
                 {
                     while (items.Count > 0)
                     {
-                        ArrayList list = new ArrayList();
+                        ArrayList list = [];
                         while (items.Count > 0)
                         {
                             list.Add(items[0]);
@@ -254,13 +253,13 @@ namespace DataAccess.SqlServer
 
                             if (list.Count > 20000)
                             {
-                                ProcessBulkInsert(list, t, ti, table);
+                                await ProcessBulkInsert(list, t, ti, table);
                                 list.Clear();
                             }
                         }
 
                         if (list.Count > 0)
-                            ProcessBulkInsert(list, t, ti, table);
+                            await ProcessBulkInsert(list, t, ti, table);
                     }
                 }
                 else
@@ -270,7 +269,7 @@ namespace DataAccess.SqlServer
             }
         }
 
-        private void ProcessBulkInsert(IList list, Type t, DatabaseTypeInfo ti, DBObject table)
+        private async Task ProcessBulkInsert(IList list, Type t, DatabaseTypeInfo ti, DBObject table)
         {
             DataTable dt = new DataTable();
             AddColumnsToTable(dt, ti, table);
@@ -289,20 +288,21 @@ namespace DataAccess.SqlServer
 
                 dt.Rows.Add(dr);
             }
-            WriteToServer(dt, this.CommandGenerator.ResolveTableName(t));
+            
+            await WriteToServer(dt, this.CommandGenerator.ResolveTableName(t));
         }
 
-        private void WriteToServer(DataTable dt, string table)
+        private async Task WriteToServer(DataTable dt, string table)
         {
             using (SqlBulkCopy bulkCopy = new SqlBulkCopy(_connectionString, SqlBulkCopyOptions.KeepNulls))
             {
                 bulkCopy.BulkCopyTimeout = Int32.MaxValue;
                 bulkCopy.DestinationTableName = table;
-                bulkCopy.WriteToServer(dt);
+                await bulkCopy.WriteToServerAsync(dt);
             }
         }
 
-        private void AddColumnsToTable(DataTable dt, DatabaseTypeInfo ti, DBObject table)
+        private static void AddColumnsToTable(DataTable dt, DatabaseTypeInfo ti, DBObject table)
         {
             foreach (Column c in table.Columns)
             {
@@ -344,22 +344,20 @@ namespace DataAccess.SqlServer
         /// </summary>
         /// <param name="dstore">the datastore to fetch from</param>
         /// <returns></returns>
-        public IEnumerable<DBObject> GetSchemaTables(IDataStore dstore)
+        public async IAsyncEnumerable<DBObject> GetSchemaTables(IDataStore dstore)
         {
-            IDbCommand tblCmd = GetCommand();
+            DbCommand tblCmd = GetCommand();
             tblCmd.CommandText = _GetTables;
 
-            IDbCommand clmCmd = GetCommand();
+            DbCommand clmCmd = GetCommand();
             clmCmd.CommandText = _GetTableColumns;
 
-            using (IQueryData objects = dstore.ExecuteCommands.ExecuteCommandQuery(tblCmd, dstore.Connection))
-            using (IQueryData columns = dstore.ExecuteCommands.ExecuteCommandQuery(clmCmd, dstore.Connection))
+            using IQueryData objects = await dstore.ExecuteCommands.ExecuteCommandQuery(tblCmd, dstore.Connection);
+            using IQueryData columns = await dstore.ExecuteCommands.ExecuteCommandQuery(clmCmd, dstore.Connection);
+            List<IQueryRow> rows = columns.GetQueryEnumerator().ToList();
+            foreach (IQueryRow o in objects)
             {
-                List<IQueryRow> rows = columns.GetQueryEnumerator().ToList();
-                foreach (IQueryRow o in objects)
-                {
-                    yield return Helpers.LoadObjectInfo(dstore, o, rows);
-                }
+                yield return Helpers.LoadObjectInfo(dstore, o, rows);
             }
         }
 
@@ -368,22 +366,20 @@ namespace DataAccess.SqlServer
         /// </summary>
         /// <param name="dstore">the datastore to fetch from</param>
         /// <returns></returns>
-        public IEnumerable<DBObject> GetSchemaViews(IDataStore dstore)
+        public async IAsyncEnumerable<DBObject> GetSchemaViews(IDataStore dstore)
         {
-            IDbCommand tblCmd = GetCommand();
+            DbCommand tblCmd = GetCommand();
             tblCmd.CommandText = _GetViews;
 
-            IDbCommand clmCmd = GetCommand();
+            DbCommand clmCmd = GetCommand();
             clmCmd.CommandText = _GetViewsColumns;
 
-            using (IQueryData objects = dstore.ExecuteCommands.ExecuteCommandQuery(tblCmd, dstore.Connection))
-            using (IQueryData columns = dstore.ExecuteCommands.ExecuteCommandQuery(clmCmd, dstore.Connection))
-            {
-                List<IQueryRow> rows = columns.GetQueryEnumerator().ToList();
+            using IQueryData objects = await dstore.ExecuteCommands.ExecuteCommandQuery(tblCmd, dstore.Connection);
+            using IQueryData columns = await dstore.ExecuteCommands.ExecuteCommandQuery(clmCmd, dstore.Connection);
+            List<IQueryRow> rows = columns.GetQueryEnumerator().ToList();
 
-                foreach (IQueryRow o in objects)
-                    yield return Helpers.LoadObjectInfo(dstore, o, rows);
-            }
+            foreach (IQueryRow o in objects)
+                yield return Helpers.LoadObjectInfo(dstore, o, rows);
         }
     }
 }

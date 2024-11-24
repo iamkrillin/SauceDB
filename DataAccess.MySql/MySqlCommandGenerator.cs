@@ -8,6 +8,7 @@ using DataAccess.Core.Data;
 using System.Collections;
 using MySql.Data.MySqlClient;
 using DataAccess.Core.Interfaces;
+using System.Data.Common;
 
 namespace DataAccess.MySql
 {
@@ -58,10 +59,10 @@ namespace DataAccess.MySql
         /// </summary>
         /// <param name="item">The object to insert</param>
         /// <returns></returns>
-        public override IDbCommand GetInsertCommand(object item)
+        public override DbCommand GetInsertCommand(object item)
         {
             IEnumerable<DataFieldInfo> info = TypeParser.GetPrimaryKeys(item.GetType());
-            IDbCommand cmd = base.GetInsertCommand(item);
+            DbCommand cmd = base.GetInsertCommand(item);
             if (info.Count() == 1 && !info.ElementAt(0).SetOnInsert)
                 cmd.CommandText = cmd.CommandText.Replace(";", string.Format("; SELECT LAST_INSERT_ID() as {0};", info.First().FieldName));
             return cmd;
@@ -72,7 +73,7 @@ namespace DataAccess.MySql
         /// </summary>
         /// <param name="ti">The type to create a table for</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetAddTableCommand(DatabaseTypeInfo ti)
+        public override IEnumerable<DbCommand> GetAddTableCommand(DatabaseTypeInfo ti)
         {
             StringBuilder sb = new StringBuilder();
             StringBuilder pFields = new StringBuilder();
@@ -121,10 +122,10 @@ namespace DataAccess.MySql
         /// <param name="type">The type to remove the column from</param>
         /// <param name="dfi">The column to remove</param>
         /// <returns></returns>
-        public override IDbCommand GetRemoveColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi)
+        public override DbCommand GetRemoveColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             MySqlCommand command = new MySqlCommand();
-            command.CommandText = string.Format("ALTER TABLE `{0}` DROP COLUMN `{1}`;", ResolveTableName(type, false), dfi.FieldName);
+            command.CommandText = $"ALTER TABLE `{ResolveTableName(type, false)}` DROP COLUMN `{dfi.FieldName}`;";
             return command;
         }
 
@@ -134,7 +135,7 @@ namespace DataAccess.MySql
         /// <param name="type">The type to add the column to</param>
         /// <param name="dfi">The column to add</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetAddColumnCommnad(DatabaseTypeInfo type, DataFieldInfo dfi)
+        public override IEnumerable<DbCommand> GetAddColumnCommnad(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             if (dfi.PrimaryKey)
                 throw new DataStoreException("Adding a primary key to an existing table is not supported");
@@ -147,11 +148,11 @@ namespace DataAccess.MySql
                 if (dfi.PrimaryKeyType != null)
                 {
                     DatabaseTypeInfo pkType = TypeParser.GetTypeInfo(dfi.PrimaryKeyType);
-                    sb.Append(",");
+                    sb.Append(',');
                     sb.AppendFormat(_addFKSql, ResolveTableName(type, false), ResolveTableName(pkType, false), dfi.EscapedFieldName, pkType.PrimaryKeys.First().EscapedFieldName, TranslateFkeyType(dfi.ForeignKeyType));
                 }
 
-                sb.Append(";");
+                sb.Append(';');
                 scmd.CommandText = sb.ToString();
                 yield return scmd;
             }
@@ -164,7 +165,7 @@ namespace DataAccess.MySql
         /// <param name="dfi">The field to edit</param>
         /// <param name="targetFieldType">the new column type</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
+        public override IEnumerable<DbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
         {
             MySqlCommand cmd = new MySqlCommand();
             cmd.CommandText = string.Format(_ModifyColumn, ResolveTableName(type, false), dfi.EscapedFieldName, targetFieldType);
@@ -176,7 +177,7 @@ namespace DataAccess.MySql
         /// </summary>
         /// <param name="ti"></param>
         /// <returns></returns>
-        public override IDbCommand GetAddSchemaCommand(DatabaseTypeInfo ti)
+        public override DbCommand GetAddSchemaCommand(DatabaseTypeInfo ti)
         {
             return null;
         }

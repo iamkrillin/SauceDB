@@ -5,6 +5,7 @@ using System.Text;
 using DataAccess.Core;
 using System.Collections;
 using DataAccess.Core.ObjectFinders;
+using System.Threading.Tasks;
 
 namespace DataAccess.SQLite
 {
@@ -29,12 +30,12 @@ namespace DataAccess.SQLite
         /// </summary>
         /// <param name="items"></param>
         /// <returns></returns>
-        public override bool InsertObjects(IList items)
+        public override async Task<bool> InsertObjects(IList items)
         {
             bool result = false;
             foreach (var v in items)
             {
-                result = InsertObject(v);
+                result = await InsertObject(v);
                 if (!result) break;
             }
             return result;

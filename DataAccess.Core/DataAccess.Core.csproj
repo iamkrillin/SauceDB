@@ -1,562 +1,107 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{816B0F31-AC67-4646-A26B-C0D519D65ED6}</ProjectGuid>
+    <TargetFramework>net8.0</TargetFramework>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DataAccess.Core</RootNamespace>
-    <AssemblyName>DataAccess.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <TargetFrameworkProfile />
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <DefineConstants>TRACE;MSNET</DefineConstants>
+    <Configurations>Debug;MONO;PlublishWithSymbolsNoTestsNoAddin;PublishWithSymbols;PublishWithSymbolsNoTests;PublishWithSymbolsWithoutTests;Release</Configurations>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
     <OutputPath>..\Publish</OutputPath>
     <DefineConstants>TRACE;DEBUG;MSNET</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
     <DefineConstants>TRACE;MSNET</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\DataAccess.Core.XML</DocumentationFile>
     <OutputPath>..\Publish</OutputPath>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Publish|AnyCPU'">
-    <DefineConstants>TRACE;MSNET</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>none</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisLogFile>bin\Release\DataAccess.Core.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
-    <DocumentationFile>..\Publish\DataAccess.Core.XML</DocumentationFile>
-    <WarningLevel>4</WarningLevel>
-    <OutputPath>..\Publish</OutputPath>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'MSNET|AnyCPU'">
-    <DefineConstants>TRACE;MSNET</DefineConstants>
-    <DocumentationFile>..\Publish\DataAccess.Core.XML</DocumentationFile>
-    <Optimize>true</Optimize>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisLogFile>bin\Release\DataAccess.Core.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
-    <DebugType>none</DebugType>
-    <WarningLevel>4</WarningLevel>
-    <OutputPath>..\Publish</OutputPath>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'MONO|AnyCPU'">
-    <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>..\Publish\DataAccess.Core.XML</DocumentationFile>
     <Optimize>true</Optimize>
     <CodeAnalysisLogFile>bin\Release\DataAccess.Core.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <DebugType>none</DebugType>
-    <WarningLevel>4</WarningLevel>
     <OutputPath>..\Publish</OutputPath>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PublishWithSymbols|AnyCPU'">
     <DefineConstants>TRACE;MSNET</DefineConstants>
     <DocumentationFile>..\Publish\DataAccess.Core.XML</DocumentationFile>
     <Optimize>true</Optimize>
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisLogFile>bin\Release\DataAccess.Core.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
-    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
-    <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <WarningLevel>4</WarningLevel>
     <OutputPath>..\Publish</OutputPath>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PublishWithSymbolsWithoutTests|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <DefineConstants>TRACE;MSNET</DefineConstants>
     <DocumentationFile>..\Publish\DataAccess.Core.XML</DocumentationFile>
     <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisLogFile>bin\Release\DataAccess.Core.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
-    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
-    <WarningLevel>4</WarningLevel>
     <OutputPath>..\Publish</OutputPath>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PublishWithSymbolsNoTests|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <DefineConstants>TRACE;MSNET</DefineConstants>
     <DocumentationFile>..\Publish\DataAccess.Core.XML</DocumentationFile>
     <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisLogFile>bin\Release\DataAccess.Core.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
-    <WarningLevel>4</WarningLevel>
     <OutputPath>..\Publish</OutputPath>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>SauceKey.snk</AssemblyOriginatorKeyFile>
+    <AssemblyTitle>DataAccess.Core</AssemblyTitle>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PlublishWithSymbolsNoTestsNoAddin|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <DefineConstants>TRACE;MSNET</DefineConstants>
     <DocumentationFile>..\Publish\DataAccess.Core.XML</DocumentationFile>
     <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisLogFile>bin\Release\DataAccess.Core.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
-    <WarningLevel>4</WarningLevel>
     <OutputPath>..\Publish</OutputPath>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AdditionalInitFunction.cs" />
-    <Compile Include="Attributes\AdditionalInitAttribute.cs" />
-    <Compile Include="Attributes\BypassValidationAttribute.cs" />
-    <Compile Include="Attributes\FieldType.cs" />
-    <Compile Include="Attributes\QueryPredicateAttribute.cs" />
-    <Compile Include="Attributes\DataFieldAttribute.cs" />
-    <Compile Include="Attributes\IgnoredFieldAttribute.cs" />
-    <Compile Include="Attributes\KeyAttribute.cs" />
-    <Compile Include="Attributes\OnTableCreate.cs" />
-    <Compile Include="Attributes\TableNameAttribute.cs" />
-    <Compile Include="Attributes\ViewAttribute.cs" />
-    <Compile Include="Conversion\StandardDBConverter.cs" />
-    <Compile Include="DatabaseCommand.cs" />
-    <Compile Include="Data\Results\FieldData.cs" />
-    <Compile Include="Interfaces\FieldMapInfo.cs" />
-    <Compile Include="Interfaces\IQueryRow.cs" />
-    <Compile Include="Data\Results\QueryEnumerator.cs" />
-    <Compile Include="Data\Results\QueryRow.cs" />
-    <Compile Include="Extensions\EnumeratorExtension.cs" />
-    <Compile Include="Interfaces\IConvertToDatastore.cs" />
-    <Compile Include="Interfaces\IQueryData.cs" />
-    <Compile Include="Interfaces\IValidateTables.cs" />
-    <Compile Include="QueryPredicateFunction.cs" />
-    <Compile Include="DatabaseCommandGenerator.cs" />
-    <Compile Include="DataStore.cs" />
-    <Compile Include="DictionaryCacheProvider.cs" />
-    <Compile Include="Events\CommandExecutingEventArgs.cs" />
-    <Compile Include="Events\ObjectInsertingEventArgs.cs" />
-    <Compile Include="Events\ObjectModifiedEventArgs.cs" />
-    <Compile Include="Events\ObjectDeletingEventArgs.cs" />
-    <Compile Include="Events\ObjectUpdatingEventArgs.cs" />
-    <Compile Include="Events\ObjectCreatedEventArgs.cs" />
-    <Compile Include="Events\TypeParsedEventArgs.cs" />
-    <Compile Include="Exceptions\ParameterInfo.cs" />
-    <Compile Include="Exceptions\QueryException.cs" />
-    <Compile Include="Exceptions\DataStoreException.cs" />
-    <Compile Include="Data\Column.cs" />
-    <Compile Include="Data\ConstraintType.cs" />
-    <Compile Include="Data\DataFieldInfo.cs" />
-    <Compile Include="Data\ForeignKeyType.cs" />
-    <Compile Include="Data\ParameterData.cs" />
-    <Compile Include="Data\QueryData.cs" />
-    <Compile Include="Data\DBObject.cs" />
-    <Compile Include="Data\DatabaseTypeInfo.cs" />
-    <Compile Include="Events\ObjectInitializedEventArgs.cs" />
-    <Compile Include="Execute\ExecuteCommands.cs" />
-    <Compile Include="Execute\TransactionCommandExecutor.cs" />
-    <Compile Include="Execute\TransactionInfo.cs" />
-    <Compile Include="Extensions\IQueryableExtensions.cs" />
-    <Compile Include="Extensions\PageData.cs" />
-    <Compile Include="Helpers.cs" />
-    <Compile Include="Interfaces\IFindDataObjects.cs" />
-    <Compile Include="Interfaces\IDataConnection.cs" />
-    <Compile Include="Interfaces\IDataStore.cs" />
-    <Compile Include="Interfaces\IDatastoreObjectValidator.cs" />
-    <Compile Include="Interfaces\IDeleteFormatter.cs" />
-    <Compile Include="Interfaces\IExecuteDatabaseCommand.cs" />
-    <Compile Include="Interfaces\ICommandGenerator.cs" />
-    <Compile Include="Interfaces\ISchemaValidator.cs" />
-    <Compile Include="Interfaces\IConvertToCLR.cs" />
-    <Compile Include="Linq\ColumnAssignment.cs" />
-    <Compile Include="Linq\CommandGatherer.cs" />
-    <Compile Include="Linq\Common\ColumnDeclaration.cs" />
-    <Compile Include="Linq\Common\ColumnGatherer.cs" />
-    <Compile Include="Linq\Common\CompoundKey.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\DeferredList.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\DeferredValue.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\EmptyReadOnlyCollection.cs" />
-    <Compile Include="Linq\Common\EntityFinder.cs" />
-    <Compile Include="Linq\Common\EnumerateOnce.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Mapping\BasicMapper.cs" />
-    <Compile Include="Linq\Common\Mapping\BasicMappingEntity.cs" />
-    <Compile Include="Linq\Common\Mapping\ConstructorBindResult.cs" />
-    <Compile Include="Linq\Common\Mapping\EntityAssignment.cs" />
-    <Compile Include="Linq\Common\Mapping\EntityInfo.cs" />
-    <Compile Include="Linq\Common\Mapping\MappingEntity.cs" />
-    <Compile Include="Linq\Common\Mapping\QueryMapper.cs" />
-    <Compile Include="Linq\Common\Nominator.cs" />
-    <Compile Include="Linq\Common\OuterParameterizer.cs" />
-    <Compile Include="Linq\Common\ProjectionFinder.cs" />
-    <Compile Include="Linq\Common\QueryParameter.cs" />
-    <Compile Include="Linq\Common\QueryPolice.cs" />
-    <Compile Include="Linq\Common\Scope.cs" />
-    <Compile Include="Linq\Common\SubtreeEvaluator.cs" />
-    <Compile Include="Linq\Common\Translation\AggregateGatherer.cs" />
-    <Compile Include="Linq\Common\Translation\GroupByInfo.cs" />
-    <Compile Include="Linq\Common\Translation\HashedExpression.cs" />
-    <Compile Include="Linq\Common\Translation\Hasher.cs" />
-    <Compile Include="Linq\Common\Translation\NamedValueComparer.cs" />
-    <Compile Include="Linq\Common\Translation\Nominator.cs" />
-    <Compile Include="Linq\Common\Translation\ProjectedColumns.cs" />
-    <Compile Include="Linq\Common\Translation\RedundantSubqueryGatherer.cs" />
-    <Compile Include="Linq\Common\Translation\SubqueryMerger.cs" />
-    <Compile Include="Linq\Common\Translation\TypeAndvalue.cs" />
-    <Compile Include="Linq\Common\VariableSubstitutor.cs" />
-    <Compile Include="Linq\Enums\DbExpressionType.cs" />
-    <Compile Include="Linq\Enums\Indentation.cs" />
-    <Compile Include="Linq\Enums\JoinType.cs" />
-    <Compile Include="Linq\Enums\OrderType.cs" />
-    <Compile Include="Linq\Common\ExecutionBuilder.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\ExpressionComparer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Executor.cs" />
-    <Compile Include="Linq\Extensions\ExpressionExtensions.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\ExpressionReplacer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Expressions\AggregateExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\AggregateSubqueryExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\Aggregator.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Expressions\AliasedExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\BatchExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\BetweenExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\BlockCommand.cs" />
-    <Compile Include="Linq\Common\Expressions\ClientJoinExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\ColumnExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\CommandExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\DbExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\DbExpressionComparer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Language\JoinColumnGatherer.cs" />
-    <Compile Include="Linq\Extensions\DbExpressionExtensions.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Expressions\DbExpressionReplacer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Expressions\DbExpressionVisitor.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Expressions\DbExpressionWriter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Expressions\DeclarationCommand.cs" />
-    <Compile Include="Linq\Common\Expressions\EntityExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\ExistsExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\FunctionExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\IFCommand.cs" />
-    <Compile Include="Linq\Common\Expressions\InExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\IsNullExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\JoinExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\NamedValueExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\OrderExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\OuterJoinedExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\ProjectionExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\RowNumberExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\ScalarExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\SelectExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\SubqueryExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\TableExpression.cs" />
-    <Compile Include="Linq\Common\Expressions\VariableExpression.cs" />
-    <Compile Include="Linq\Common\ExpressionVisitor.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\ExpressionWriter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\FieldReader.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Grouping.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Language\QueryLanguage.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Language\QueryLinguist.cs" />
-    <Compile Include="Linq\Common\Language\SqlFormatter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\PartialEvaluator.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Query.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\QueryCommand.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\QueryCompiler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\QueryExecutor.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\QueryPolicy.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\QueryProvider.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\QueryTranslator.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\ReadOnlyExtensions.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\ReflectionExtensions.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\ScopedDictionary.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\StrongDelegate.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\TableAlias.cs" />
-    <Compile Include="Linq\Common\TopologicalSort.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\AggregateChecker.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\AggregateRewriter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\ClientJoinedProjectionRewriter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\ColumnMapper.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\ColumnProjector.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\ComparisonRewriter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\CrossApplyRewriter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\CrossJoinIsolator.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\CrossJoinRewriter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\DeclaredAliasGatherer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\NamedValueGatherer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\OrderByRewriter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\Parameterizer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\QueryBinder.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\QueryDuplicator.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\RedundantColumnRemover.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\RedundantJoinRemover.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\RedundantSubqueryRemover.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\ReferencedAliasGatherer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\ReferencedColumnGatherer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\RelationshipBinder.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\RelationshipIncluder.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\SelectGatherer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\SingletonProjectionRewriter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\SkipToNestedOrderByRewriter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\SkipToRowNumberRewriter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\SubqueryRemover.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\Translation\UnusedColumnRemover.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\TypedSubtreeFinder.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\TypeHelper.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Common\VariableDeclaration.cs" />
-    <Compile Include="Linq\DBQueryProvider.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Extensions\DbExpressionTypeExtensions.cs" />
-    <Compile Include="Linq\Interfaces\IDeferLoadable.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Interfaces\IDeferredList.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Linq\Interfaces\IHaveMappingEntity.cs" />
-    <Compile Include="Linq\Interfaces\IQueryText.cs" />
-    <Compile Include="Linq\Mapping\SauceMapping.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ObjectBuilder.cs" />
-    <Compile Include="ObjectFinders\NoSchemaSupportObjectFinder.cs" />
-    <Compile Include="ObjectFinders\SupportsSchemaObjectFinder.cs" />
-    <Compile Include="ObjectValidators\DoesNothingObjectVallidator.cs" />
-    <Compile Include="ObjectValidators\NotifyTableValidator.cs" />
-    <Compile Include="ObjectValidators\ObjectValidator.cs" />
-    <Compile Include="ObjectValidators\ModifyTableValidator.cs" />
-    <Compile Include="ObjectValidators\ViewValidator.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SchemaValidation\DoesNothingValidator.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="SchemaValidation\ModifyValidator.cs" />
-    <Compile Include="SchemaValidation\NotifyValidator.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="SchemaValidation\SchemaValidator.cs" />
-    <Compile Include="TransactionContext.cs" />
-    <Compile Include="Conversion\StandardCLRConverter.cs" />
-    <Compile Include="Extensions\DataAccessExtensions.cs" />
-    <Compile Include="TypeParser.cs" />
+    <Compile Include="..\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="SauceKey.snk" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <Compile Remove="Linq\Common\Language\QueryType.cs" />
+    <Compile Remove="Linq\Common\Language\QueryTypeSystem.cs" />
+    <Compile Remove="Linq\DbQueryType.cs" />
+    <Compile Remove="Linq\DbTypeSystem.cs" />
+  </ItemGroup>
 </Project>

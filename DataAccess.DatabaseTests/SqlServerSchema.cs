@@ -8,9 +8,10 @@ using DataAccess.SqlServer;
 using DataAccess.DatabaseTests.DataObjects;
 using DataAccess.Core.Data;
 using System.Data;
-using System.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DataAccess.Core;
+using System.Data.Common;
+using Microsoft.Data.SqlClient;
 
 namespace DataAccess.DatabaseTests
 {
@@ -21,7 +22,7 @@ namespace DataAccess.DatabaseTests
         {
             IDataStore toReturn = SqlServerConnection.GetDataStore("Data Source=172.16.0.3;Initial Catalog=Sauce;User Id=AppLogin;Password=AppLogin;");
 
-            IDbCommand cmd = toReturn.Connection.GetCommand();
+            DbCommand cmd = toReturn.Connection.GetCommand();
             cmd.CommandText = "DROP SCHEMA NewSchema";
 
             try

@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using DataAccess.Core;
 using DataAccess.Core.Interfaces;
 using System.Data;
 using DataAccess.Core.Data;
 using System.Collections;
-using System.Data.SqlClient;
 using System.Reflection;
-using System.IO;
+using Microsoft.Data.SqlClient;
+using System.Data.Common;
 
 namespace DataAccess.SqlServer
 {
     /// <summary>
     /// Generates various types of data store Commands, appropriate for Sql Server
     /// </summary>
-    public class SqlServerCommandGenerator : DatabaseCommandGenerator
+    public class SqlServerCommandGenerator(IDataConnection connection) : DatabaseCommandGenerator(connection)
     {
         private static string _createSchema;
 
@@ -26,20 +25,15 @@ namespace DataAccess.SqlServer
             _createSchema = asmb.LoadResource("DataAccess.SqlServer.Sql.CreateSchema.sql");
         }
 
-        public SqlServerCommandGenerator(IDataConnection connection)
-            : base(connection)
-        {
-        }
-
         /// <summary>
         /// Returns a command for inserting one object
         /// </summary>
         /// <param name="item">The object to insert</param>
         /// <returns></returns>
-        public override IDbCommand GetInsertCommand(object item)
+        public override DbCommand GetInsertCommand(object item)
         {
             DatabaseTypeInfo ti = TypeParser.GetTypeInfo(item.GetType());
-            IDbCommand cmd = base.GetInsertCommand(item);
+            DbCommand cmd = base.GetInsertCommand(item);
 
             if (!ti.IsCompilerGenerated)
             {
@@ -64,9 +58,9 @@ namespace DataAccess.SqlServer
         /// </summary>
         /// <param name="items"></param>
         /// <returns></returns>
-        public override IDbCommand GetInsertCommand(IList items)
+        public override DbCommand GetInsertCommand(IList items)
         {//this can cause issues with triggers.
-            IDbCommand cmd = base.GetInsertCommand(items);
+            DbCommand cmd = base.GetInsertCommand(items);
             cmd.CommandText = cmd.CommandText.Replace("VALUES", "output inserted.* VALUES");
             return cmd;
         }
@@ -76,9 +70,9 @@ namespace DataAccess.SqlServer
         /// </summary>
         /// <param name="ti">The type to create a table for</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetAddTableCommand(DatabaseTypeInfo ti)
+        public override IEnumerable<DbCommand> GetAddTableCommand(DatabaseTypeInfo ti)
         {
-            List<IDbCommand> toReturn = new List<IDbCommand>();
+            List<DbCommand> toReturn = [];
             StringBuilder sb = new StringBuilder();
             StringBuilder pFields = new StringBuilder();
             SqlCommand cmd = new SqlCommand();
@@ -87,11 +81,11 @@ namespace DataAccess.SqlServer
             for (int i = 0; i < ti.DataFields.Count; i++)
             {
                 DataFieldInfo dfi = ti.DataFields[i];
-                if (i > 0) sb.Append(",");
+                if (i > 0) sb.Append(',');
 
                 if (dfi.PrimaryKey)
                 {
-                    if (pFields.Length > 0) pFields.Append(",");
+                    if (pFields.Length > 0) pFields.Append(',');
                     pFields.Append(dfi.FieldName);
 
                     if (dfi.PropertyType == typeof(int) && ti.PrimaryKeys.Count == 1)
@@ -116,9 +110,7 @@ namespace DataAccess.SqlServer
             if (pFields.Length > 0)
             {
                 SqlCommand pKey = new SqlCommand();
-                pKey.CommandText = string.Format("ALTER TABLE {0}.{1} ADD CONSTRAINT PK_{3}_{4} PRIMARY KEY CLUSTERED ({2})",
-                                ti.Schema, ti.TableName, pFields.ToString(), ti.UnEscapedSchema, ti.UnescapedTableName);
-
+                pKey.CommandText = $"ALTER TABLE {ti.Schema}.{ti.TableName} ADD CONSTRAINT PK_{ti.UnEscapedSchema}_{ti.UnescapedTableName} PRIMARY KEY CLUSTERED ({pFields})";
                 toReturn.Insert(0, pKey);
             }
 
@@ -145,10 +137,10 @@ namespace DataAccess.SqlServer
         /// <param name="type">The type to remove the column from</param>
         /// <param name="dfi">The column to remove</param>
         /// <returns></returns>
-        public override IDbCommand GetRemoveColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi)
+        public override DbCommand GetRemoveColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             SqlCommand scmd = new SqlCommand();
-            scmd.CommandText = string.Format("ALTER TABLE {0}.{1} DROP COLUMN [{2}]", type.Schema, type.TableName, dfi.FieldName);
+            scmd.CommandText = $"ALTER TABLE {type.Schema}.{type.TableName} DROP COLUMN [{dfi.FieldName}]";
             return scmd;
         }
 
@@ -158,16 +150,16 @@ namespace DataAccess.SqlServer
         /// <param name="type">The type to add the column to</param>
         /// <param name="dfi">The column to add</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetAddColumnCommnad(DatabaseTypeInfo type, DataFieldInfo dfi)
+        public override IEnumerable<DbCommand> GetAddColumnCommnad(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
-            List<IDbCommand> toReturn = new List<IDbCommand>();
+            List<DbCommand> toReturn = [];
 
             if (dfi.PrimaryKey)
                 throw new DataStoreException("Adding a primary key to an existing table is not supported");
             else
             {
                 SqlCommand scmd = new SqlCommand();
-                scmd.CommandText = string.Format("ALTER TABLE {0} ADD {1} {2} NULL;", ResolveTableName(type), dfi.EscapedFieldName, TranslateTypeToSql(dfi));
+                scmd.CommandText = $"ALTER TABLE {ResolveTableName(type)} ADD {dfi.EscapedFieldName} {TranslateTypeToSql(dfi)} NULL;";
                 toReturn.Add(scmd);
 
                 if (dfi.PrimaryKeyType != null)
@@ -188,7 +180,7 @@ namespace DataAccess.SqlServer
         /// <param name="dfi">The field</param>
         /// <param name="targetFieldType">The new column type</param>
         /// <returns></returns>
-        public override IEnumerable<IDbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
+        public override IEnumerable<DbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
         {
             SqlCommand cmd = new SqlCommand();
             cmd.CommandText = string.Format("ALTER TABLE {0} ALTER COLUMN [{1}] {2}", ResolveTableName(type), dfi.FieldName, targetFieldType);
@@ -228,11 +220,11 @@ namespace DataAccess.SqlServer
                 return table;
         }
 
-        public override IDbCommand GetAddSchemaCommand(DatabaseTypeInfo ti)
+        public override DbCommand GetAddSchemaCommand(DatabaseTypeInfo ti)
         {
             if (!ti.UnEscapedSchema.Equals("dbo", StringComparison.InvariantCultureIgnoreCase))
             {
-                IDbCommand cmd = new SqlCommand();
+                SqlCommand cmd = new SqlCommand();
                 cmd.CommandText = string.Format(_createSchema, ti.UnEscapedSchema);
                 return cmd;
             }

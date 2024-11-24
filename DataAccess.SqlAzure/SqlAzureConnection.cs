@@ -1,8 +1,9 @@
 ﻿using DataAccess.SqlServer;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,12 +18,12 @@ namespace DataAccess.SqlAzure
 
         }
 
-        public override System.Data.IDbConnection GetConnection()
+        public override DbConnection GetConnection()
         {
             return new IDb.SqlAzureConnection(_connectionString);
         }
 
-        public override System.Data.IDbCommand GetCommand()
+        public override DbCommand GetCommand()
         {
             SqlCommand cmd = new SqlCommand();
             return new IDb.SqlAzureCommand(cmd);

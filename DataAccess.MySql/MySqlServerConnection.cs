@@ -11,6 +11,8 @@ using System.Collections;
 using DataAccess.Core.Data;
 using DataAccess.Core.Conversion;
 using DataAccess.Core.Data.Results;
+using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace DataAccess.MySql
 {
@@ -27,36 +29,36 @@ namespace DataAccess.MySql
         /// <summary>
         /// Converts data on the way out that is Datastore -&gt; CLR
         /// </summary>
-        public IConvertToCLR CLRConverter { get { return _tConverter; } }
+        public IConvertToCLR CLRConverter => _tConverter;
 
         /// <summary>
         /// Coverts data on the way in that is, CLR -&gt; Datastore
         /// </summary>
-        public IConvertToDatastore DatastoreConverter { get { return _dConverter; } }
+        public IConvertToDatastore DatastoreConverter => _dConverter;
 
         /// <summary>
         /// The command generator for this data store
         /// </summary>
         /// <value></value>
-        public ICommandGenerator CommandGenerator { get { return _commandGenerator; } }
+        public ICommandGenerator CommandGenerator => _commandGenerator;
 
         /// <summary>
         /// the data stores escape character (left side)
         /// </summary>
         /// <value></value>
-        public string LeftEscapeCharacter { get { return "`"; } }
+        public string LeftEscapeCharacter => "`";
 
         /// <summary>
         /// the data stores escape character (right side)
         /// </summary>
         /// <value></value>
-        public string RightEscapeCharacter { get { return "`"; } }
+        public string RightEscapeCharacter => "`";
 
         /// <summary>
         /// The default schema for this data store
         /// </summary>
         /// <value></value>
-        public string DefaultSchema { get { return ""; } }
+        public string DefaultSchema => "";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MySqlServerConnection"/> class
@@ -66,7 +68,7 @@ namespace DataAccess.MySql
         /// <param name="User">The user.</param>
         /// <param name="Password">The password.</param>
         public MySqlServerConnection(string Server, string Catalog, string User, string Password)
-            : this(string.Format("server={0};user id={1};password={2};persist security info=True;database={3}", Server, User, Password, Catalog))
+            : this($"server={Server};user id={User};password={Password};persist security info=True;database={Catalog}")
         {
 
         }
@@ -92,7 +94,7 @@ namespace DataAccess.MySql
         /// <param name="Password">The password.</param>
         /// <param name="engine">The storage engine to use when creating tables.</param>
         public MySqlServerConnection(string Server, string Catalog, string User, string Password, StorageEngine engine)
-            : this(string.Format("server={0};user id={1};password={2};persist security info=True;database={3}", Server, User, Password, Catalog), engine)
+            : this($"server={Server};user id={User};password={Password};persist security info=True;database={Catalog}", engine)
         {
 
         }
@@ -114,7 +116,7 @@ namespace DataAccess.MySql
         /// Gets the connection.
         /// </summary>
         /// <returns></returns>
-        public IDbConnection GetConnection()
+        public DbConnection GetConnection()
         {
             return new MySqlConnection(_connectionString);
         }
@@ -123,7 +125,7 @@ namespace DataAccess.MySql
         /// Gets a data command for this connection type
         /// </summary>
         /// <returns></returns>
-        public IDbCommand GetCommand()
+        public DbCommand GetCommand()
         {
             return new MySqlCommand();
         }
@@ -211,10 +213,10 @@ namespace DataAccess.MySql
         /// </summary>
         /// <param name="items"></param>
         /// <param name="dstore"></param>
-        public void DoBulkInsert(IList items, IDataStore dstore)
+        public async Task DoBulkInsert(IList items, IDataStore dstore)
         {
             while (items.Count > 0)
-                dstore.InsertObjects(items.GetSmallerList(100));
+                await dstore.InsertObjects(items.GetSmallerList(100));
         }
 
         /// <summary>
@@ -232,13 +234,13 @@ namespace DataAccess.MySql
         /// </summary>
         /// <param name="dstore"></param>
         /// <returns></returns>
-        public IEnumerable<DBObject> GetSchemaTables(IDataStore dstore)
+        public async IAsyncEnumerable<DBObject> GetSchemaTables(IDataStore dstore)
         {
             MySqlCommand getColumns = new MySqlCommand();
             MySqlCommand getTables = new MySqlCommand();
             getTables.CommandText = "show full tables where table_type != 'view'";
 
-            using (IQueryData tables = dstore.ExecuteCommands.ExecuteCommandQuery(getTables, dstore.Connection))
+            using (IQueryData tables = await dstore.ExecuteCommands.ExecuteCommandQuery(getTables, dstore.Connection))
             {
                 foreach (IQueryRow row in tables)
                 {
@@ -247,7 +249,7 @@ namespace DataAccess.MySql
                     t.Columns = new List<Column>();
 
                     getColumns.CommandText = string.Concat("DESCRIBE ", t.Name);
-                    using (IQueryData columns = dstore.ExecuteCommands.ExecuteCommandQuery(getColumns, dstore.Connection))
+                    using (IQueryData columns = await dstore.ExecuteCommands.ExecuteCommandQuery(getColumns, dstore.Connection))
                     {
 
                         foreach (QueryRow c in columns)
@@ -272,13 +274,13 @@ namespace DataAccess.MySql
         /// </summary>
         /// <param name="dstore"></param>
         /// <returns></returns>
-        public IEnumerable<DBObject> GetSchemaViews(IDataStore dstore)
+        public async IAsyncEnumerable<DBObject> GetSchemaViews(IDataStore dstore)
         {
             MySqlCommand getColumns = new MySqlCommand();
             MySqlCommand getTables = new MySqlCommand();
             getTables.CommandText = "show full tables where table_type = 'view'";
 
-            using (IQueryData tables = dstore.ExecuteCommands.ExecuteCommandQuery(getTables, dstore.Connection))
+            using (IQueryData tables = await dstore.ExecuteCommands.ExecuteCommandQuery(getTables, dstore.Connection))
             {
                 foreach (IQueryRow tab in tables)
                 {
@@ -289,7 +291,7 @@ namespace DataAccess.MySql
                     try
                     {
                         getColumns.CommandText = string.Concat("DESCRIBE ", t.Name);
-                        using (IQueryData columns = dstore.ExecuteCommands.ExecuteCommandQuery(getColumns, dstore.Connection))
+                        using (IQueryData columns = await dstore.ExecuteCommands.ExecuteCommandQuery(getColumns, dstore.Connection))
                         {
                             foreach (IQueryRow col in columns)
                             {
