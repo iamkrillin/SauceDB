@@ -13,9 +13,7 @@ namespace DataAccess.Core
     [Serializable]
     public class QueryPredicateFunction
     {
-        private Func<object, object[], object> _function;
         private MethodInfo _mi;
-
 
         /// <summary>
         /// Will be true if the method is static
