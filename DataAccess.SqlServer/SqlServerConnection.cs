@@ -83,7 +83,7 @@ namespace DataAccess.SqlServer
         /// <param name="User">The user.</param>
         /// <param name="Password">The password.</param>
         public SqlServerConnection(string Server, string Catalog, string User, string Password)
-            : this($"Data Source={Server};Initial Catalog={Catalog};User Id={User};Password={Password};")
+            : this($"Data Source={Server};Initial Catalog={Catalog};User Id={User};Password={Password};Encrypt=false")
         {
 
         }
@@ -106,7 +106,7 @@ namespace DataAccess.SqlServer
         /// <param name="Server"></param>
         /// <param name="Catalog"></param>
         public SqlServerConnection(string Server, string Catalog)
-            : this($"Data Source={Server};Initial Catalog={Catalog};Integrated Security=true;")
+            : this($"Data Source={Server};Initial Catalog={Catalog};Integrated Security=true;Encrypt=false")
         {
 
         }
@@ -238,7 +238,7 @@ namespace DataAccess.SqlServer
             if (items.Count > 0)
             {
                 Type t = items[0].GetType();
-                DatabaseTypeInfo ti = _commandGenerator.TypeParser.GetTypeInfo(t);
+                DatabaseTypeInfo ti = await dstore.TypeParser.GetTypeInfo(t);
                 DBObject table = dstore.SchemaValidator.TableValidator.GetObjects().Where(R => R.Schema.Equals(ti.UnEscapedSchema, StringComparison.InvariantCultureIgnoreCase) && R.Name.Equals(ti.UnescapedTableName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
 
                 if (table != null)
@@ -253,13 +253,13 @@ namespace DataAccess.SqlServer
 
                             if (list.Count > 20000)
                             {
-                                await ProcessBulkInsert(list, t, ti, table);
+                                await ProcessBulkInsert(dstore, list, t, ti, table);
                                 list.Clear();
                             }
                         }
 
                         if (list.Count > 0)
-                            await ProcessBulkInsert(list, t, ti, table);
+                            await ProcessBulkInsert(dstore, list, t, ti, table);
                     }
                 }
                 else
@@ -269,7 +269,7 @@ namespace DataAccess.SqlServer
             }
         }
 
-        private async Task ProcessBulkInsert(IList list, Type t, DatabaseTypeInfo ti, DBObject table)
+        private async Task ProcessBulkInsert(IDataStore dstore, IList list, Type t, DatabaseTypeInfo ti, DBObject table)
         {
             DataTable dt = new DataTable();
             AddColumnsToTable(dt, ti, table);
@@ -289,7 +289,7 @@ namespace DataAccess.SqlServer
                 dt.Rows.Add(dr);
             }
             
-            await WriteToServer(dt, this.CommandGenerator.ResolveTableName(t));
+            await WriteToServer(dt, await this.CommandGenerator.ResolveTableName(dstore.TypeParser, t));
         }
 
         private async Task WriteToServer(DataTable dt, string table)

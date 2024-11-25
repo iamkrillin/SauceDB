@@ -9,6 +9,7 @@ using System.Collections;
 using System.Reflection;
 using Microsoft.Data.SqlClient;
 using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace DataAccess.SqlServer
 {
@@ -25,15 +26,10 @@ namespace DataAccess.SqlServer
             _createSchema = asmb.LoadResource("DataAccess.SqlServer.Sql.CreateSchema.sql");
         }
 
-        /// <summary>
-        /// Returns a command for inserting one object
-        /// </summary>
-        /// <param name="item">The object to insert</param>
-        /// <returns></returns>
-        public override DbCommand GetInsertCommand(object item)
+        public override async Task<DbCommand> GetInsertCommand(TypeParser tparser, object item)
         {
-            DatabaseTypeInfo ti = TypeParser.GetTypeInfo(item.GetType());
-            DbCommand cmd = base.GetInsertCommand(item);
+            DatabaseTypeInfo ti = await tparser.GetTypeInfo(item.GetType());
+            DbCommand cmd = await base.GetInsertCommand(tparser, item);
 
             if (!ti.IsCompilerGenerated)
             {
@@ -53,24 +49,14 @@ namespace DataAccess.SqlServer
             return cmd;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="items"></param>
-        /// <returns></returns>
-        public override DbCommand GetInsertCommand(IList items)
+        public override async Task<DbCommand> GetInsertCommand(TypeParser tparser, IList items)
         {//this can cause issues with triggers.
-            DbCommand cmd = base.GetInsertCommand(items);
+            DbCommand cmd = await base.GetInsertCommand(tparser, items);
             cmd.CommandText = cmd.CommandText.Replace("VALUES", "output inserted.* VALUES");
             return cmd;
         }
 
-        /// <summary>
-        /// Returns a command for creating a new table
-        /// </summary>
-        /// <param name="ti">The type to create a table for</param>
-        /// <returns></returns>
-        public override IEnumerable<DbCommand> GetAddTableCommand(DatabaseTypeInfo ti)
+        public override async Task<List<DbCommand>> GetAddTableCommand(TypeParser tparser, DatabaseTypeInfo ti)
         {
             List<DbCommand> toReturn = [];
             StringBuilder sb = new StringBuilder();
@@ -89,19 +75,19 @@ namespace DataAccess.SqlServer
                     pFields.Append(dfi.FieldName);
 
                     if (dfi.PropertyType == typeof(int) && ti.PrimaryKeys.Count == 1)
-                        sb.AppendFormat("{0} {1} NOT NULL IDENTITY(1,1) ", dfi.EscapedFieldName, TranslateTypeToSql(dfi));
+                        sb.AppendFormat("{0} {1} NOT NULL IDENTITY(1,1) ", dfi.EscapedFieldName, await TranslateTypeToSql(tparser, dfi));
                     else
-                        sb.AppendFormat("{0} {1} NOT NULL ", dfi.EscapedFieldName, TranslateTypeToSql(dfi));
+                        sb.AppendFormat("{0} {1} NOT NULL ", dfi.EscapedFieldName, await TranslateTypeToSql(tparser, dfi));
                 }
                 else
                 {
-                    sb.AppendFormat("{0} {1} NULL ", dfi.EscapedFieldName, TranslateTypeToSql(dfi));
+                    sb.AppendFormat("{0} {1} NULL ", dfi.EscapedFieldName, await TranslateTypeToSql(tparser, dfi));
                 }
 
                 if (dfi.PrimaryKeyType != null)
                 {
                     SqlCommand fk = new SqlCommand();
-                    fk.CommandText = GetForeignKeySql(dfi, ti, TypeParser.GetTypeInfo(dfi.PrimaryKeyType));
+                    fk.CommandText = GetForeignKeySql(dfi, ti, await tparser.GetTypeInfo(dfi.PrimaryKeyType));
                     toReturn.Add(fk);
                 }
             }
@@ -131,12 +117,6 @@ namespace DataAccess.SqlServer
             return sb.ToString();
         }
 
-        /// <summary>
-        /// Returns a command for removing a column from a table
-        /// </summary>
-        /// <param name="type">The type to remove the column from</param>
-        /// <param name="dfi">The column to remove</param>
-        /// <returns></returns>
         public override DbCommand GetRemoveColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             SqlCommand scmd = new SqlCommand();
@@ -144,13 +124,7 @@ namespace DataAccess.SqlServer
             return scmd;
         }
 
-        /// <summary>
-        /// Returns a command for adding a column to a table
-        /// </summary>
-        /// <param name="type">The type to add the column to</param>
-        /// <param name="dfi">The column to add</param>
-        /// <returns></returns>
-        public override IEnumerable<DbCommand> GetAddColumnCommnad(DatabaseTypeInfo type, DataFieldInfo dfi)
+        public override async Task<List<DbCommand>> GetAddColumnCommnad(TypeParser tparser, DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             List<DbCommand> toReturn = [];
 
@@ -159,13 +133,13 @@ namespace DataAccess.SqlServer
             else
             {
                 SqlCommand scmd = new SqlCommand();
-                scmd.CommandText = $"ALTER TABLE {ResolveTableName(type)} ADD {dfi.EscapedFieldName} {TranslateTypeToSql(dfi)} NULL;";
+                scmd.CommandText = $"ALTER TABLE {ResolveTableName(type)} ADD {dfi.EscapedFieldName} {await TranslateTypeToSql(tparser, dfi)} NULL;";
                 toReturn.Add(scmd);
 
                 if (dfi.PrimaryKeyType != null)
                 {
                     SqlCommand fk = new SqlCommand();
-                    fk.CommandText = GetForeignKeySql(dfi, type, TypeParser.GetTypeInfo(dfi.PrimaryKeyType));
+                    fk.CommandText = GetForeignKeySql(dfi, type, await tparser.GetTypeInfo(dfi.PrimaryKeyType));
                     toReturn.Add(fk);
                 }
             }
@@ -173,37 +147,18 @@ namespace DataAccess.SqlServer
             return toReturn;
         }        
 
-        /// <summary>
-        /// Gets a command for changing a column type
-        /// </summary>
-        /// <param name="type">The type</param>
-        /// <param name="dfi">The field</param>
-        /// <param name="targetFieldType">The new column type</param>
-        /// <returns></returns>
-        public override IEnumerable<DbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
+        public override List<DbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
         {
             SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = string.Format("ALTER TABLE {0} ALTER COLUMN [{1}] {2}", ResolveTableName(type), dfi.FieldName, targetFieldType);
-            yield return cmd;
-
+            cmd.CommandText = $"ALTER TABLE {ResolveTableName(type)} ALTER COLUMN [{dfi.FieldName}] {targetFieldType}";
+            return [cmd];
         }
 
-        /// <summary>
-        /// /// Gets a table name for a type
-        /// </summary>
-        /// <param name="ti">The table name</param>
-        /// <param name="EscapeTableName">ignored</param>
-        /// <returns></returns>
         public override string ResolveTableName(DatabaseTypeInfo ti, bool EscapeTableName)
         {
             return ResolveTableName(ti);
         }
 
-        /// <summary>
-        /// Gets a table name for a type
-        /// </summary>
-        /// <param name="ti">The type</param>
-        /// <returns></returns>
         public override string ResolveTableName(DatabaseTypeInfo ti)
         {
             if (!string.IsNullOrEmpty(ti.Schema))

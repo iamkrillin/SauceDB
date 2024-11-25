@@ -42,7 +42,7 @@ namespace DataAccess.SqlServer.Linq
         {
             //parametrize constants
             string par = String.Format("{0}", _parameters.Count + 1);
-            if (_parameters == null) _parameters = new Dictionary<string, object>();
+            _parameters ??= new Dictionary<string, object>();
             _parameters.Add(par, c.Value);
             var result = new NamedValueExpression(par, c);
             return base.VisitNamedValue(result);
@@ -50,7 +50,10 @@ namespace DataAccess.SqlServer.Linq
 
         protected override Expression VisitMemberAccess(MemberExpression m)
         {
-            this.WriteColumnName(_mapper.GetColumnName(m.Member));
+            var cname = _mapper.GetColumnName(m.Member);
+            cname.Wait();
+
+            this.WriteColumnName(cname.Result);
             return m;
         }
     }

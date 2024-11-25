@@ -9,26 +9,19 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using DataAccess.Core.Events;
 using System.Linq.Expressions;
+using DataAccess.Core.Schema;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core
 {
-    /// <summary>
-    /// A caching type information parser, the type will be parsed once and then stored for later retrieval,
-    /// NOTE: Type parsing is expensive, so make sure the cache does not invalidate very often
-    /// </summary>
     public class TypeParser
     {
         private DictionaryCacheProvider<Type, DatabaseTypeInfo> _cache = new DictionaryCacheProvider<Type, DatabaseTypeInfo>();
-        private IDataConnection _connection;
+        private IDataStore _dstore;
 
-        /// <summary>
-        /// Occurs when a type is parsed
-        /// </summary>
-        public event EventHandler<TypeParsedEventArgs> OnTypeParsed;
-
-        public TypeParser(IDataConnection connection)
+        public TypeParser(IDataStore dstore)
         {
-            _connection = connection;
+            _dstore = dstore;
         }
 
         public void ClearCache()
@@ -41,9 +34,11 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="dataType">The type to parse</param>
         /// <returns></returns>
-        public virtual IEnumerable<DataFieldInfo> GetTypeFields(Type dataType)
+        public virtual async Task<List<DataFieldInfo>> GetTypeFields(Type dataType)
         {
-            return GetTypeInfo(dataType).DataFields;
+            var info = await GetTypeInfo(dataType);
+
+            return info.DataFields;
         }
 
         /// <summary>
@@ -51,9 +46,11 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="dataType">The type to parse</param>
         /// <returns></returns>
-        public virtual IEnumerable<DataFieldInfo> GetPrimaryKeys(Type dataType)
+        public virtual async Task<List<DataFieldInfo>> GetPrimaryKeys(Type dataType)
         {
-            return GetTypeInfo(dataType).PrimaryKeys;
+            var info = await GetTypeInfo(dataType);
+
+            return info.PrimaryKeys;
         }
 
         /// <summary>
@@ -62,7 +59,7 @@ namespace DataAccess.Core
         /// <param name="type">The type to parse</param>
         /// <param name="bypassValidate">If true, type will not validate against datastore</param>
         /// <returns></returns>
-        public virtual DatabaseTypeInfo GetTypeInfo(Type type, bool bypassValidate = false)
+        public virtual async Task<DatabaseTypeInfo> GetTypeInfo(Type type, bool bypassValidate = false)
         {
             DatabaseTypeInfo toReturn = _cache.GetObject(type);
 
@@ -79,13 +76,8 @@ namespace DataAccess.Core
                         ParseDataInfo(type, toReturn);
                     }
 
-                    lock (this)
-                    {
-                        if (_cache.StoreObject(type, toReturn))
-                            OnTypeParsed?.Invoke(this, new TypeParsedEventArgs(toReturn, type, bypassValidate));
-                        else
-                            toReturn = _cache.GetObject(type);
-                    }
+                    if (!type.IsSystemType() && !bypassValidate && !bypassValidate)
+                        await _dstore.SchemaValidator.ValidateType(toReturn);
                 }
             }
 
@@ -251,7 +243,7 @@ namespace DataAccess.Core
             if (string.IsNullOrEmpty(dfi.FieldName))
                 dfi.FieldName = pi.Name;
 
-            dfi.EscapedFieldName = string.Concat(_connection.LeftEscapeCharacter, dfi.FieldName, _connection.RightEscapeCharacter);
+            dfi.EscapedFieldName = string.Concat(_dstore.Connection.LeftEscapeCharacter, dfi.FieldName, _dstore.Connection.RightEscapeCharacter);
         }
 
         /// <summary>
@@ -346,16 +338,16 @@ namespace DataAccess.Core
             }
 
             if (string.IsNullOrEmpty(toAdd.UnEscapedSchema))
-                toAdd.UnEscapedSchema = _connection.DefaultSchema;
+                toAdd.UnEscapedSchema = _dstore.Connection.DefaultSchema;
 
             if (string.IsNullOrEmpty(toAdd.UnescapedTableName))
                 toAdd.UnescapedTableName = GenTableName(type);
 
             //escape table name
-            toAdd.TableName = string.Concat(_connection.LeftEscapeCharacter, toAdd.UnescapedTableName, _connection.RightEscapeCharacter);
+            toAdd.TableName = string.Concat(_dstore.Connection.LeftEscapeCharacter, toAdd.UnescapedTableName, _dstore.Connection.RightEscapeCharacter);
 
             if (!string.IsNullOrEmpty(toAdd.UnEscapedSchema))
-                toAdd.Schema = string.Concat(_connection.LeftEscapeCharacter, toAdd.UnEscapedSchema, _connection.RightEscapeCharacter);
+                toAdd.Schema = string.Concat(_dstore.Connection.LeftEscapeCharacter, toAdd.UnEscapedSchema, _dstore.Connection.RightEscapeCharacter);
         }
 
         /// <summary>

@@ -77,10 +77,10 @@ namespace DataAccess.Core.Linq
         /// <param name="entity">The entity.</param>
         /// <param name="paramValues">The param values.</param>
         /// <returns></returns>
-        public override IAsyncEnumerable<T> Execute<T>(QueryCommand command, Func<FieldReader, T> fnProjector, MappingEntity entity, object[] paramValues)
+        public override IEnumerable<T> Execute<T>(QueryCommand command, Func<FieldReader, T> fnProjector, MappingEntity entity, object[] paramValues)
         {
             DbCommand cmd = this.GetCommand(command, paramValues);
-            return Provider.Store.ExecuteCommandLoadList<T>(cmd);
+            return Provider.Store.ExecuteCommandLoadList<T>(cmd).ToBlockingEnumerable();
         }
 
         /// <summary>

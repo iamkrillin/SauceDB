@@ -12,9 +12,6 @@ using DataAccess.Core.Linq.Mapping;
 
 namespace DataAccess.Core.Linq.Common.Mapping
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class BasicMapper : QueryMapper
     {
         private SauceMapping mapping;
@@ -29,28 +26,14 @@ namespace DataAccess.Core.Linq.Common.Mapping
             this.translator = translator;
         }
 
-        /// <summary>
-        /// The query language specific type for the column
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <param name="member">The member.</param>
-        /// <returns></returns>
-        //public virtual QueryType GetColumnType(MappingEntity entity, MemberInfo member)
-        //{
-        //    return this.translator.Linguist.Language.TypeSystem.GetColumnType(TypeHelper.GetMemberType(member));
-        //}
-
-        /// <summary>
-        /// Get a query expression that selects all entities from a table
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <returns></returns>
         public override ProjectionExpression GetQueryExpression(MappingEntity entity)
         {
             var tableAlias = new TableAlias();
             var selectAlias = new TableAlias();
-            var table = new TableExpression(tableAlias, entity, this.mapping.GetTableName(entity));
+            var tableName = this.mapping.GetTableName(entity);
+            tableName.Wait();
 
+            var table = new TableExpression(tableAlias, entity, tableName.Result);
             Expression projector = this.GetEntityExpression(table, entity);
             var pc = ColumnProjector.ProjectColumns(this.translator.Linguist.Language, projector, null, selectAlias, tableAlias);
             var proj = new ProjectionExpression(new SelectExpression(selectAlias, pc.Columns, table, null), pc.Projector);
@@ -58,14 +41,6 @@ namespace DataAccess.Core.Linq.Common.Mapping
             return (ProjectionExpression)this.Translator.Police.ApplyPolicy(proj, entity.ElementType);
         }
 
-        /// <summary>
-        /// Gets an expression that constructs an entity instance relative to a root.
-        /// The root is most often a TableExpression, but may be any other expression such as
-        /// a ConstantExpression.
-        /// </summary>
-        /// <param name="root"></param>
-        /// <param name="entity"></param>
-        /// <returns></returns>
         public override EntityExpression GetEntityExpression(Expression root, MappingEntity entity)
         {
             // must be some complex type constructed from multiple columns
@@ -134,12 +109,6 @@ namespace DataAccess.Core.Linq.Common.Mapping
             return result;
         }
 
-        /// <summary>
-        /// Maps the assignments.
-        /// </summary>
-        /// <param name="assignments">The assignments.</param>
-        /// <param name="entityType">Type of the entity.</param>
-        /// <returns></returns>
         private IEnumerable<EntityAssignment> MapAssignments(IEnumerable<EntityAssignment> assignments, Type entityType)
         {
             foreach (var assign in assignments)
@@ -156,12 +125,6 @@ namespace DataAccess.Core.Linq.Common.Mapping
             }
         }
 
-        /// <summary>
-        /// Binds the constructor.
-        /// </summary>
-        /// <param name="cons">The cons.</param>
-        /// <param name="assignments">The assignments.</param>
-        /// <returns></returns>
         protected virtual ConstructorBindResult BindConstructor(ConstructorInfo cons, IList<EntityAssignment> assignments)
         {
             var ps = cons.GetParameters();
@@ -203,10 +166,6 @@ namespace DataAccess.Core.Linq.Common.Mapping
             return new ConstructorBindResult(Expression.New(cons, args, mis), members);
         }
 
-        /// <summary>
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
         public override bool HasIncludedMembers(EntityExpression entity)
         {
             var policy = this.translator.Police.Policy;
@@ -218,12 +177,6 @@ namespace DataAccess.Core.Linq.Common.Mapping
             return false;
         }
 
-        /// <summary>
-        /// Recreate the type projection with the additional members included
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="fnIsIncluded"></param>
-        /// <returns></returns>
         public override EntityExpression IncludeMembers(EntityExpression entity, Func<MemberInfo, bool> fnIsIncluded)
         {
             var assignments = this.GetAssignments(entity.Expression).ToDictionary(ma => ma.Member.Name);
@@ -246,11 +199,6 @@ namespace DataAccess.Core.Linq.Common.Mapping
             return entity;
         }
 
-        /// <summary>
-        /// Gets the assignments.
-        /// </summary>
-        /// <param name="newOrMemberInit">The new or member init.</param>
-        /// <returns></returns>
         private IEnumerable<EntityAssignment> GetAssignments(Expression newOrMemberInit)
         {
             var assignments = new List<EntityAssignment>();
@@ -268,36 +216,31 @@ namespace DataAccess.Core.Linq.Common.Mapping
             return assignments;
         }
 
-        /// <summary>
-        /// Get an expression for a mapped property relative to a root expression.
-        /// The root is either a TableExpression or an expression defining an entity instance.
-        /// </summary>
-        /// <param name="root"></param>
-        /// <param name="entity"></param>
-        /// <param name="member"></param>
-        /// <returns></returns>
         public override Expression GetMemberExpression(Expression root, MappingEntity entity, MemberInfo member)
         {
             AliasedExpression aliasedRoot = root as AliasedExpression;
-            if (aliasedRoot != null && this.mapping.IsColumn(entity, member))
-                return new ColumnExpression(TypeHelper.GetMemberType(member), aliasedRoot.Alias, this.mapping.GetColumnName(entity, member));
+            var isCol = this.mapping.IsColumn(entity, member);
+            isCol.Wait();
+
+            if (aliasedRoot != null && isCol.Result)
+            {
+                var colName = this.mapping.GetColumnName(entity, member);
+                colName.Wait();
+
+                return new ColumnExpression(TypeHelper.GetMemberType(member), aliasedRoot.Alias, colName.Result);
+            }
 
             return QueryBinder.BindMember(root, member);
         }
 
-        /// <summary>
-        /// Gets the column assignments.
-        /// </summary>
-        /// <param name="table">The table.</param>
-        /// <param name="instance">The instance.</param>
-        /// <param name="entity">The entity.</param>
-        /// <param name="fnIncludeColumn">The fn include column.</param>
-        /// <returns></returns>
         private IEnumerable<ColumnAssignment> GetColumnAssignments(Expression table, Expression instance, MappingEntity entity, Func<MappingEntity, MemberInfo, bool> fnIncludeColumn)
         {
             foreach (var m in this.mapping.GetMappedMembers(entity))
             {
-                if (this.mapping.IsColumn(entity, m) && fnIncludeColumn(entity, m))
+                var isCol = this.mapping.IsColumn(entity, m);
+                isCol.Wait();
+
+                if (isCol.Result && fnIncludeColumn(entity, m))
                 {
                     yield return new ColumnAssignment((ColumnExpression)this.GetMemberExpression(table, entity, m), Expression.MakeMemberAccess(instance, m));
                 }

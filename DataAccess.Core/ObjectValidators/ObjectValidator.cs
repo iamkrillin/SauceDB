@@ -6,6 +6,7 @@ using DataAccess.Core.Data;
 using DataAccess.Core.Interfaces;
 using System.Data;
 using DataAccess.Core.Events;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core.ObjectValidators
 {
@@ -56,7 +57,7 @@ namespace DataAccess.Core.ObjectValidators
         /// Validates an objects info against the datastore
         /// </summary>
         /// <param name="ti"></param>
-        public abstract void ValidateObject(DatabaseTypeInfo ti);
+        public abstract Task ValidateObject(TypeParser tparser, DatabaseTypeInfo ti);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectValidator"/> class.
@@ -101,8 +102,7 @@ namespace DataAccess.Core.ObjectValidators
         /// <param name="ti">The ti.</param>
         protected void FireCreated(DatabaseTypeInfo ti)
         {
-            if (OnObjectCreated != null)
-                OnObjectCreated(this, new ObjectCreatedEventArgs(ti));
+            OnObjectCreated?.Invoke(this, new ObjectCreatedEventArgs(ti));
         }
 
         /// <summary>

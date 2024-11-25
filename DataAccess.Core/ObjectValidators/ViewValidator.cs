@@ -9,35 +9,18 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Core.ObjectValidators
 {
-    /// <summary>
-    /// Does view validation
-    /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="ViewValidator"/> class.
-    /// </remarks>
-    /// <param name="dstore">The dstore.</param>
     public class ViewValidator(IDataStore dstore) : ObjectValidator(dstore)
     {
-
-        /// <summary>
-        /// Validates an objects info against the datastore
-        /// </summary>
-        /// <param name="ti"></param>
-        public override void ValidateObject(DatabaseTypeInfo ti)
+        public override async Task ValidateObject(TypeParser tparser, DatabaseTypeInfo ti)
         {
             DBObject obj = GetObject(ti);
             if (obj == null)
-                CreateNewView(ti);
+                await CreateNewView(ti);
             else
-                ValidateExistingView(ti, obj);
+                await ValidateExistingView(ti, obj);
         }
 
-        /// <summary>
-        /// Validates an  existing view.
-        /// </summary>
-        /// <param name="ti">The ti.</param>
-        /// <param name="obj">The obj.</param>
-        protected virtual void ValidateExistingView(DatabaseTypeInfo ti, DBObject obj)
+        protected virtual Task ValidateExistingView(DatabaseTypeInfo ti, DBObject obj)
         {
             List<string> Missing = [];
 
@@ -60,27 +43,18 @@ namespace DataAccess.Core.ObjectValidators
 
                 throw new DataStoreException(string.Format("The view {0} is missing the following columns {1}",  ti.TableName, sb.ToString()));
             }
+
+            return Task.CompletedTask;
         }
 
-        /// <summary>
-        /// Creates the new view.
-        /// </summary>
-        /// <param name="ti">The ti.</param>
-        /// <returns></returns>
-        protected virtual DBObject CreateNewView(DatabaseTypeInfo ti)
+        protected virtual Task<DBObject> CreateNewView(DatabaseTypeInfo ti)
         {
             if (ti.DataFields.Count > 0)
-            {
                 throw new DataStoreException(string.Format("The view requested by {0} ({1}) was not found", ti.DataType.Name, ti.TableName));
-            }
             else
                 return null;
         }
 
-        /// <summary>
-        /// Returns a list of objects from the datastore
-        /// </summary>
-        /// <returns></returns>
         public override IEnumerable<DBObject> GetObjects()
         {
             if (Objects.Count < 1)

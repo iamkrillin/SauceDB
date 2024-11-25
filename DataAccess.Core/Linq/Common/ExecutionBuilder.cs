@@ -348,7 +348,11 @@ namespace DataAccess.Core.Linq.Common
                         ColumnDeclaration dec = projection.Select.Columns[i];
                         ColumnExpression match = memberColumns.FirstOrDefault(r => r.Name.Equals(dec.Name));
                         MemberInfo mi = newExpress.Members[memberColumns.IndexOf(match)];
-                        dec.Name = linguist.Translator.Mapper.Mapping.GetColumnName(mi);
+
+                        var ntask = linguist.Translator.Mapper.Mapping.GetColumnName(mi);
+                        ntask.Wait();
+
+                        dec.Name = ntask.Result;
                         match.Name = dec.Name;
                     }
                 }

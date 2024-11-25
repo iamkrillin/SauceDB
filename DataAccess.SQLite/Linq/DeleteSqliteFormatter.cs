@@ -50,7 +50,10 @@ namespace DataAccess.SQLite.Linq
 
         protected override Expression VisitMemberAccess(MemberExpression m)
         {
-            this.WriteColumnName(_mapper.GetColumnName(m.Member));
+            var cname = _mapper.GetColumnName(m.Member);
+            cname.Wait();
+
+            this.WriteColumnName(cname.Result);
             return m;
         }
     }

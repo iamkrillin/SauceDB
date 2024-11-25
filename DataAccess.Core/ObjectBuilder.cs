@@ -7,6 +7,7 @@ using System.Reflection;
 using DataAccess.Core.Interfaces;
 using DataAccess.Core.Events;
 using DataAccess.Core.Data.Results;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core
 {
@@ -22,7 +23,7 @@ namespace DataAccess.Core
         /// <param name="dt">The query data to build with</param>
         /// <param name="ti">The parsed  type info for the object</param>
         /// <returns></returns>
-        public static object BuildObject(this IDataStore dstore, IQueryRow row, DatabaseTypeInfo ti)
+        public static async Task<object> BuildObject(this IDataStore dstore, IQueryRow row, DatabaseTypeInfo ti)
         {
             object toAdd;
             ConstructorInfo ci = ti.DataType.GetConstructor(new Type[] { });
@@ -32,13 +33,15 @@ namespace DataAccess.Core
             {
                 ci = ti.DataType.GetConstructors().First();
                 ParameterInfo[] parminfo = ci.GetParameters();
-                toAdd = ci.Invoke(SetConstructorArguments(dstore, parminfo, ti, row));
+                var args = await SetConstructorArguments(dstore, parminfo, ti, row);
+
+                toAdd = ci.Invoke(args);
             }
             else
             {
                 parms = new object[0];
                 toAdd = ci.Invoke(parms);
-                SetFieldData(dstore, ti, row, toAdd);
+                await SetFieldData(dstore, ti, row, toAdd);
             }
 
             return toAdd;
@@ -53,7 +56,7 @@ namespace DataAccess.Core
         /// <param name="row">The row in the result set to use</param>
         /// <param name="dt">The query result set</param>
         /// <returns></returns>
-        public static object[] SetConstructorArguments(this IDataStore dstore, ParameterInfo[] parminfo, DatabaseTypeInfo ti, IQueryRow dt)
+        public static async Task<object[]> SetConstructorArguments(this IDataStore dstore, ParameterInfo[] parminfo, DatabaseTypeInfo ti, IQueryRow dt)
         {
             object[] toReturn = new object[parminfo.Length];
             for (int i = 0; i < parminfo.Length; i++)
@@ -64,7 +67,10 @@ namespace DataAccess.Core
                     if (curr.ParameterType.IsSystemType())
                         toReturn[i] = dstore.Connection.CLRConverter.ConvertToType(dt.GetDataForRowField(curr.Name), parminfo[i].ParameterType);
                     else
-                        toReturn[i] = BuildObject(dstore, dt, dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(curr.ParameterType));
+                    {
+                        var tinfo = await dstore.TypeParser.GetTypeInfo(curr.ParameterType);
+                        toReturn[i] = BuildObject(dstore, dt, tinfo);
+                    }
                 }
                 else
                 {
@@ -72,7 +78,10 @@ namespace DataAccess.Core
                     if (dt.FieldHasMapping(ti.DataFields[i].FieldName) && curr.ParameterType.IsSystemType())
                         toReturn[i] = dstore.Connection.CLRConverter.ConvertToType(dt.GetDataForRowField(parminfo[i].Name), parminfo[i].ParameterType);
                     else
-                        toReturn[i] = BuildObject(dstore, dt, dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(curr.ParameterType));
+                    {
+                        var tinfo = await dstore.TypeParser.GetTypeInfo(curr.ParameterType);
+                        toReturn[i] = BuildObject(dstore, dt, tinfo);
+                    }
                 }
             }
             return toReturn;
@@ -84,12 +93,12 @@ namespace DataAccess.Core
         /// <param name="dstore">The datastore.</param>
         /// <param name="row">The row to pull from</param>
         /// <param name="dataItem">The object to set the data on</param>
-        public static void SetFieldData(this IDataStore dstore, IQueryRow row, object dataItem)
+        public static async Task SetFieldData(this IDataStore dstore, IQueryRow row, object dataItem)
         {
             if (row != null)
             {
-                DatabaseTypeInfo ti = dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(dataItem.GetType());
-                SetFieldData(dstore, ti, row, dataItem);
+                DatabaseTypeInfo ti = await dstore.TypeParser.GetTypeInfo(dataItem.GetType());
+                await SetFieldData(dstore, ti, row, dataItem);
             }
         }
 
@@ -100,7 +109,7 @@ namespace DataAccess.Core
         /// <param name="info">The information for the type</param>
         /// <param name="row">The row to pull from</param>
         /// <param name="dataItem">The object to set the data on</param>
-        public static void SetFieldData(this IDataStore dstore, DatabaseTypeInfo info, IQueryRow row, object dataItem)
+        public static async Task SetFieldData(this IDataStore dstore, DatabaseTypeInfo info, IQueryRow row, object dataItem)
         {
             foreach (DataFieldInfo dfi in info.DataFields)
             {
@@ -116,7 +125,10 @@ namespace DataAccess.Core
                         try
                         {
                             if (!dfi.PropertyType.IsSystemType() && !dfi.PropertyType.IsEnum)
-                                dfi.Setter(dataItem, BuildObject(dstore, row, dstore.Connection.CommandGenerator.TypeParser.GetTypeInfo(dfi.PropertyType)));
+                            {
+                                var tinfo = await dstore.TypeParser.GetTypeInfo(dfi.PropertyType);
+                                dfi.Setter(dataItem, BuildObject(dstore, row, tinfo));
+                            }
                             else
                             {
                                 object fieldValue = dstore.Connection.CLRConverter.ConvertToType(item, dfi.PropertyType);

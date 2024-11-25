@@ -8,12 +8,10 @@ using DataAccess.Core.Data;
 using System.Data.SQLite;
 using DataAccess.Core.Interfaces;
 using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace DataAccess.SQLite
 {
-    /// <summary>
-    /// Generates various types of data store Commands, appropriate for SQLite
-    /// </summary>
     public class SqliteCommandGenerator : DatabaseCommandGenerator
     {
         public SqliteCommandGenerator(IDataConnection conn)
@@ -22,27 +20,17 @@ namespace DataAccess.SQLite
 
         }
 
-        /// <summary>
-        /// Returns a command for inserting one object
-        /// </summary>
-        /// <param name="item">The object to insert</param>
-        /// <returns></returns>
-        public override DbCommand GetInsertCommand(object item)
+        public override async Task<DbCommand> GetInsertCommand(TypeParser tparser, object item)
         {
-            IEnumerable<DataFieldInfo> info = TypeParser.GetPrimaryKeys(item.GetType());
-            DbCommand cmd = base.GetInsertCommand(item);
+            List<DataFieldInfo> info = await tparser.GetPrimaryKeys(item.GetType());
+            DbCommand cmd = await base.GetInsertCommand(tparser, item);
             if (info.Count() == 1)
                 cmd.CommandText = cmd.CommandText.Replace(";", string.Format("; SELECT last_insert_rowid() as {0};", info.First().EscapedFieldName));
 
             return cmd;
         }
 
-        /// <summary>
-        /// Returns a command for creating a new table
-        /// </summary>
-        /// <param name="ti">The type to create a table for</param>
-        /// <returns></returns>
-        public override IEnumerable<DbCommand> GetAddTableCommand(DatabaseTypeInfo ti)
+        public override async Task<List<DbCommand>> GetAddTableCommand(TypeParser tparser, DatabaseTypeInfo ti)
         {
             StringBuilder sb = new StringBuilder();
             StringBuilder pFields = new StringBuilder();
@@ -55,9 +43,11 @@ namespace DataAccess.SQLite
                 DataFieldInfo dfi = ti.DataFields[i];
                 if (i > 0) sb.Append(",");
 
+                string sType = await TranslateTypeToSql(tparser, dfi);
+
                 if (dfi.PrimaryKey)
                 {
-                    sb.AppendFormat("{0} {1}", dfi.EscapedFieldName, TranslateTypeToSql(dfi));
+                    sb.AppendFormat("{0} {1}", dfi.EscapedFieldName, sType);
 
                     if (dfi.PropertyType == typeof(int))
                     {
@@ -71,7 +61,7 @@ namespace DataAccess.SQLite
                 }
                 else
                 {
-                    sb.AppendFormat("{0} {1}", dfi.EscapedFieldName, TranslateTypeToSql(dfi));
+                    sb.AppendFormat("{0} {1}", dfi.EscapedFieldName, sType);
 
                     if (dfi.PrimaryKeyType == null)
                         sb.Append(" NULL");
@@ -80,7 +70,7 @@ namespace DataAccess.SQLite
                 if (dfi.PrimaryKeyType != null)
                 {
                     if (fKey.Length > 0) fKey.Append(",");
-                    fKey.Append(GetForeignKeySql(dfi, ti, TypeParser.GetTypeInfo(dfi.PrimaryKeyType)));
+                    fKey.Append(GetForeignKeySql(dfi, ti, await tparser.GetTypeInfo(dfi.PrimaryKeyType)));
                 }
             }
 
@@ -92,7 +82,7 @@ namespace DataAccess.SQLite
 
             sb.Append(");");
             cmd.CommandText = sb.ToString();
-            yield return cmd;
+            return [cmd];
         }
 
         private string GetForeignKeySql(DataFieldInfo field, DatabaseTypeInfo targetTable, DatabaseTypeInfo pkeyTable)
@@ -100,52 +90,28 @@ namespace DataAccess.SQLite
             return $" FOREIGN KEY({field.EscapedFieldName}) REFERENCES {ResolveTableName(pkeyTable, false)}({pkeyTable.PrimaryKeys.First().EscapedFieldName}) ON DELETE {TranslateFkeyType(field.ForeignKeyType)} ON UPDATE {TranslateFkeyType(field.ForeignKeyType)}";
         }
 
-        /// <summary>
-        /// Returns a command for removing a column from a table (Not supported for sqlite)
-        /// </summary>
-        /// <param name="type">The type to remove the column from</param>
-        /// <param name="dfi">The column to remove</param>
-        /// <returns></returns>
         public override DbCommand GetRemoveColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             throw new DataStoreException("This is not supported by SQLite");
         }
 
-        /// <summary>
-        /// Returns a command for adding a column to a table
-        /// </summary>
-        /// <param name="type">The type to add the column to</param>
-        /// <param name="dfi">The column to add</param>
-        /// <returns></returns>
-        public override IEnumerable<DbCommand> GetAddColumnCommnad(DatabaseTypeInfo type, DataFieldInfo dfi)
+        public override async Task<List<DbCommand>> GetAddColumnCommnad(TypeParser tparser, DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             if (dfi.PrimaryKey)
                 throw new DataStoreException("Adding a primary key to an existing table is not supported");
             else
             {
                 SQLiteCommand scmd = new SQLiteCommand();
-                scmd.CommandText = $"ALTER TABLE {ResolveTableName(type, false)} ADD COLUMN {dfi.EscapedFieldName} {TranslateTypeToSql(dfi)}";
-                yield return scmd;
+                scmd.CommandText = $"ALTER TABLE {ResolveTableName(type, false)} ADD COLUMN {dfi.EscapedFieldName} {await TranslateTypeToSql(tparser, dfi)}";
+                return [scmd];
             }
         }
 
-        /// <summary>
-        /// Returns a command for modifying a column to the specified type (Not supported for sqlite)
-        /// </summary>
-        /// <param name="type">The type to modify</param>
-        /// <param name="dfi">The column to modify</param>
-        /// <param name="targetFieldType">The type to change the field to</param>
-        /// <returns></returns>
-        public override IEnumerable<DbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
+        public override List<DbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
         {
             throw new Exception("this is not supported right now");
         }
 
-        /// <summary>
-        /// Returns null (sqlite doesnt support this)
-        /// </summary>
-        /// <param name="ti"></param>
-        /// <returns></returns>
         public override DbCommand GetAddSchemaCommand(DatabaseTypeInfo ti)
         {
             return null;

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using DataAccess.Core.Events;
 using DataAccess.Core.Data;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core.Interfaces
 {
@@ -41,7 +42,7 @@ namespace DataAccess.Core.Interfaces
         /// Validates an objects info against the datastore
         /// </summary>
         /// <param name="ti"></param>
-        void ValidateObject(DatabaseTypeInfo ti);
+        Task ValidateObject(TypeParser tparser, DatabaseTypeInfo ti);
 
         /// <summary>
         /// Returns a list of objects from the datastore

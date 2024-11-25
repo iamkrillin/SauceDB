@@ -49,7 +49,10 @@ namespace DataAccess.MySql.Linq
 
         protected override Expression VisitMemberAccess(MemberExpression m)
         {
-            this.WriteColumnName(_mapper.GetColumnName(m.Member));
+            var cName = _mapper.GetColumnName(m.Member);
+            cName.Wait();
+
+            this.WriteColumnName(cName.Result);
             return m;
         }
     }

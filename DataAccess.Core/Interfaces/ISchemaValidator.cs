@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using DataAccess.Core.Data;
 using DataAccess.Core.Events;
 
@@ -41,6 +42,6 @@ namespace DataAccess.Core.Interfaces
         /// Performs schema validation/modification to match the type
         /// </summary>
         /// <param name="typeInfo"></param>
-        void ValidateType(DatabaseTypeInfo typeInfo);
+        Task ValidateType(DatabaseTypeInfo typeInfo);
     }
 }

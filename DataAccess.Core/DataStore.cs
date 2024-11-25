@@ -18,6 +18,8 @@ using DataAccess.Core.ObjectFinders;
 using DataAccess.Core.Data.Results;
 using System.Data.Common;
 using System.Threading.Tasks;
+using System.ComponentModel;
+using Microsoft.VisualBasic;
 
 namespace DataAccess.Core
 {
@@ -49,6 +51,8 @@ namespace DataAccess.Core
         /// <value>The schema validator.</value>
         public ISchemaValidator SchemaValidator { get; set; }
 
+        public TypeParser TypeParser { get; private set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DataStore"/> class.
         /// </summary>
@@ -56,17 +60,10 @@ namespace DataAccess.Core
         public DataStore(IDataConnection Connection)
         {
             this.Connection = Connection;
-            this.Connection.CommandGenerator.TypeParser.OnTypeParsed += TypeParser_OnTypeParsed;
-
             this.ExecuteCommands = new ExecuteCommands();
             this.SchemaValidator = new ModifySchemaValidator(this);
             this.ObjectFinder = new SupportsSchemaObjectFinder();
-        }
-
-        private void TypeParser_OnTypeParsed(object sender, TypeParsedEventArgs e)
-        {
-            if (!e.Type.IsSystemType() && !e.Data.BypassValidation && !e.BypassValidation)
-                SchemaValidator.ValidateType(e.Data);
+            this.TypeParser = new TypeParser(this);
         }
 
         /// <summary>
@@ -92,7 +89,7 @@ namespace DataAccess.Core
             if (item == null)
                 return false;
 
-            DbCommand command = Connection.CommandGenerator.GetSelectCommand(item);
+            DbCommand command = await Connection.CommandGenerator.GetSelectCommand(TypeParser, item);
             return await ProcessCommand(item, command, true);
         }
 
@@ -115,7 +112,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual async Task<object> LoadObject(Type item, object key)
         {
-            DatabaseTypeInfo ti = Connection.CommandGenerator.TypeParser.GetTypeInfo(item);
+            DatabaseTypeInfo ti = await TypeParser.GetTypeInfo(item);
             if (ti.PrimaryKeys.Count == 1)
             {
                 object toReturn = CreateObjectSetKey(item, key, ti);
@@ -140,7 +137,7 @@ namespace DataAccess.Core
         {
             if (CheckObjectInserting(item))
             {
-                DbCommand command = Connection.CommandGenerator.GetInsertCommand(item);
+                DbCommand command = await Connection.CommandGenerator.GetInsertCommand(TypeParser, item);
                 bool result = await ProcessCommand(item, command);
                 FireObjectInserted(item, result);
                 return result;
@@ -164,7 +161,7 @@ namespace DataAccess.Core
                 }
                 else
                 {
-                    DbCommand command = Connection.CommandGenerator.GetInsertCommand(items);
+                    DbCommand command = await Connection.CommandGenerator.GetInsertCommand(TypeParser, items);
                     return await ProcessCommand(items, command);
                 }
             }
@@ -181,7 +178,7 @@ namespace DataAccess.Core
         {
             if (CheckObjectDeleting(item))
             {
-                DbCommand command = Connection.CommandGenerator.GetDeleteCommand(item);
+                DbCommand command = await Connection.CommandGenerator.GetDeleteCommand(TypeParser, item);
                 bool result = await ProcessCommand(item, command);
                 FireObjectDeleted(item, result);
 
@@ -207,9 +204,12 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="item">The type to load</param>
         /// <returns></returns>
-        public virtual IAsyncEnumerable<object> LoadEntireTable(Type item)
+        public virtual async IAsyncEnumerable<object> LoadEntireTable(Type item)
         {
-            return ExecuteCommandLoadList(item, Connection.CommandGenerator.LoadEntireTableCommand(item));
+            var command = await Connection.CommandGenerator.LoadEntireTableCommand(TypeParser, item);
+
+            await foreach (var rItem in ExecuteCommandLoadList(item, command))
+                yield return rItem;
         }
 
         /// <summary>
@@ -217,9 +217,12 @@ namespace DataAccess.Core
         /// </summary>
         /// <typeparam name="T">The type to load</typeparam>
         /// <returns></returns>
-        public virtual IAsyncEnumerable<T> LoadEntireTable<T>()
+        public virtual async IAsyncEnumerable<T> LoadEntireTable<T>()
         {
-            return ExecuteCommandLoadList<T>(Connection.CommandGenerator.LoadEntireTableCommand(typeof(T)));
+            var command = await Connection.CommandGenerator.LoadEntireTableCommand(TypeParser, typeof(T));
+
+            await foreach(var v in ExecuteCommandLoadList<T>(command))
+                yield return v;
         }
 
         /// <summary>
@@ -227,9 +230,9 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="t">The type</param>
         /// <returns></returns>
-        public virtual string GetTableName(Type t)
+        public virtual async Task<string> GetTableName(Type t)
         {
-            return Connection.CommandGenerator.ResolveTableName(t);
+            return await Connection.CommandGenerator.ResolveTableName(TypeParser, t);
         }
 
         /// <summary>
@@ -237,9 +240,9 @@ namespace DataAccess.Core
         /// </summary>
         /// <typeparam name="T">The type</typeparam>
         /// <returns></returns>
-        public virtual string GetTableName<T>()
+        public virtual async Task<string> GetTableName<T>()
         {
-            return GetTableName(typeof(T));
+            return await GetTableName(typeof(T));
         }
 
         /// <summary>
@@ -248,9 +251,9 @@ namespace DataAccess.Core
         /// <param name="type">The type to check</param>
         /// <param name="item">The object to extract from</param>
         /// <returns></returns>
-        public virtual object GetKeyForItemType(Type type, object item)
+        public virtual async Task<object> GetKeyForItemType(Type type, object item)
         {
-            IEnumerable<DataFieldInfo> fields = Connection.CommandGenerator.TypeParser.GetPrimaryKeys(type);
+            IEnumerable<DataFieldInfo> fields = await TypeParser.GetPrimaryKeys(type);
 
             if (fields.Count() > 1) 
                 throw new DataStoreException("This Type contains more than one key");
@@ -268,7 +271,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual async Task<bool> IsNew(object item)
         {
-            DbCommand cmd = Connection.CommandGenerator.GetSelectCommand(item);
+            DbCommand cmd = await Connection.CommandGenerator.GetSelectCommand(TypeParser, item);
             using (IQueryData qd = await ExecuteCommands.ExecuteCommandQuery(cmd, Connection))
             {
                 var enumerator = qd.GetEnumerator();
@@ -300,7 +303,7 @@ namespace DataAccess.Core
         {
             if (CheckObjectUpdating(item))
             {
-                DbCommand command = Connection.CommandGenerator.GetUpdateCommand(item);
+                DbCommand command = await Connection.CommandGenerator.GetUpdateCommand(TypeParser, item);
                 bool result = await ProcessCommand(command, command);
                 FireObjectUpdated(item, result);
                 return result;
@@ -362,7 +365,10 @@ namespace DataAccess.Core
         public virtual IQueryable<T> Query<T>()
         {
             IQueryable<T> toReturn = new Query<T>(Connection.GetQueryProvider(this));
-            DatabaseTypeInfo ti = Connection.CommandGenerator.TypeParser.GetTypeInfo(typeof(T));
+            var tInfo = TypeParser.GetTypeInfo(typeof(T));
+            tInfo.Wait();
+
+            DatabaseTypeInfo ti = tInfo.Result;
 
             if (ti.QueryPredicate != null)
                 toReturn = ti.QueryPredicate.Invoke(toReturn);
@@ -414,7 +420,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         protected virtual async IAsyncEnumerable<ReturnType> ExecuteCommandLoadList<ReturnType>(Type objectType, DbCommand command)
         {
-            DatabaseTypeInfo ti = Connection.CommandGenerator.TypeParser.GetTypeInfo(objectType);
+            DatabaseTypeInfo ti = await TypeParser.GetTypeInfo(objectType);
             using (IQueryData dt = await ExecuteCommands.ExecuteCommandQuery(command, Connection))
             {
                 if (dt.QuerySuccessful)
@@ -475,7 +481,10 @@ namespace DataAccess.Core
                     for (int i = 0; i < items.Count; i++)
                     {
                         rows.MoveNext();
-                        SetFieldData(Connection.CommandGenerator.TypeParser.GetTypeInfo(t), rows.Current, items[i]);
+                        var tInfo = TypeParser.GetTypeInfo(t);
+                        tInfo.Wait();
+
+                        SetFieldData(tInfo.Result, rows.Current, items[i]);
                     }
                     return true;
                 }
@@ -497,7 +506,10 @@ namespace DataAccess.Core
                 var en = r.GetQueryEnumerator();
                 if (en.MoveNext())
                 {
-                    SetFieldData(Connection.CommandGenerator.TypeParser.GetTypeInfo(item.GetType()), en.Current, item);
+                    var tInfo = TypeParser.GetTypeInfo(item.GetType());
+                    tInfo.Wait();
+
+                    SetFieldData(tInfo.Result, en.Current, item);
                     return true;
                 }
                 else
@@ -535,7 +547,8 @@ namespace DataAccess.Core
             foreach (KeyValuePair<string, object> par in whereParams)
                 cmd.Parameters.Add(Connection.GetParameter(par.Key, par.Value));
 
-            cmd.CommandText = $"DELETE FROM {Connection.CommandGenerator.ResolveTableName(typeof(T))} WHERE {whereString}";
+            string tableName = await Connection.CommandGenerator.ResolveTableName(TypeParser, typeof(T));
+            cmd.CommandText = $"DELETE FROM {tableName} WHERE {whereString}";
             return await ExecuteCommands.ExecuteCommand(cmd, Connection);
         }
 
@@ -606,9 +619,10 @@ namespace DataAccess.Core
         /// <param name="item">The item.</param>
         /// <param name="key">The key.</param>
         /// <returns></returns>
-        protected virtual object CreateObjectSetKey(Type item, object key)
+        protected virtual async Task<object> CreateObjectSetKey(Type item, object key)
         {
-            return CreateObjectSetKey(item, key, Connection.CommandGenerator.TypeParser.GetTypeInfo(item));
+            var tinfo = await TypeParser.GetTypeInfo(item);
+            return CreateObjectSetKey(item, key, tinfo);
         }
 
         /// <summary>

@@ -41,7 +41,7 @@ namespace DataAccess.Core.Linq.Common
         /// <param name="entity">The entity.</param>
         /// <param name="paramValues">The param values.</param>
         /// <returns></returns>
-        public abstract IAsyncEnumerable<T> Execute<T>(QueryCommand command, Func<FieldReader, T> fnProjector, MappingEntity entity, object[] paramValues);
+        public abstract IEnumerable<T> Execute<T>(QueryCommand command, Func<FieldReader, T> fnProjector, MappingEntity entity, object[] paramValues);
         
         /// <summary>
         /// Executes the command.

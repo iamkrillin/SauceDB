@@ -6,9 +6,8 @@ using System.Data;
 using DataAccess.Core.Data;
 using DataAccess.Core.Interfaces;
 using System.Collections;
-using System.Linq.Expressions;
-using DataAccess.Core.Linq.Common.Language;
 using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core
 {
@@ -18,14 +17,13 @@ namespace DataAccess.Core
     public abstract class DatabaseCommandGenerator : ICommandGenerator
     {
         private IDataConnection _connection;
-        public TypeParser TypeParser { get; private set; }
 
         /// <summary>
         /// Returns a command for creating a new table
         /// </summary>
         /// <param name="ti">The type to create a table for</param>
         /// <returns></returns>
-        public abstract IEnumerable<DbCommand> GetAddTableCommand(DatabaseTypeInfo ti);
+        public abstract Task<List<DbCommand>> GetAddTableCommand(TypeParser tParser, DatabaseTypeInfo ti);
 
         /// <summary>
         /// Returns a command for removing a column from a table
@@ -41,7 +39,7 @@ namespace DataAccess.Core
         /// <param name="type">The type to add the column to</param>
         /// <param name="dfi">The column to add</param>
         /// <returns></returns>
-        public abstract IEnumerable<DbCommand> GetAddColumnCommnad(DatabaseTypeInfo type, DataFieldInfo dfi);
+        public abstract Task<List<DbCommand>> GetAddColumnCommnad(TypeParser tparser, DatabaseTypeInfo type, DataFieldInfo dfi);
 
         /// <summary>
         /// Returns a command appropriate for adding a schema
@@ -57,12 +55,11 @@ namespace DataAccess.Core
         /// <param name="dfi">The column to modify</param>
         /// <param name="targetFieldType">The type to change the field to</param>
         /// <returns></returns>
-        public abstract IEnumerable<DbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType);
+        public abstract List<DbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType);
 
         public DatabaseCommandGenerator(IDataConnection connection)
         {
             _connection = connection;
-            TypeParser = new TypeParser(_connection);
         }
 
         /// <summary>
@@ -70,10 +67,13 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="item">The type to load</param>
         /// <returns></returns>
-        public virtual DbCommand LoadEntireTableCommand(Type item)
+        public virtual async Task<DbCommand> LoadEntireTableCommand(TypeParser tParser, Type item)
         {
+            string sList = await GetSelectList(tParser, item);
+            string tName = await ResolveTableName(tParser, item);
+
             DbCommand command = _connection.GetCommand();
-            command.CommandText = string.Format("SELECT {0} FROM {1};", GetSelectList(item), ResolveTableName(item));
+            command.CommandText = $"SELECT {sList} FROM {tName};";
             return command;
         }
 
@@ -83,9 +83,10 @@ namespace DataAccess.Core
         /// <param name="type">The type to modify</param>
         /// <param name="dfi">The column to modify</param>
         /// <returns></returns>
-        public virtual IEnumerable<DbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi)
+        public virtual async Task<List<DbCommand>> GetModifyColumnCommand(TypeParser tParser, DatabaseTypeInfo type, DataFieldInfo dfi)
         {
-            return GetModifyColumnCommand(type, dfi, TranslateTypeToSql(dfi));
+            var item = await TranslateTypeToSql(tParser, dfi);
+            return GetModifyColumnCommand(type, dfi, item);
         }
 
         /// <summary>
@@ -136,9 +137,9 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="item">The object to insert</param>
         /// <returns></returns>
-        public virtual DbCommand GetInsertCommand(object item)
+        public virtual async Task<DbCommand> GetInsertCommand(TypeParser tParser, object item)
         {
-            DatabaseTypeInfo ti = TypeParser.GetTypeInfo(item.GetType());
+            DatabaseTypeInfo ti = await tParser.GetTypeInfo(item.GetType());
             DbCommand cmd = null;
             if (item != null)
             {
@@ -156,7 +157,7 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="items">The objects to insert</param>
         /// <returns></returns>
-        public virtual DbCommand GetInsertCommand(IList items)
+        public virtual async Task<DbCommand> GetInsertCommand(TypeParser tParser, IList items)
         {
             DbCommand cmd = null;
 
@@ -166,7 +167,7 @@ namespace DataAccess.Core
 
             if (items.Count > 0)
             {
-                DatabaseTypeInfo ti = TypeParser.GetTypeInfo(items[0].GetType());
+                DatabaseTypeInfo ti = await tParser.GetTypeInfo(items[0].GetType());
                 cmd = _connection.GetCommand();
                 string fieldList = null;
                 StringBuilder parmbuilder = new StringBuilder();
@@ -176,10 +177,10 @@ namespace DataAccess.Core
                     object item = items[i];
                     List<ParameterData> parms = GetObjectParameters((ti.DataFields.Count * i), item, ti);
                     fieldList ??= BuildFieldList(parms);
-                    
-                    if (parmbuilder.Length > 0) 
+
+                    if (parmbuilder.Length > 0)
                         parmbuilder.Append(',');
-                    
+
                     parmbuilder.Append('(');
                     parmbuilder.Append(AppendParameters(parms, cmd));
                     parmbuilder.Append(')');
@@ -195,9 +196,9 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="item">The object to update</param>
         /// <returns></returns>
-        public virtual DbCommand GetUpdateCommand(object item)
+        public virtual async Task<DbCommand> GetUpdateCommand(TypeParser tParser, object item)
         {
-            DatabaseTypeInfo data = TypeParser.GetTypeInfo(item.GetType());
+            DatabaseTypeInfo data = await tParser.GetTypeInfo(item.GetType());
             DbCommand toReturn = _connection.GetCommand();
             StringBuilder fieldList = new StringBuilder("UPDATE ");
             fieldList.Append(ResolveTableName(data));
@@ -269,14 +270,17 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="item">The item to load (primary key needs to be set)</param>
         /// <returns></returns>
-        public virtual DbCommand GetSelectCommand(object item)
+        public virtual async Task<DbCommand> GetSelectCommand(TypeParser tParser, object item)
         {
             Type t = item.GetType();
-            DatabaseTypeInfo ti = TypeParser.GetTypeInfo(t);
+            DatabaseTypeInfo ti = await tParser.GetTypeInfo(t);
             DbCommand cmd = _connection.GetCommand();
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("SELECT {0} FROM {1} WHERE ", GetSelectList(t), ResolveTableName(ti));
+            string sList = await GetSelectList(tParser, t);
+
+
+            sb.AppendFormat("SELECT {0} FROM {1} WHERE ", sList, ResolveTableName(ti));
 
             for (int i = 0; i < ti.PrimaryKeys.Count; i++)
             {
@@ -301,9 +305,9 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="item">The item to remove</param>
         /// <returns></returns>
-        public virtual DbCommand GetDeleteCommand(object item)
+        public virtual async Task<DbCommand> GetDeleteCommand(TypeParser tParser, object item)
         {
-            DatabaseTypeInfo ti = TypeParser.GetTypeInfo(item.GetType());
+            DatabaseTypeInfo ti = await tParser.GetTypeInfo(item.GetType());
             StringBuilder sb = new StringBuilder("DELETE FROM ");
             sb.Append(ResolveTableName(ti));
             sb.Append(" WHERE ");
@@ -327,9 +331,9 @@ namespace DataAccess.Core
         /// <param name="type">The type</param>
         /// <param name="LoadAllFields">Honor LoadFieldAttribute</param>
         /// <returns></returns>
-        public virtual IEnumerable<DataFieldInfo> GetSelectFields(Type type, bool LoadAllFields)
+        public virtual async IAsyncEnumerable<DataFieldInfo> GetSelectFields(TypeParser tparser, Type type, bool LoadAllFields)
         {
-            DatabaseTypeInfo ti = TypeParser.GetTypeInfo(type);
+            DatabaseTypeInfo ti = await tparser.GetTypeInfo(type);
 
             foreach (DataFieldInfo dfi in ti.DataFields)
             {
@@ -343,9 +347,9 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="type">The type</param>
         /// <returns></returns>
-        public virtual string GetSelectList(Type type)
+        public virtual async Task<string> GetSelectList(TypeParser tParser, Type type)
         {
-            DatabaseTypeInfo ti = TypeParser.GetTypeInfo(type);
+            DatabaseTypeInfo ti = await tParser.GetTypeInfo(type);
             if (ti.SelectString == null)
             {
                 StringBuilder sb = new StringBuilder();
@@ -354,7 +358,7 @@ namespace DataAccess.Core
                 {
                     if (!dfi.LoadField) continue;
                     if (sb.Length > 0) sb.Append(',');
-                    sb.Append(ResolveFieldName(dfi.PropertyName, type));
+                    sb.Append(ResolveFieldName(tParser, dfi.PropertyName, type));
                 }
 
                 ti.SelectString = sb.ToString();
@@ -368,9 +372,9 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="type">The type</param>
         /// <returns></returns>
-        public virtual string ResolveTableName(Type type)
+        public virtual async Task<string> ResolveTableName(TypeParser tParser, Type type)
         {
-            DatabaseTypeInfo ti = TypeParser.GetTypeInfo(type);
+            DatabaseTypeInfo ti = await tParser.GetTypeInfo(type);
             return ResolveTableName(ti);
         }
 
@@ -422,10 +426,12 @@ namespace DataAccess.Core
         /// <param name="PropertyName">The objects property to use</param>
         /// <param name="type">The type</param>
         /// <returns></returns>
-        public virtual string ResolveFieldName(string PropertyName, Type type)
+        public virtual async Task<string> ResolveFieldName(TypeParser tParser, string PropertyName, Type type)
         {
             string toReturn = "";
-            DataFieldInfo dfi = TypeParser.GetTypeFields(type).Where(R => R.PropertyName.Equals(PropertyName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+            var fields = await tParser.GetTypeFields(type);
+
+            DataFieldInfo dfi = fields.Where(R => R.PropertyName.Equals(PropertyName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             if (dfi != null)
                 toReturn = dfi.EscapedFieldName;
 
@@ -437,10 +443,13 @@ namespace DataAccess.Core
         /// </summary>
         /// <param name="dfi">The data field.</param>
         /// <returns></returns>
-        public virtual string TranslateTypeToSql(DataFieldInfo dfi)
+        public virtual async Task<string> TranslateTypeToSql(TypeParser tParser, DataFieldInfo dfi)
         {
             if (dfi.PrimaryKeyType != null) //if there is primary key, the field types MUST match
-                return TranslateTypeToSql(TypeParser.GetTypeInfo(dfi.PrimaryKeyType).PrimaryKeys.First());
+            {
+                var typeInfo = await tParser.GetTypeInfo(dfi.PrimaryKeyType);
+                return await TranslateTypeToSql(tParser, typeInfo.PrimaryKeys.First());
+            }
             else
             {
                 if (dfi.DataFieldType != Attributes.FieldType.Default)
@@ -495,7 +504,7 @@ namespace DataAccess.Core
             string[] parts = parmName.Split('.');
             for (int i = 0; i < parts.Length; i++)
             {
-                if (i > 0) appendTo.Append(".");
+                if (i > 0) appendTo.Append('.');
                 appendTo.Append(string.Concat(_connection.LeftEscapeCharacter, parts[i], _connection.RightEscapeCharacter));
             }
         }

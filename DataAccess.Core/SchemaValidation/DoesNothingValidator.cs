@@ -5,6 +5,7 @@ using System.Text;
 using DataAccess.Core.Interfaces;
 using DataAccess.Core.Data;
 using DataAccess.Core.Events;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core.Schema
 {
@@ -55,9 +56,9 @@ namespace DataAccess.Core.Schema
         /// <summary>
         /// Does nothing
         /// </summary>
-        public void ValidateType(DatabaseTypeInfo typeInfo)
+        public Task ValidateType(DatabaseTypeInfo typeInfo)
         {
-
+            return Task.CompletedTask;
         }
 
         /// <summary>

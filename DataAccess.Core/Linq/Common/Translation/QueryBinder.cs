@@ -820,7 +820,10 @@ namespace DataAccess.Core.Linq.Common.Translation
                 if (q.Expression.NodeType == ExpressionType.Constant)
                 {
                     // assume this is also a table via some other implementation of IQueryable
-                    MappingEntity entity = this.mapper.Mapping.GetEntity(q.ElementType);
+                    var eTask = this.mapper.Mapping.GetEntity(q.ElementType);
+                    eTask.Wait();
+
+                    MappingEntity entity = eTask.Result;
                     return this.VisitSequence(this.mapper.GetQueryExpression(entity));
                 }
                 else
@@ -860,7 +863,10 @@ namespace DataAccess.Core.Linq.Common.Translation
         {
             if (m.Expression != null && m.Expression.NodeType == ExpressionType.Parameter && !this.map.ContainsKey((ParameterExpression)m.Expression) && this.IsQuery(m))
             {
-                return this.VisitSequence(this.mapper.GetQueryExpression(this.mapper.Mapping.GetEntity(m.Member)));
+                var etask = this.mapper.Mapping.GetEntity(m.Member);
+                etask.Wait();
+
+                return this.VisitSequence(this.mapper.GetQueryExpression(etask.Result));
             }
             Expression source = this.Visit(m.Expression);
             if (this.language.IsAggregate(m.Member) && IsRemoteQuery(source))

@@ -82,6 +82,8 @@ namespace DataAccess.Core.Interfaces
         /// </summary>
         IFindDataObjects ObjectFinder { get; set; }
 
+        TypeParser TypeParser { get; }
+
         /// <summary>
         /// Inserts an object
         /// </summary>
@@ -143,14 +145,14 @@ namespace DataAccess.Core.Interfaces
         /// </summary>
         /// <param name="t">The type</param>
         /// <returns></returns>
-        string GetTableName(Type t);
+        Task<string> GetTableName(Type t);
 
         /// <summary>
         /// Returns the resolved table name for a type
         /// </summary>
         /// <typeparam name="T">The type</typeparam>
         /// <returns></returns>
-        string GetTableName<T>();
+        Task<string> GetTableName<T>();
 
         /// <summary>
         /// Executes a command and loads a list
@@ -189,7 +191,7 @@ namespace DataAccess.Core.Interfaces
         /// <param name="type">The type to check</param>
         /// <param name="item">The object to extract from</param>
         /// <returns></returns>
-        object GetKeyForItemType(Type type, object item);
+        Task<object> GetKeyForItemType(Type type, object item);
 
         /// <summary>
         /// Loads an object from the data store, the key must be set

@@ -42,13 +42,13 @@ namespace DataAccess.Core
         /// Sets the parameters on the object based on a parameter object
         /// </summary>
         /// <param name="parameters"></param>
-        protected virtual void SetParameters(object parameters)
+        protected virtual async Task SetParameters(object parameters)
         {
             Command.Parameters.Clear();
 
             if (parameters != null)
             {
-                DatabaseTypeInfo ti = DataStore.Connection.CommandGenerator.TypeParser.GetTypeInfo(parameters.GetType(), false);
+                DatabaseTypeInfo ti = await DataStore.TypeParser.GetTypeInfo(parameters.GetType(), false);
                 if (ti.IsDynamic)
                 {
                     IDictionary<string, object> items = (IDictionary<string, object>)parameters;

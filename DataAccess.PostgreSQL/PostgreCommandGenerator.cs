@@ -9,6 +9,7 @@ using Npgsql;
 using System.Reflection;
 using DataAccess.Core.Interfaces;
 using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace DataAccess.PostgreSQL
 {
@@ -17,22 +18,13 @@ namespace DataAccess.PostgreSQL
     /// </summary>
     public class PostgreCommandGenerator : DatabaseCommandGenerator
     {
-        private static string _createFKSQL = @"CONSTRAINT ""{0}"" FOREIGN KEY ({1}) REFERENCES {2} ({3}) MATCH SIMPLE ON UPDATE {4} ON DELETE {4}";
-        private static string _addFKSql = @"ADD CONSTRAINT ""{0}"" FOREIGN KEY ({1}) REFERENCES {2} ({3}) MATCH SIMPLE ON UPDATE {4} ON DELETE {4}";
-        private static string _ModifyColumn = "ALTER TABLE {0} ALTER COLUMN {1} TYPE {2};";
-
         public PostgreCommandGenerator(IDataConnection connection)
             : base(connection)
         {
 
         }
 
-        /// <summary>
-        /// Returns a command for creating a new table
-        /// </summary>
-        /// <param name="ti">The type to create a table for</param>
-        /// <returns></returns>
-        public override IEnumerable<DbCommand> GetAddTableCommand(DatabaseTypeInfo ti)
+        public override async Task<List<DbCommand>> GetAddTableCommand(TypeParser tParser, DatabaseTypeInfo ti)
         {
             StringBuilder sb = new StringBuilder();
             StringBuilder pFields = new StringBuilder();
@@ -43,26 +35,28 @@ namespace DataAccess.PostgreSQL
             for (int i = 0; i < ti.DataFields.Count; i++)
             {
                 DataFieldInfo dfi = ti.DataFields[i];
-                if (i > 0) sb.Append(",");
+                if (i > 0) sb.Append(',');
+
+                string sType = await TranslateTypeToSql(tParser, dfi);
 
                 if (dfi.PrimaryKey)
                 {
-                    if (pFields.Length > 0) pFields.Append(",");
-                    pFields.AppendFormat("{0}", dfi.EscapedFieldName);
+                    if (pFields.Length > 0) pFields.Append(',');
+                    pFields.Append(dfi.EscapedFieldName);
 
                     if (dfi.PropertyType == typeof(int) && ti.PrimaryKeys.Count == 1)
                         sb.AppendFormat("{0} serial NOT NULL ", dfi.EscapedFieldName);
                     else
-                        sb.AppendFormat("{0} {1} NOT NULL ", dfi.EscapedFieldName, TranslateTypeToSql(dfi));
+                        sb.AppendFormat("{0} {1} NOT NULL ", dfi.EscapedFieldName, sType);
                 }
                 else
-                    sb.AppendFormat("{0} {1} NULL ", dfi.EscapedFieldName, TranslateTypeToSql(dfi));
+                    sb.AppendFormat("{0} {1} NULL ", dfi.EscapedFieldName, sType);
 
                 if (dfi.PrimaryKeyType != null)
                 {
                     if (contrain.Length > 0) contrain.Append(",");
-                    DatabaseTypeInfo pkType = TypeParser.GetTypeInfo(dfi.PrimaryKeyType);
-                    contrain.AppendFormat(_createFKSQL, Guid.NewGuid().ToString(), dfi.EscapedFieldName, ResolveTableName(pkType, false), pkType.PrimaryKeys.First().EscapedFieldName, TranslateFkeyType(dfi.ForeignKeyType));
+                    DatabaseTypeInfo pkType = await tParser.GetTypeInfo(dfi.PrimaryKeyType);
+                    contrain.AppendFormat(@"CONSTRAINT ""{0}"" FOREIGN KEY ({1}) REFERENCES {2} ({3}) MATCH SIMPLE ON UPDATE {4} ON DELETE {4}", Guid.NewGuid().ToString(), dfi.EscapedFieldName, ResolveTableName(pkType, false), pkType.PrimaryKeys.First().EscapedFieldName, TranslateFkeyType(dfi.ForeignKeyType));
                 }
             }
 
@@ -77,41 +71,24 @@ namespace DataAccess.PostgreSQL
 
             sb.Append(");");
             cmd.CommandText = sb.ToString();
-            yield return cmd;
+            return [cmd];
         }
 
-        /// <summary>
-        /// Returns a command for inserting one object
-        /// </summary>
-        /// <param name="item">The object to insert</param>
-        /// <returns></returns>
-        public override DbCommand GetInsertCommand(object item)
+        public override async Task<DbCommand> GetInsertCommand(TypeParser tParser, object item)
         {
-            DbCommand cmd = base.GetInsertCommand(item);
+            DbCommand cmd = await base.GetInsertCommand(tParser, item);
             cmd.CommandText = cmd.CommandText.Replace(";", " returning *;");
             return cmd;
         }
 
-        /// <summary>
-        /// Returns a command for removing a column from a table
-        /// </summary>
-        /// <param name="type">The type to remove the column from</param>
-        /// <param name="dfi">The column to remove</param>
-        /// <returns></returns>
         public override DbCommand GetRemoveColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             NpgsqlCommand command = new NpgsqlCommand();
-            command.CommandText = string.Format("ALTER TABLE {0} DROP COLUMN {1};", ResolveTableName(type, false), dfi.FieldName);
+            command.CommandText = $"ALTER TABLE {ResolveTableName(type, false)} DROP COLUMN {dfi.FieldName};";
             return command;
         }
 
-        /// <summary>
-        /// Returns a command for adding a column to a table
-        /// </summary>
-        /// <param name="type">The type to add the column to</param>
-        /// <param name="dfi">The column to add</param>
-        /// <returns></returns>
-        public override IEnumerable<DbCommand> GetAddColumnCommnad(DatabaseTypeInfo type, DataFieldInfo dfi)
+        public override async Task<List<DbCommand>> GetAddColumnCommnad(TypeParser tparser, DatabaseTypeInfo type, DataFieldInfo dfi)
         {
             if (dfi.PrimaryKey)
                 throw new DataStoreException("Adding a primary key to an existing table is not supported");
@@ -119,61 +96,41 @@ namespace DataAccess.PostgreSQL
             {
                 NpgsqlCommand scmd = new NpgsqlCommand();
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("ALTER TABLE {0} ADD {1} {2} NULL ", ResolveTableName(type, false), dfi.EscapedFieldName, TranslateTypeToSql(dfi));
+
+                string sType = await TranslateTypeToSql(tparser, dfi);
+                sb.AppendFormat("ALTER TABLE {0} ADD {1} {2} NULL ", ResolveTableName(type, false), dfi.EscapedFieldName, sType);
 
                 if (dfi.PrimaryKeyType != null)
                 {
-                    DatabaseTypeInfo pkType = TypeParser.GetTypeInfo(dfi.PrimaryKeyType);
-                    sb.Append(",");
-                    sb.AppendFormat(_addFKSql, Guid.NewGuid().ToString(), dfi.EscapedFieldName, ResolveTableName(pkType, false), pkType.PrimaryKeys.First().EscapedFieldName, TranslateFkeyType(dfi.ForeignKeyType));
+                    DatabaseTypeInfo pkType = await tparser.GetTypeInfo(dfi.PrimaryKeyType);
+                    sb.Append(',');
+                    sb.AppendFormat(@"ADD CONSTRAINT ""{0}"" FOREIGN KEY ({1}) REFERENCES {2} ({3}) MATCH SIMPLE ON UPDATE {4} ON DELETE {4}", Guid.NewGuid().ToString(), dfi.EscapedFieldName, ResolveTableName(pkType, false), pkType.PrimaryKeys.First().EscapedFieldName, TranslateFkeyType(dfi.ForeignKeyType));
                 }
 
-                sb.Append(";");
+                sb.Append(';');
                 scmd.CommandText = sb.ToString();
-                yield return scmd;
+                return [scmd];
             }
         }
 
-        /// <summary>
-        /// Returns a command for modifying a column to the specified type
-        /// </summary>
-        /// <param name="type">The type to modify</param>
-        /// <param name="dfi">The column to modify</param>
-        /// <param name="targetFieldType">The type to change the field to</param>
-        /// <returns></returns>
-        public override IEnumerable<DbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
+        public override List<DbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
         {
             targetFieldType = targetFieldType.Replace("varchar", "character varying");
             NpgsqlCommand cmd = new NpgsqlCommand();
-            cmd.CommandText = string.Format(_ModifyColumn, ResolveTableName(type, false), dfi.EscapedFieldName, targetFieldType);
-            yield return cmd;
+            cmd.CommandText = $"ALTER TABLE {ResolveTableName(type, false)} ALTER COLUMN {dfi.EscapedFieldName} TYPE {targetFieldType};";
+            return [cmd];
         }
 
-        /// <summary>
-        /// Returns the name of the table (schema.table)
-        /// </summary>
-        /// <param name="type">The type</param>
-        /// <returns></returns>
-        public override string ResolveTableName(Type type)
+        public override async Task<string> ResolveTableName(TypeParser tParser, Type type)
         {
-            return ResolveTableName(TypeParser.GetTypeInfo(type), false);
+            return ResolveTableName(await tParser.GetTypeInfo(type), false);
         }
 
-        /// <summary>
-        /// Resolves the name of the table.
-        /// </summary>
-        /// <param name="ti">The ti.</param>
-        /// <returns></returns>
         public override string ResolveTableName(DatabaseTypeInfo ti)
         {
             return ResolveTableName(ti, false);
         }
 
-        /// <summary>
-        /// Returns null (postgre doesnt support this)
-        /// </summary>
-        /// <param name="ti"></param>
-        /// <returns></returns>
         public override DbCommand GetAddSchemaCommand(DatabaseTypeInfo ti)
         {
             return null;

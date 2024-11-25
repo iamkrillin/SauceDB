@@ -20,28 +20,19 @@ namespace DataAccess.Core.ObjectValidators
     /// <param name="dstore">The dstore.</param>
     public class ModifyTableValidator(IDataStore dstore) : ObjectValidator(dstore), IValidateTables
     {
-
-        /// <summary>
-        /// Validates an objects info against the datastore
-        /// </summary>
-        /// <param name="ti"></param>
-        public override void ValidateObject(DatabaseTypeInfo ti)
+        public override async Task ValidateObject(TypeParser tparser, DatabaseTypeInfo ti)
         {
             DBObject table = GetObject(ti);
 
             if (table == null)
-                CreateNewTable(ti);
+                await CreateNewTable(tparser, ti);
             else
-                ValidateExistingTable(ti, table);
+                await ValidateExistingTable(tparser, ti, table);
         }
-
-        /// <summary>
-        /// Creates a new table.
-        /// </summary>
-        /// <param name="typeInfo">The type info.</param>
-        public virtual void CreateNewTable(DatabaseTypeInfo typeInfo)
+        
+        public virtual async Task CreateNewTable(TypeParser tparser, DatabaseTypeInfo typeInfo)
         {
-            AddTable(typeInfo);
+            await AddTable(tparser, typeInfo);
             if (typeInfo.OnTableCreate != null)
             {
                 foreach (AdditionalInitFunction v in typeInfo.OnTableCreate)
@@ -54,12 +45,7 @@ namespace DataAccess.Core.ObjectValidators
             }
         }
 
-        /// <summary>
-        /// Validates an existing table.
-        /// </summary>
-        /// <param name="typeInfo">The type info.</param>
-        /// <param name="t">The t.</param>
-        protected virtual void ValidateExistingTable(DatabaseTypeInfo typeInfo, DBObject t)
+        protected virtual async Task ValidateExistingTable(TypeParser tparser, DatabaseTypeInfo typeInfo, DBObject t)
         {
             List<Column> valid = [];
             bool dirty = false;
@@ -69,7 +55,7 @@ namespace DataAccess.Core.ObjectValidators
                 Column c = t.Columns.Where(R => R.Name.Equals(dfi.FieldName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
                 if (c == null)
                 {
-                    if (AddColumn(dfi, typeInfo))
+                    if (await AddColumn(tparser, dfi, typeInfo))
                     {
                         dirty = true;
                         valid.Add(new Column() { Name = dfi.FieldName });
@@ -79,10 +65,12 @@ namespace DataAccess.Core.ObjectValidators
                 {
                     if (!string.IsNullOrEmpty(c.DataType) && !dfi.PrimaryKey)
                     {
+                        var sqlTYpe = await _dstore.Connection.CommandGenerator.TranslateTypeToSql(_dstore.TypeParser, dfi);
+
                         //check column type
-                        if (!c.ResolvedColumnType.Equals(_dstore.Connection.CommandGenerator.TranslateTypeToSql(dfi), StringComparison.InvariantCultureIgnoreCase))
+                        if (!c.ResolvedColumnType.Equals(sqlTYpe, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            if (ModifyColumn(dfi, typeInfo))
+                            if (await ModifyColumn(dfi, typeInfo))
                             {
                                 dirty = true;
                             }
@@ -93,20 +81,13 @@ namespace DataAccess.Core.ObjectValidators
                 }
             }
 
-            if (CheckForDeletedColumns(typeInfo, t, valid))
+            if (await CheckForDeletedColumns(typeInfo, t, valid))
                 dirty = true;
 
             if (dirty) Objects.Clear(); //this will cause the table info to reload
         }
 
-        /// <summary>
-        /// Checks for deleted columns.
-        /// </summary>
-        /// <param name="typeInfo">The type info.</param>
-        /// <param name="t">The t.</param>
-        /// <param name="valid">The valid.</param>
-        /// <returns></returns>
-        protected virtual bool CheckForDeletedColumns(DatabaseTypeInfo typeInfo, DBObject t, List<Column> valid)
+        protected virtual async Task<bool> CheckForDeletedColumns(DatabaseTypeInfo typeInfo, DBObject t, List<Column> valid)
         {
             if (CanRemoveColumns)
             {
@@ -118,7 +99,7 @@ namespace DataAccess.Core.ObjectValidators
                     {
                         Column found = valid.Where(R => R.Name.Equals(c.Name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
                         if (found == null)
-                            RemoveColumn(new DataFieldInfo() { FieldName = c.Name }, typeInfo);
+                            await RemoveColumn(new DataFieldInfo() { FieldName = c.Name }, typeInfo);
                     }
                 }
                 return dirty;
@@ -127,19 +108,14 @@ namespace DataAccess.Core.ObjectValidators
                 return false;
         }
 
-        /// <summary>
-        /// Returns the tables from the data store
-        /// </summary>
-        /// <param name="ti"></param>
-        /// <returns></returns>
-        public virtual DBObject AddTable(DatabaseTypeInfo ti)
+        public virtual async Task<DBObject> AddTable(TypeParser tparser, DatabaseTypeInfo ti)
         {
             if (ti.DataFields.Count > 0)
             {
-                CheckSchema(ti);
+                await CheckSchema(ti);
 
-                foreach (DbCommand cmd in _dstore.Connection.CommandGenerator.GetAddTableCommand(ti))
-                    _dstore.ExecuteCommands.ExecuteCommand(cmd, _dstore.Connection);
+                foreach (DbCommand cmd in await _dstore.Connection.CommandGenerator.GetAddTableCommand(tparser, ti))
+                    await _dstore.ExecuteCommands.ExecuteCommand(cmd, _dstore.Connection);
 
                 FireCreated(ti);
                 Objects.Clear();
@@ -149,21 +125,15 @@ namespace DataAccess.Core.ObjectValidators
                 return null;
         }
 
-        /// <summary>
-        /// Adds the column.
-        /// </summary>
-        /// <param name="field">The field to add</param>
-        /// <param name="ti">The type its being added to</param>
-        /// <returns></returns>
-        public virtual bool AddColumn(DataFieldInfo field, DatabaseTypeInfo ti)
+        public virtual async Task<bool> AddColumn(TypeParser tparser, DataFieldInfo field, DatabaseTypeInfo ti)
         {
             if (CanAddColumns)
             {
                 bool result = false;
                 if (ti.DataFields.Count > 0)
                 {
-                    foreach (DbCommand cmd in _dstore.Connection.CommandGenerator.GetAddColumnCommnad(ti, field))
-                        _dstore.ExecuteCommands.ExecuteCommand(cmd, _dstore.Connection);
+                    foreach (DbCommand cmd in await _dstore.Connection.CommandGenerator.GetAddColumnCommnad(tparser, ti, field))
+                        await _dstore.ExecuteCommands.ExecuteCommand(cmd, _dstore.Connection);
 
                     FireModified(ti, "Added {0} to {1}", field.FieldName, ti.TableName);
                     result = true;
@@ -176,13 +146,7 @@ namespace DataAccess.Core.ObjectValidators
             }
         }
 
-        /// <summary>
-        /// Removed a column from a data table
-        /// </summary>
-        /// <param name="field">The field to remove</param>
-        /// <param name="ti">The type to remove it from</param>
-        /// <returns></returns>
-        public virtual bool RemoveColumn(DataFieldInfo field, DatabaseTypeInfo ti)
+        public virtual async Task<bool> RemoveColumn(DataFieldInfo field, DatabaseTypeInfo ti)
         {
             if (CanRemoveColumns)
             {
@@ -190,7 +154,7 @@ namespace DataAccess.Core.ObjectValidators
                 if (ti.DataFields.Count > 0)
                 {
                     DbCommand cmd = _dstore.Connection.CommandGenerator.GetRemoveColumnCommand(ti, field);
-                    _dstore.ExecuteCommands.ExecuteCommand(cmd, _dstore.Connection);
+                    await _dstore.ExecuteCommands.ExecuteCommand(cmd, _dstore.Connection);
                     FireModified(ti, "Removed Column {0} from {1}", field.FieldName, ti.TableName);
                     result = true;
                 }
@@ -202,17 +166,14 @@ namespace DataAccess.Core.ObjectValidators
             }
         }
 
-        /// <summary>
-        /// Modifies a column from a data table
-        /// </summary>
-        /// <param name="dfi">The data field.</param>
-        /// <param name="typeInfo">The type info.</param>
-        public bool ModifyColumn(DataFieldInfo dfi, DatabaseTypeInfo typeInfo)
+        public async Task<bool> ModifyColumn(DataFieldInfo dfi, DatabaseTypeInfo typeInfo)
         {
             if (CanUpdateColumns)
             {
-                foreach (DbCommand cmd in _dstore.Connection.CommandGenerator.GetModifyColumnCommand(typeInfo, dfi))
-                    _dstore.ExecuteCommands.ExecuteCommand(cmd, _dstore.Connection);
+                var modifyCommands = await _dstore.Connection.CommandGenerator.GetModifyColumnCommand(_dstore.TypeParser, typeInfo, dfi);
+
+                foreach (DbCommand cmd in modifyCommands)
+                    await _dstore.ExecuteCommands.ExecuteCommand(cmd, _dstore.Connection);
 
                 FireModified(typeInfo, "Added {0} to {1}", dfi.FieldName, typeInfo.TableName);
                 return true;
@@ -223,10 +184,6 @@ namespace DataAccess.Core.ObjectValidators
             }
         }
 
-        /// <summary>
-        /// Returns a list of objects from the datastore
-        /// </summary>
-        /// <returns></returns>
         public override IEnumerable<DBObject> GetObjects()
         {
             if (Objects.Count < 1)
@@ -240,18 +197,14 @@ namespace DataAccess.Core.ObjectValidators
             return Objects;
         }
 
-        /// <summary>
-        /// executes a command to add a schema
-        /// </summary>
-        /// <param name="ti">The ti.</param>
-        public virtual void CheckSchema(DatabaseTypeInfo ti)
+        public virtual async Task CheckSchema(DatabaseTypeInfo ti)
         {
             if (!ti.UnEscapedSchema.Equals(_dstore.Connection.DefaultSchema, StringComparison.InvariantCultureIgnoreCase))
             {
                 DbCommand cmd = _dstore.Connection.CommandGenerator.GetAddSchemaCommand(ti);
 
-                if(cmd != null)
-                    _dstore.ExecuteCommands.ExecuteCommand(cmd, _dstore.Connection);
+                if (cmd != null)
+                    await _dstore.ExecuteCommands.ExecuteCommand(cmd, _dstore.Connection);
             }
         }
     }

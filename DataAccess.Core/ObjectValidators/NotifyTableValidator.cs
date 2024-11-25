@@ -10,44 +10,24 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Core.ObjectValidators
 {
-    /// <summary>
-    /// Validates tables on the datastore
-    /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="ModifyTableValidator"/> class.
-    /// </remarks>
-    /// <param name="dstore">The dstore.</param>
     public class NotifyTableValidator(IDataStore dstore) : ObjectValidator(dstore)
     {
-        /// <summary>
-        /// Validates an objects info against the datastore
-        /// </summary>
-        /// <param name="ti"></param>
-        public override void ValidateObject(DatabaseTypeInfo ti)
+        public override async Task ValidateObject(TypeParser tparser, DatabaseTypeInfo ti)
         {
             DBObject table = GetObject(ti);
 
             if (table == null)
-                CreateNewTable(ti);
+                await CreateNewTable(ti);
             else
-                ValidateExistingTable(ti, table);
+                await ValidateExistingTable(ti, table);
         }
 
-        /// <summary>
-        /// Creates a new table.
-        /// </summary>
-        /// <param name="typeInfo">The type info.</param>
-        protected virtual void CreateNewTable(DatabaseTypeInfo typeInfo)
+        protected virtual Task CreateNewTable(DatabaseTypeInfo typeInfo)
         {
             throw new DataStoreException(string.Format("A Table {0} was requested but was not found in the datastore", typeInfo.TableName));
         }
 
-        /// <summary>
-        /// Validates an existing table.
-        /// </summary>
-        /// <param name="typeInfo">The type info.</param>
-        /// <param name="t">The t.</param>
-        protected virtual void ValidateExistingTable(DatabaseTypeInfo typeInfo, DBObject t)
+        protected virtual Task ValidateExistingTable(DatabaseTypeInfo typeInfo, DBObject t)
         {
             List<Column> valid = [];
 
@@ -63,12 +43,10 @@ namespace DataAccess.Core.ObjectValidators
                     valid.Add(new Column() { Name = dfi.FieldName });
                 }
             }
+
+            return Task.CompletedTask;
         }
 
-        /// <summary>
-        /// Returns a list of objects from the datastore
-        /// </summary>
-        /// <returns></returns>
         public override IEnumerable<DBObject> GetObjects()
         {
             if (Objects.Count < 1)
@@ -81,12 +59,9 @@ namespace DataAccess.Core.ObjectValidators
             return Objects;
         }
 
-        /// <summary>
-        /// Does nothing...
-        /// </summary>
-        /// <param name="ti">The ti.</param>
-        public virtual void CheckSchema(DatabaseTypeInfo ti)
+        public virtual Task CheckSchema(DatabaseTypeInfo ti)
         {
+            return Task.CompletedTask;
         }
     }
 }

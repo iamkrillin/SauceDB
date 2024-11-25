@@ -8,6 +8,7 @@ using DataAccess.Core.Data;
 using System.Reflection;
 using DataAccess.Core.Linq.Common.Mapping;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core.Linq.Mapping
 {
@@ -25,9 +26,9 @@ namespace DataAccess.Core.Linq.Mapping
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns></returns>
-        public string GetTableId(Type type)
+        public async Task<string> GetTableId(Type type)
         {
-            return dStore.GetTableName(type);
+            return await dStore.GetTableName(type);
         }
 
         /// <summary>
@@ -35,9 +36,10 @@ namespace DataAccess.Core.Linq.Mapping
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public virtual MappingEntity GetEntity(Type type)
+        public virtual async Task<MappingEntity> GetEntity(Type type)
         {
-            return GetEntity(type, this.GetTableId(type));
+            var item = await this.GetTableId(type);
+            return await GetEntity(type, item);
         }
 
         /// <summary>
@@ -46,10 +48,10 @@ namespace DataAccess.Core.Linq.Mapping
         /// <param name="elementType">Type of the element.</param>
         /// <param name="tableId">The table id.</param>
         /// <returns></returns>
-        public MappingEntity GetEntity(Type elementType, string tableId)
+        public async Task<MappingEntity> GetEntity(Type elementType, string tableId)
         {
             if (tableId == null)
-                tableId = dStore.GetTableName(elementType);
+                tableId = await dStore.GetTableName(elementType);
             return new BasicMappingEntity(elementType, tableId);
         }
 
@@ -58,10 +60,10 @@ namespace DataAccess.Core.Linq.Mapping
         /// </summary>
         /// <param name="contextMember">The context member.</param>
         /// <returns></returns>
-        public MappingEntity GetEntity(MemberInfo contextMember)
+        public async Task<MappingEntity> GetEntity(MemberInfo contextMember)
         {
             Type elementType = TypeHelper.GetElementType(TypeHelper.GetMemberType(contextMember));
-            return this.GetEntity(elementType);
+            return await this.GetEntity(elementType);
         }
 
         /// <summary>
@@ -70,16 +72,18 @@ namespace DataAccess.Core.Linq.Mapping
         /// <param name="entity">The entity.</param>
         /// <param name="instance">The instance.</param>
         /// <returns></returns>
-        public object CloneEntity(MappingEntity entity, object instance)
+        public async Task<object> CloneEntity(MappingEntity entity, object instance)
         {
             var clone = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(entity.EntityType);
+
             foreach (var mi in GetMappedMembers(entity))
             {
-                if (this.IsColumn(entity, mi))
+                if (await this.IsColumn(entity, mi))
                 {
                     mi.SetValue(clone, mi.GetValue(instance));
                 }
             }
+
             return clone;
         }
 
@@ -91,9 +95,9 @@ namespace DataAccess.Core.Linq.Mapping
         /// <returns>
         ///   <c>true</c> if the specified entity is column; otherwise, <c>false</c>.
         /// </returns>
-        public bool IsColumn(MappingEntity entity, MemberInfo member)
+        public async Task<bool> IsColumn(MappingEntity entity, MemberInfo member)
         {
-            return IsMapped(entity, member);
+            return await IsMapped(entity, member);
         }
 
         /// <summary>
@@ -104,9 +108,9 @@ namespace DataAccess.Core.Linq.Mapping
         /// <returns>
         ///   <c>true</c> if the specified entity is mapped; otherwise, <c>false</c>.
         /// </returns>
-        public bool IsMapped(MappingEntity entity, MemberInfo member)
+        public async Task<bool> IsMapped(MappingEntity entity, MemberInfo member)
         {
-            DatabaseTypeInfo ti = dStore.Connection.CommandGenerator.TypeParser.GetTypeInfo(entity.EntityType);
+            DatabaseTypeInfo ti = await dStore.TypeParser.GetTypeInfo(entity.EntityType);
             DataFieldInfo field = ti.DataFields.Where(R => R.PropertyName.Equals(member.Name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             return field != null && field.LoadField;
         }
@@ -119,9 +123,9 @@ namespace DataAccess.Core.Linq.Mapping
         /// <returns>
         ///   <c>true</c> if [is primary key] [the specified entity]; otherwise, <c>false</c>.
         /// </returns>
-        public bool IsPrimaryKey(MappingEntity entity, MemberInfo member)
+        public async Task<bool> IsPrimaryKey(MappingEntity entity, MemberInfo member)
         {
-            DatabaseTypeInfo ti = dStore.Connection.CommandGenerator.TypeParser.GetTypeInfo(entity.EntityType);
+            DatabaseTypeInfo ti = await dStore.TypeParser.GetTypeInfo(entity.EntityType);
             return ti.PrimaryKeys.Where(R => R.PropertyName.Equals(member.Name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault() != null;
         }
 
@@ -131,11 +135,11 @@ namespace DataAccess.Core.Linq.Mapping
         /// <param name="entity">The entity.</param>
         /// <param name="instance">The instance.</param>
         /// <returns></returns>
-        public object GetPrimaryKey(MappingEntity entity, object instance)
+        public async Task<object> GetPrimaryKey(MappingEntity entity, object instance)
         {
             object firstKey = null;
             List<object> keys = null;
-            DatabaseTypeInfo ti = dStore.Connection.CommandGenerator.TypeParser.GetTypeInfo(entity.EntityType);
+            DatabaseTypeInfo ti = await dStore.TypeParser.GetTypeInfo(entity.EntityType);
 
             foreach (DataFieldInfo v in ti.PrimaryKeys)
             {
@@ -199,8 +203,15 @@ namespace DataAccess.Core.Linq.Mapping
         public IEnumerable<MemberInfo> GetMappedMembers(MappingEntity entity)
         {
             Type type = entity.EntityType;
-            HashSet<MemberInfo> members = new HashSet<MemberInfo>(type.GetFields().Cast<MemberInfo>().Where(m => this.IsMapped(entity, m)));
-            members.UnionWith(type.GetProperties().Cast<MemberInfo>().Where(m => IsMapped(entity, m)));
+            var isMapped = (MappingEntity entity, MemberInfo member) =>
+            {
+                var mapp = IsMapped(entity, member);
+                mapp.Wait();
+                return mapp.Result;
+            };
+
+            HashSet<MemberInfo> members = new HashSet<MemberInfo>(type.GetFields().Cast<MemberInfo>().Where(m => isMapped(entity, m)));
+            members.UnionWith(type.GetProperties().Cast<MemberInfo>().Where(m => isMapped(entity, m)));
             return members.OrderBy(m => m.Name);
         }
 
@@ -219,9 +230,9 @@ namespace DataAccess.Core.Linq.Mapping
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
-        public string GetTableName(MappingEntity entity)
+        public async Task<string> GetTableName(MappingEntity entity)
         {
-            return GetTableId(entity.EntityType);
+            return await GetTableId(entity.EntityType);
         }
 
         /// <summary>
@@ -230,9 +241,9 @@ namespace DataAccess.Core.Linq.Mapping
         /// <param name="entity">The entity.</param>
         /// <param name="member">The member.</param>
         /// <returns></returns>
-        public string GetColumnName(MappingEntity entity, MemberInfo member)
+        public async Task<string> GetColumnName(MappingEntity entity, MemberInfo member)
         {
-            DatabaseTypeInfo ti = dStore.Connection.CommandGenerator.TypeParser.GetTypeInfo(entity.EntityType);
+            DatabaseTypeInfo ti = await dStore.TypeParser.GetTypeInfo(entity.EntityType);
             DataFieldInfo field = ti.DataFields.Where(R => R.PropertyName.Equals(member.Name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             return field != null ? field.EscapedFieldName : "";
         }
@@ -242,9 +253,9 @@ namespace DataAccess.Core.Linq.Mapping
         /// </summary>
         /// <param name="memberInfo">The member info.</param>
         /// <returns></returns>
-        public string GetColumnName(MemberInfo memberInfo)
+        public async Task<string> GetColumnName(MemberInfo memberInfo)
         {
-            DatabaseTypeInfo ti = dStore.Connection.CommandGenerator.TypeParser.GetTypeInfo(memberInfo.DeclaringType);
+            DatabaseTypeInfo ti = await dStore.TypeParser.GetTypeInfo(memberInfo.DeclaringType);
             DataFieldInfo field = ti.DataFields.Where(R => R.PropertyName.Equals(memberInfo.Name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             return field != null ? field.EscapedFieldName : "";
         }
@@ -256,7 +267,14 @@ namespace DataAccess.Core.Linq.Mapping
         /// <returns></returns>
         public virtual IEnumerable<MemberInfo> GetPrimaryKeyMembers(MappingEntity entity)
         {
-            return this.GetMappedMembers(entity).Where(m => this.IsPrimaryKey(entity, m));
+            var isPrimary = (MappingEntity ent, MemberInfo mi) =>
+            {
+                var value = this.IsPrimaryKey(ent, mi);
+                value.Wait();
+                return value.Result;
+            };
+
+            return this.GetMappedMembers(entity).Where(m => isPrimary(entity, m));
         }
 
         /// <summary>
