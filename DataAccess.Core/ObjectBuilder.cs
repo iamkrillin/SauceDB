@@ -69,7 +69,7 @@ namespace DataAccess.Core
                     else
                     {
                         var tinfo = await dstore.TypeParser.GetTypeInfo(curr.ParameterType);
-                        toReturn[i] = BuildObject(dstore, dt, tinfo);
+                        toReturn[i] = await BuildObject(dstore, dt, tinfo);
                     }
                 }
                 else
@@ -80,7 +80,7 @@ namespace DataAccess.Core
                     else
                     {
                         var tinfo = await dstore.TypeParser.GetTypeInfo(curr.ParameterType);
-                        toReturn[i] = BuildObject(dstore, dt, tinfo);
+                        toReturn[i] = await BuildObject(dstore, dt, tinfo);
                     }
                 }
             }
@@ -127,7 +127,7 @@ namespace DataAccess.Core
                             if (!dfi.PropertyType.IsSystemType() && !dfi.PropertyType.IsEnum)
                             {
                                 var tinfo = await dstore.TypeParser.GetTypeInfo(dfi.PropertyType);
-                                dfi.Setter(dataItem, BuildObject(dstore, row, tinfo));
+                                dfi.Setter(dataItem, await BuildObject(dstore, row, tinfo));
                             }
                             else
                             {

@@ -117,9 +117,9 @@ namespace DataAccess.Core
             {
                 object toReturn = CreateObjectSetKey(item, key, ti);
 
-                if (!await LoadObject(toReturn)) 
+                if (!await LoadObject(toReturn))
                     toReturn = null;
-                
+
                 return toReturn;
             }
             else
@@ -221,7 +221,7 @@ namespace DataAccess.Core
         {
             var command = await Connection.CommandGenerator.LoadEntireTableCommand(TypeParser, typeof(T));
 
-            await foreach(var v in ExecuteCommandLoadList<T>(command))
+            await foreach (var v in ExecuteCommandLoadList<T>(command))
                 yield return v;
         }
 
@@ -255,10 +255,10 @@ namespace DataAccess.Core
         {
             IEnumerable<DataFieldInfo> fields = await TypeParser.GetPrimaryKeys(type);
 
-            if (fields.Count() > 1) 
+            if (fields.Count() > 1)
                 throw new DataStoreException("This Type contains more than one key");
-            
-            if (fields.Count() < 1) 
+
+            if (fields.Count() < 1)
                 throw new DataStoreException("This type does not contain a key");
 
             return fields.ElementAt(0).Getter(item);
@@ -395,9 +395,9 @@ namespace DataAccess.Core
             return await ExecuteCommands.ExecuteCommandQuery(command, Connection);
         }
 
-        private object BuildObject(IQueryRow dt, DatabaseTypeInfo ti)
+        private async Task<object> BuildObject(IQueryRow dt, DatabaseTypeInfo ti)
         {
-            object toReturn = ObjectBuilder.BuildObject(this, dt, ti);
+            object toReturn = await ObjectBuilder.BuildObject(this, dt, ti);
             FireObjectLoaded(toReturn);
             return toReturn;
         }
@@ -432,7 +432,7 @@ namespace DataAccess.Core
                         if (objectType.IsSystemType())
                             toAdd = (ReturnType)Connection.CLRConverter.ConvertToType(row.GetDataForRowField(0), typeof(ReturnType));
                         else
-                            toAdd = (ReturnType)BuildObject(row, ti);
+                            toAdd = (ReturnType)await BuildObject(row, ti);
 
                         yield return toAdd;
                     }

@@ -358,7 +358,7 @@ namespace DataAccess.Core
                 {
                     if (!dfi.LoadField) continue;
                     if (sb.Length > 0) sb.Append(',');
-                    sb.Append(ResolveFieldName(tParser, dfi.PropertyName, type));
+                    sb.Append(await ResolveFieldName(tParser, dfi.PropertyName, type));
                 }
 
                 ti.SelectString = sb.ToString();

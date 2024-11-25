@@ -104,10 +104,10 @@ namespace DataAccess.Core
         /// <param name="command">The command text</param>
         /// <param name="parameters">The parameters</param>
         /// <returns></returns>
-        public virtual List<T> ExecuteStoredProcedure(string command, object parameters = null)
+        public virtual async Task<List<T>> ExecuteStoredProcedure(string command, object parameters = null)
         {
             SetCommandText(command);
-            SetParameters(parameters);
+            await SetParameters(parameters);
             return ExecuteAsStoredProcedureGetList();
         }
 
@@ -117,11 +117,13 @@ namespace DataAccess.Core
         /// <param name="command">The command text</param>
         /// <param name="parameters">The parameters</param>
         /// <returns></returns>
-        public virtual IAsyncEnumerable<T> ExecuteQuery(string command, object parameters = null)
+        public virtual async IAsyncEnumerable<T> ExecuteQuery(string command, object parameters = null)
         {
             SetCommandText(command);
-            SetParameters(parameters);
-            return ExecuteCommandGetList();
+            await SetParameters(parameters);
+
+            await foreach (var item in ExecuteCommandGetList())
+                yield return item;
         }
 
         /// <summary>
@@ -133,7 +135,7 @@ namespace DataAccess.Core
         public virtual async Task<int> ExecuteCommand(string command, object parameters = null)
         {
             SetCommandText(command);
-            SetParameters(parameters);
+            await SetParameters(parameters);
             return await DataStore.ExecuteCommand(this.Command);
         }
     }
