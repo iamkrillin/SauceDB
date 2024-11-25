@@ -236,7 +236,7 @@ namespace DataAccess.PostgreSQL
                 List<IQueryRow> rows = columns.GetQueryEnumerator().ToList();
                 foreach (IQueryRow table in tables)
                 {
-                    yield return Helpers.LoadObjectInfo(dstore, table, rows);
+                    yield return await Helpers.LoadObjectInfo(dstore, table, rows);
                 }
             }
         }
@@ -259,7 +259,7 @@ namespace DataAccess.PostgreSQL
             {
                 List<IQueryRow> rows = columns.GetQueryEnumerator().ToList();
                 foreach (IQueryRow o in objects)
-                    yield return Helpers.LoadObjectInfo(dstore, o, rows);
+                    yield return await Helpers.LoadObjectInfo(dstore, o, rows);
             }
         }
     }

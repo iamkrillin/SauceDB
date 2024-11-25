@@ -357,7 +357,7 @@ namespace DataAccess.SqlServer
             List<IQueryRow> rows = columns.GetQueryEnumerator().ToList();
             foreach (IQueryRow o in objects)
             {
-                yield return Helpers.LoadObjectInfo(dstore, o, rows);
+                yield return await Helpers.LoadObjectInfo(dstore, o, rows);
             }
         }
 
@@ -379,7 +379,7 @@ namespace DataAccess.SqlServer
             List<IQueryRow> rows = columns.GetQueryEnumerator().ToList();
 
             foreach (IQueryRow o in objects)
-                yield return Helpers.LoadObjectInfo(dstore, o, rows);
+                yield return await Helpers.LoadObjectInfo(dstore, o, rows);
         }
     }
 }

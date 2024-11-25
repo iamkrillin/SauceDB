@@ -5,6 +5,7 @@ using System.Text;
 using DataAccess.Core.Data;
 using DataAccess.Core.Interfaces;
 using DataAccess.Core.Data.Results;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core
 {
@@ -20,10 +21,10 @@ namespace DataAccess.Core
         /// <param name="table">The table.</param>
         /// <param name="dstore">The datastore to look in</param>
         /// <returns></returns>
-        public static DBObject LoadObjectInfo(IDataStore dstore, IQueryRow table, List<IQueryRow> columns)
+        public static async Task<DBObject> LoadObjectInfo(IDataStore dstore, IQueryRow table, List<IQueryRow> columns)
         {
             DBObject t = new DBObject();
-            ObjectBuilder.SetFieldData(dstore, table, t);
+            await ObjectBuilder.SetFieldData(dstore, table, t);
             t.Columns = new List<Column>();
 
             foreach (IQueryRow row in columns) //all of the columns for all of the tables were returned, so we need to only get the one I'm working on...
@@ -42,7 +43,7 @@ namespace DataAccess.Core
                             {
                                 if (row.FieldHasMapping("ColumnName"))
                                 {
-                                    AddColumn(dstore, row, t);
+                                    await AddColumn(dstore, row, t);
                                 }
                             }
                         }
@@ -50,7 +51,7 @@ namespace DataAccess.Core
                         {
                             if (row.FieldHasMapping("ColumnName"))
                             {
-                                AddColumn(dstore, row, t);
+                                await AddColumn(dstore, row, t);
                             }
                         }
                     }
@@ -66,10 +67,10 @@ namespace DataAccess.Core
         /// <param name="column">The column</param>
         /// <param name="t">The data object</param>
         /// <param name="dstore">The datastore to look in</param>
-        private static void AddColumn(IDataStore dstore, IQueryRow column, DBObject t)
+        private static async Task AddColumn(IDataStore dstore, IQueryRow column, DBObject t)
         {
             Column toAdd = new Column();
-            ObjectBuilder.SetFieldData(dstore, column, toAdd);
+            await ObjectBuilder.SetFieldData(dstore, column, toAdd);
             t.Columns.Add(toAdd);
         }
     }

@@ -402,11 +402,11 @@ namespace DataAccess.Core
             return toReturn;
         }
 
-        private void SetFieldData(DatabaseTypeInfo DatabaseTypeInfo, IQueryRow dt, object p)
+        private async Task SetFieldData(DatabaseTypeInfo DatabaseTypeInfo, IQueryRow dt, object p)
         {
             if (dt != null)
             {
-                ObjectBuilder.SetFieldData(this, DatabaseTypeInfo, dt, p);
+                await ObjectBuilder.SetFieldData(this, DatabaseTypeInfo, dt, p);
                 FireObjectLoaded(p);
             }
         }
@@ -484,7 +484,7 @@ namespace DataAccess.Core
                         var tInfo = TypeParser.GetTypeInfo(t);
                         tInfo.Wait();
 
-                        SetFieldData(tInfo.Result, rows.Current, items[i]);
+                        SetFieldData(tInfo.Result, rows.Current, items[i]).Wait();
                     }
                     return true;
                 }
@@ -509,7 +509,7 @@ namespace DataAccess.Core
                     var tInfo = TypeParser.GetTypeInfo(item.GetType());
                     tInfo.Wait();
 
-                    SetFieldData(tInfo.Result, en.Current, item);
+                    SetFieldData(tInfo.Result, en.Current, item).Wait();
                     return true;
                 }
                 else

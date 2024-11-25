@@ -125,5 +125,5 @@ namespace DataAccess.Core.Execute
             command.Connection = conn;
             command.CommandTimeout = 10000;
         }
-    }
+}
 }
