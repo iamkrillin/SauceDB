@@ -21,6 +21,7 @@ namespace DataAccess.MySql
     {
         private StorageEngine StorageEngine;
 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MySqlCommandGenerator"/> class.
         /// </summary>
@@ -58,11 +59,11 @@ namespace DataAccess.MySql
             StringBuilder contrain = new StringBuilder();
             MySqlCommand cmd = new MySqlCommand();
 
-            sb.AppendFormat("CREATE TABLE {0} (", ResolveTableName(ti, false));
+            sb.AppendFormat("CREATE TABLE {0} (", ResolveTableName(ti, true));
             for (int i = 0; i < ti.DataFields.Count; i++)
             {
                 DataFieldInfo dfi = ti.DataFields[i];
-                if (i > 0) sb.Append(",");
+                if (i > 0) sb.Append(',');
                 string sqlType = await TranslateTypeToSql(tParser, dfi);
 
                 if (dfi.PrimaryKey)

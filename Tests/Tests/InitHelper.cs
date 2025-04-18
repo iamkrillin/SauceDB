@@ -8,6 +8,8 @@ using System.Data;
 using DataAccess.SqlServer;
 using System.Threading.Tasks;
 using System.Data.Common;
+using MySql.Data.MySqlClient;
+using DataAccess.MySql;
 
 namespace Tests.Tests
 {
@@ -52,10 +54,12 @@ namespace Tests.Tests
         public static string GetTableName(DBObject t, IDataStore dstore)
         {
             string toReturn = t.Name;
+
             if (dstore.Connection.GetType() == typeof(SqlServerConnection))
-            {
                 toReturn = string.Concat(t.Schema, ".", t.Name);
-            }
+            else if(dstore.Connection.GetType() == typeof(MySqlServerConnection))
+                toReturn = string.Concat("`", t.Name, "`");
+            
             return toReturn;
         }
     }

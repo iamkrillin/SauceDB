@@ -33,8 +33,8 @@ namespace DataAccess.MySql
             FieldMappings.Add(FieldType.Char, new FieldMapInfo("VARCHAR({0})", "1"));
             FieldMappings.Add(FieldType.UnicodeChar, new FieldMapInfo("VARCHAR({0}) CHARSET utf8", "1"));
             FieldMappings.Add(FieldType.Date, new FieldMapInfo("DATETIME"));
-            FieldMappings.Add(FieldType.Int, new FieldMapInfo("INT({0})", "11"));
-            FieldMappings.Add(FieldType.Long, new FieldMapInfo("BIGINT({0})", "20"));
+            FieldMappings.Add(FieldType.Int, new FieldMapInfo("INT"));
+            FieldMappings.Add(FieldType.Long, new FieldMapInfo("BIGINT"));
             FieldMappings.Add(FieldType.Real, new FieldMapInfo("DOUBLE"));
             FieldMappings.Add(FieldType.String, new FieldMapInfo("VARCHAR({0})", "200"));
             FieldMappings.Add(FieldType.Money, new FieldMapInfo("NUMERIC"));

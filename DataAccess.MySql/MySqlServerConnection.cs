@@ -248,7 +248,7 @@ namespace DataAccess.MySql
                     t.Name = row.GetDataForRowField(0).ToString();
                     t.Columns = new List<Column>();
 
-                    getColumns.CommandText = string.Concat("DESCRIBE ", t.Name);
+                    getColumns.CommandText = string.Concat("DESCRIBE `", t.Name, '`');
                     using (IQueryData columns = await dstore.ExecuteCommands.ExecuteCommandQuery(getColumns, dstore.Connection))
                     {
 
