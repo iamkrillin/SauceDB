@@ -12,6 +12,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 using System.Threading.Tasks;
 using Tests.Tests;
+using Tests.DataObjects;
 
 namespace Tests
 {
@@ -79,7 +80,7 @@ namespace Tests
 
             dstore.InsertObjects(items);
 
-            List<TestItem> loaded = dstore.LoadEntireTable<TestItem>().ToList();
+            List<TestItem> loaded = dstore.LoadEntireTable<TestItem>().ToBlockingEnumerable().ToList();
             Assert.IsTrue(loaded.Count == 100);
         }
 #endif

@@ -26,14 +26,6 @@
     <Compile Include="..\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="IDb\SqlAzureCommand.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="IDb\SqlAzureConnection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\DataAccess.Core\DataAccess.Core.csproj" />
     <ProjectReference Include="..\DataAccess.SqlServer\DataAccess.SqlServer.csproj" />
   </ItemGroup>

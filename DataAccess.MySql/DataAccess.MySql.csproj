@@ -8,44 +8,22 @@
     <SccProvider>SAK</SccProvider>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputPath>..\Publish\</OutputPath>
-    <Configurations>Debug;MONO;PlublishWithSymbolsNoTestsNoAddin;PublishWithSymbols;PublishWithSymbolsNoTests;PublishWithSymbolsWithoutTests;Release</Configurations>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\Debug\</OutputPath>
+    <Optimize>False</Optimize>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DocumentationFile>bin\Release\DataAccess.MySql.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Publish|AnyCPU'">
-    <OutputPath>..\Publish\</OutputPath>
-    <Optimize>True</Optimize>
-    <DebugType>none</DebugType>
-    <CodeAnalysisLogFile>bin\Release\DataAccess.MySql.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
-    <DocumentationFile>..\Publish\DataAccess.MySql.XML</DocumentationFile>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>True</SignAssembly>
+    <SignAssembly>False</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>SauceKey.snk</AssemblyOriginatorKeyFile>
     <AssemblyTitle>DataAccess.MySql</AssemblyTitle>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PlublishWithSymbolsNoTestsNoAddin|AnyCPU'">
-    <DebugSymbols>True</DebugSymbols>
-    <OutputPath>bin\PlublishWithSymbolsNoTestsNoAddin\</OutputPath>
-    <DocumentationFile>..\Publish\DataAccess.MySql.XML</DocumentationFile>
-    <Optimize>True</Optimize>
-    <CodeAnalysisLogFile>bin\Release\DataAccess.MySql.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
-    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
-    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\SharedAssemblyInfo.cs">

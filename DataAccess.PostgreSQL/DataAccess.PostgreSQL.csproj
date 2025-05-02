@@ -7,7 +7,7 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <Configurations>Debug;MONO;PlublishWithSymbolsNoTestsNoAddin;PublishWithSymbols;PublishWithSymbolsNoTests;PublishWithSymbolsWithoutTests;Release</Configurations>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\Debug\</OutputPath>
@@ -17,33 +17,11 @@
     <OutputPath>..\Publish\</OutputPath>
     <DocumentationFile>..\Publish\DataAccess.PostgreSQL.XML</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PublishWithSymbols|AnyCPU'">
-    <OutputPath>..\Publish\</OutputPath>
-    <DocumentationFile>..\Publish\DataAccess.PostgreSQL.XML</DocumentationFile>
-    <Optimize>true</Optimize>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PublishWithSymbolsNoTests|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\Publish\</OutputPath>
-    <DocumentationFile>..\Publish\DataAccess.PostgreSQL.XML</DocumentationFile>
-    <Optimize>true</Optimize>
+  <PropertyGroup>
+    <SignAssembly>False</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>SauceKey.snk</AssemblyOriginatorKeyFile>
     <AssemblyTitle>DataAccess.PostgreSQL</AssemblyTitle>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PlublishWithSymbolsNoTestsNoAddin|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\PlublishWithSymbolsNoTestsNoAddin\</OutputPath>
-    <DocumentationFile>..\Publish\DataAccess.PostgreSQL.XML</DocumentationFile>
-    <Optimize>true</Optimize>
-    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />

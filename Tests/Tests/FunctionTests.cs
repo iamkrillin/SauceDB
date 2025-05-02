@@ -95,7 +95,7 @@ namespace Tests.Tests
 
             dstore.InsertObjects(items);
 
-            List<TestBulkItem> loaded = dstore.LoadEntireTable<TestBulkItem>().ToList();
+            List<TestBulkItem> loaded = dstore.LoadEntireTable<TestBulkItem>().ToBlockingEnumerable().ToList();
             Assert.IsTrue(loaded.Count == numItems);
         }
 #endif

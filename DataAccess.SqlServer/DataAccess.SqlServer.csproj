@@ -7,7 +7,7 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <Configurations>Debug;MONO;PlublishWithSymbolsNoTestsNoAddin;PublishWithSymbols;PublishWithSymbolsNoTests;PublishWithSymbolsWithoutTests;Release</Configurations>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\Debug\</OutputPath>
@@ -16,94 +16,11 @@
     <OutputPath>..\Publish\</OutputPath>
     <DocumentationFile>bin\Release\DataAccess.SqlServer.XML</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Publish|AnyCPU'">
-    <OutputPath>..\Publish\</OutputPath>
-    <Optimize>true</Optimize>
-    <DebugType>none</DebugType>
-    <CodeAnalysisLogFile>bin\Release\DataAccess.SqlServer.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
-    <DocumentationFile>..\Publish\DataAccess.SqlServer.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'MSNET|AnyCPU'">
-    <OutputPath>bin\MSNET\</OutputPath>
-    <DocumentationFile>..\Publish\DataAccess.SqlServer.XML</DocumentationFile>
-    <Optimize>true</Optimize>
-    <CodeAnalysisLogFile>bin\Release\DataAccess.SqlServer.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
-    <DebugType>none</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'MONO|AnyCPU'">
-    <OutputPath>bin\MONO\</OutputPath>
-    <DocumentationFile>..\Publish\DataAccess.SqlServer.XML</DocumentationFile>
-    <Optimize>true</Optimize>
-    <CodeAnalysisLogFile>bin\Release\DataAccess.SqlServer.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
-    <DebugType>none</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PublishWithSymbols|AnyCPU'">
-    <OutputPath>..\Publish\</OutputPath>
-    <DocumentationFile>..\Publish\DataAccess.SqlServer.XML</DocumentationFile>
-    <Optimize>true</Optimize>
-    <CodeAnalysisLogFile>bin\Release\DataAccess.SqlServer.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
-    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PublishWithSymbolsWithoutTests|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\PublishWithSymbolsWithoutTests\</OutputPath>
-    <DocumentationFile>..\Publish\DataAccess.SqlServer.XML</DocumentationFile>
-    <Optimize>true</Optimize>
-    <CodeAnalysisLogFile>bin\Release\DataAccess.SqlServer.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PublishWithSymbolsNoTests|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\Publish\</OutputPath>
-    <DocumentationFile>..\Publish\DataAccess.SqlServer.XML</DocumentationFile>
-    <Optimize>true</Optimize>
-    <CodeAnalysisLogFile>bin\Release\DataAccess.SqlServer.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  <PropertyGroup>
+    <SignAssembly>False</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>SauceKey.snk</AssemblyOriginatorKeyFile>
     <AssemblyTitle>DataAccess.SqlServer</AssemblyTitle>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PlublishWithSymbolsNoTestsNoAddin|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\PlublishWithSymbolsNoTestsNoAddin\</OutputPath>
-    <DocumentationFile>..\Publish\DataAccess.SqlServer.XML</DocumentationFile>
-    <Optimize>true</Optimize>
-    <CodeAnalysisLogFile>bin\Release\DataAccess.SqlServer.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
@@ -130,5 +47,13 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="IDb\SqlAzureCommand.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="IDb\SqlAzureConnection.cs">
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
 </Project>

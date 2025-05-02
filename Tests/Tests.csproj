@@ -21,7 +21,6 @@
     <ProjectReference Include="..\DataAccess.Core\DataAccess.Core.csproj" />
     <ProjectReference Include="..\DataAccess.MySql\DataAccess.MySql.csproj" />
     <ProjectReference Include="..\DataAccess.PostgreSQL\DataAccess.PostgreSQL.csproj" />
-    <ProjectReference Include="..\DataAccess.SqlAzure\DataAccess.SqlAzure.csproj" />
     <ProjectReference Include="..\DataAccess.SQLite\DataAccess.SQLite.csproj" />
     <ProjectReference Include="..\DataAccess.SqlServer\DataAccess.SqlServer.csproj" />
   </ItemGroup>

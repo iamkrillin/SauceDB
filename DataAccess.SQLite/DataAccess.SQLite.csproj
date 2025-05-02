@@ -10,7 +10,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <OutputPath>..\Publish\</OutputPath>
-    <Configurations>Debug;MONO;PlublishWithSymbolsNoTestsNoAddin;PublishWithSymbols;PublishWithSymbolsNoTests;PublishWithSymbolsWithoutTests;Release</Configurations>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\Debug\</OutputPath>
@@ -21,38 +21,11 @@
     <ErrorReport>none</ErrorReport>
     <DocumentationFile>..\Publish\DataAccess.SQLite.XML</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'MSNET|AnyCPU'">
-    <OutputPath>bin\MSNET\</OutputPath>
-    <DocumentationFile>..\Publish\DataAccess.SQLite.XML</DocumentationFile>
-    <Optimize>true</Optimize>
-    <ErrorReport>none</ErrorReport>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
-    <DebugType>none</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'MONO|AnyCPU'">
-    <OutputPath>bin\MONO\</OutputPath>
-    <DocumentationFile>..\Publish\DataAccess.SQLite.XML</DocumentationFile>
-    <Optimize>true</Optimize>
-    <ErrorReport>none</ErrorReport>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
-    <DebugType>none</DebugType>
+  <PropertyGroup>
+    <SignAssembly>False</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>SauceKey.snk</AssemblyOriginatorKeyFile>
     <AssemblyTitle>DataAccess.SQLite</AssemblyTitle>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PlublishWithSymbolsNoTestsNoAddin|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\PlublishWithSymbolsNoTestsNoAddin\</OutputPath>
-    <DocumentationFile>..\Publish\DataAccess.SQLite.XML</DocumentationFile>
-    <Optimize>true</Optimize>
-    <ErrorReport>none</ErrorReport>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\SharedAssemblyInfo.cs">
