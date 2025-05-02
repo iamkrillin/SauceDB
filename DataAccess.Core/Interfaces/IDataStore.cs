@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Collections;
-using System.Data;
-using System.Linq.Expressions;
-using DataAccess.Core.Interfaces;
-using DataAccess.Core.Events;
-using DataAccess.Core.Data;
-using DataAccess.Core.Linq.Common;
+﻿using DataAccess.Core.Events;
 using DataAccess.Core.Linq.Mapping;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace DataAccess.Core.Interfaces
@@ -168,7 +163,7 @@ namespace DataAccess.Core.Interfaces
         /// <typeparam name="T">The type to load in the list</typeparam>
         /// <param name="command">The command to execute</param>
         /// <returns></returns>
-        IAsyncEnumerable<T> ExecuteCommandLoadList<T>(DbCommand command);        
+        IAsyncEnumerable<T> ExecuteCommandLoadList<T>(DbCommand command);
 
         /// <summary>
         /// Execute a command an loads an object
@@ -240,7 +235,7 @@ namespace DataAccess.Core.Interfaces
         /// Executes a command on the data store
         /// </summary>
         /// <param name="command">The command to execute</param>
-       Task<int> ExecuteCommand(DbCommand command);
+        Task<int> ExecuteCommand(DbCommand command);
 
         /// <summary>
         /// This function will return an IQueryable appropriate for using with LINQ

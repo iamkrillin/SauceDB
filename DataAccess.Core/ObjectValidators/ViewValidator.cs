@@ -1,10 +1,10 @@
-﻿using System;
+﻿using DataAccess.Core.Data;
+using DataAccess.Core.Interfaces;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
-using DataAccess.Core.Interfaces;
-using System.Data;
-using DataAccess.Core.Data;
 using System.Threading.Tasks;
 
 namespace DataAccess.Core.ObjectValidators
@@ -41,7 +41,7 @@ namespace DataAccess.Core.ObjectValidators
                     sb.AppendFormat(" {0}", Missing[i]);
                 }
 
-                throw new DataStoreException(string.Format("The view {0} is missing the following columns {1}",  ti.TableName, sb.ToString()));
+                throw new DataStoreException(string.Format("The view {0} is missing the following columns {1}", ti.TableName, sb.ToString()));
             }
 
             return Task.CompletedTask;

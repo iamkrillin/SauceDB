@@ -1,12 +1,8 @@
-﻿using System;
+﻿using DataAccess.Core.Interfaces;
+using DataAccess.SQLite.Results;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using DataAccess.Core;
-using DataAccess.Core.Data.Results;
-using System.Collections;
-using DataAccess.SQLite.Results;
-using DataAccess.Core.Interfaces;
 
 namespace DataAccess.SQLite
 {

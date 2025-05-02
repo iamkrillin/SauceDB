@@ -2,17 +2,10 @@
 // This source code is made available under the terms of the Microsoft Public License (MS-PL)
 #pragma warning disable 1591
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using DataAccess.Core.Linq.Common;
 using DataAccess.Core.Linq.Common.Mapping;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DataAccess.Core.Linq.Common
 {
@@ -42,7 +35,7 @@ namespace DataAccess.Core.Linq.Common
         /// <param name="paramValues">The param values.</param>
         /// <returns></returns>
         public abstract IEnumerable<T> Execute<T>(QueryCommand command, Func<FieldReader, T> fnProjector, MappingEntity entity, object[] paramValues);
-        
+
         /// <summary>
         /// Executes the command.
         /// </summary>

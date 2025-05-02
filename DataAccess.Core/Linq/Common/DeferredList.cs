@@ -4,10 +4,10 @@
 
 #pragma warning disable 1591
 
+using DataAccess.Core.Linq.Interfaces;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using DataAccess.Core.Linq.Interfaces;
 
 namespace DataAccess.Core.Linq.Common
 {

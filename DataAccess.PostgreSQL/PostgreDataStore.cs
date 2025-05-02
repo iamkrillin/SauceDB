@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DataAccess.Core;
-using DataAccess.Core.ObjectValidators;
+﻿using DataAccess.Core;
 using DataAccess.Core.ObjectFinders;
 
 namespace DataAccess.PostgreSQL

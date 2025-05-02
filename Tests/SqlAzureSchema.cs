@@ -1,12 +1,9 @@
-﻿using System;
-using System.Text;
-using System.Linq;
-using DataAccess.Core.Interfaces;
+﻿using DataAccess.Core.Interfaces;
 using DataAccess.SqlServer;
 using Microsoft.Data.SqlClient;
 using System.Data.Common;
-using Tests.Tests;
 using Tests.DataObjects;
+using Tests.Tests;
 
 namespace Tests
 {

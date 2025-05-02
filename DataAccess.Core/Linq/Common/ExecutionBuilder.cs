@@ -2,21 +2,17 @@
 // This source code is made available under the terms of the Microsoft Public License (MS-PL)
 #pragma warning disable 1591
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using DataAccess.Core.Linq.Common;
 using DataAccess.Core.Linq.Common.Expressions;
-using DataAccess.Core.Linq.Enums;
 using DataAccess.Core.Linq.Common.Language;
 using DataAccess.Core.Linq.Common.Mapping;
 using DataAccess.Core.Linq.Common.Translation;
+using DataAccess.Core.Linq.Enums;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace DataAccess.Core.Linq.Common
 {
@@ -334,14 +330,14 @@ namespace DataAccess.Core.Linq.Common
             if (newExpress != null)
             {
                 List<ColumnExpression> memberColumns = new List<ColumnExpression>();
-                foreach(var v in newExpress.Arguments)
+                foreach (var v in newExpress.Arguments)
                 {
                     ColumnExpression cExpress = v as ColumnExpression;
-                    if(cExpress != null)
+                    if (cExpress != null)
                         memberColumns.Add(cExpress);
                 }
 
-                if(memberColumns.Count() == projection.Select.Columns.Count)
+                if (memberColumns.Count() == projection.Select.Columns.Count)
                 {
                     for (int i = 0; i < projection.Select.Columns.Count; i++)
                     {
@@ -530,7 +526,7 @@ namespace DataAccess.Core.Linq.Common
         protected override Expression VisitExists(ExistsExpression exists)
         {
             // how did we get here? Translate exists into count query
-           // var colType = this.linguist.Language.TypeSystem.GetColumnType(typeof(int));
+            // var colType = this.linguist.Language.TypeSystem.GetColumnType(typeof(int));
             var newSelect = exists.Select.SetColumns(
                     new[] { new ColumnDeclaration("value", new AggregateExpression(typeof(int), "Count", null, false)) }
                     );

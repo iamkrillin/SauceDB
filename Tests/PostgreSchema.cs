@@ -1,12 +1,6 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
+﻿using DataAccess.Core.Data;
 using DataAccess.Core.Interfaces;
 using DataAccess.PostgreSQL;
-using DataAccess.Core.Data;
-using System.Data;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Tests.DataObjects;
 using Tests.Tests;
 

@@ -1,14 +1,7 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
+﻿using DataAccess.Core;
+using DataAccess.Core.Data;
 using DataAccess.Core.Interfaces;
 using DataAccess.SQLite;
-using DataAccess.Core.Data;
-using System.Data.SQLite;
-using DataAccess.Core;
-using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Tests.DataObjects;
 using Tests.Tests;
 

@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data;
+﻿using DataAccess.Core.Linq.Common;
 using DataAccess.Core.Linq.Common.Mapping;
-using DataAccess.Core.Linq.Common;
+using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Threading.Tasks;
 

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace DataAccess.Core.Linq.Interfaces
+﻿namespace DataAccess.Core.Linq.Interfaces
 {
     /// <summary>
     /// Common interface for controlling defer-loadable types

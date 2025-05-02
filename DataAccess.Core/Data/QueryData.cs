@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DataAccess.Core;
-using DataAccess.Core.Data.Results;
-using System.Collections;
-using System.Data;
+﻿using DataAccess.Core.Data.Results;
 using DataAccess.Core.Interfaces;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
+using System.Linq;
 
 namespace DataAccess.Core.Data
 {
@@ -64,7 +62,7 @@ namespace DataAccess.Core.Data
         public virtual void MapReturnData(IDataReader reader)
         {
             QueryFields = new Dictionary<string, int>();
-            
+
             int len = reader.FieldCount;
             for (int i = 0; i < len; i++)
                 AddFieldMapping(reader.GetName(i), i);

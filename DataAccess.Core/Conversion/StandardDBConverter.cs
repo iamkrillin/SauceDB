@@ -3,8 +3,6 @@ using DataAccess.Core.Data;
 using DataAccess.Core.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace DataAccess.Core.Conversion
 {
@@ -78,7 +76,7 @@ namespace DataAccess.Core.Conversion
                 case "INT64":
                     return MapFieldType(FieldType.Long, dfi);
                 case "SINGLE":
-                case "FLOAT":                
+                case "FLOAT":
                 case "DOUBLE":
                     return MapFieldType(FieldType.Real, dfi);
                 case "DECIMAL":

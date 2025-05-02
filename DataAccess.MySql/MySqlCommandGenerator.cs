@@ -1,16 +1,13 @@
-﻿using System;
+﻿using DataAccess.Core;
+using DataAccess.Core.Data;
+using DataAccess.Core.Interfaces;
+using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
-using DataAccess.Core;
-using System.Data;
-using DataAccess.Core.Data;
-using System.Collections;
-using MySql.Data.MySqlClient;
-using DataAccess.Core.Interfaces;
-using System.Data.Common;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace DataAccess.MySql
 {
@@ -152,7 +149,7 @@ namespace DataAccess.MySql
             MySqlCommand cmd = new MySqlCommand();
             cmd.CommandText = $"ALTER TABLE {ResolveTableName(type, false)} MODIFY COLUMN {dfi.EscapedFieldName} {targetFieldType};";
             return [cmd];
-        }        
+        }
 
         /// <summary>
         /// Returns null (mysql doesnt support this)

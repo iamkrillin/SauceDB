@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
-using DataAccess.Core.Attributes;
+﻿using DataAccess.Core.Attributes;
+using System;
 
 namespace DataAccess.Core.Data
 {

@@ -1,13 +1,4 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using DataAccess.Core.Interfaces;
-using DataAccess.Core;
-using DataAccess.Core.Data;
-using System.Data.SqlClient;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading.Tasks;
+﻿using DataAccess.Core.Interfaces;
 using Tests.DataObjects;
 
 namespace Tests.Tests
@@ -29,7 +20,7 @@ namespace Tests.Tests
         {
             for (int i = 0; i < 10; i++)
                 await dStore.InsertObject(new TestItem() { Something = "foo" });
-            
+
             var result = dStore.Query<TestItem>().Where(R => R.Something == "foo").Take(2).ToList();
             Assert.IsTrue(result.Count() == 2);
         }

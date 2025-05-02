@@ -1,15 +1,8 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
+﻿using DataAccess.Core;
 using DataAccess.Core.Data;
-using DataAccess.Core;
 using DataAccess.Core.Interfaces;
-using System.Data;
 using DataAccess.Core.Schema;
-using System.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading.Tasks;
+using System.Data;
 using Tests.DataObjects;
 
 namespace Tests.Tests

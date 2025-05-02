@@ -1,17 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // This source code is made available under the terms of the Microsoft Public License (MS-PL)
 
-using System;
-using System.Collections;
+using DataAccess.Core.Linq.Common.Expressions;
+using DataAccess.Core.Linq.Enums;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using DataAccess.Core.Linq.Common;
-using DataAccess.Core.Linq.Common.Expressions;
-using DataAccess.Core.Linq.Enums;
 
 namespace DataAccess.Core.Linq.Common.Translation
 {

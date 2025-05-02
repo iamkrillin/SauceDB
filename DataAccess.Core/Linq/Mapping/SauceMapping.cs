@@ -1,13 +1,12 @@
-﻿using System;
+﻿using DataAccess.Core.Data;
+using DataAccess.Core.Interfaces;
+using DataAccess.Core.Linq.Common;
+using DataAccess.Core.Linq.Common.Mapping;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using DataAccess.Core.Linq.Common;
-using DataAccess.Core.Interfaces;
-using DataAccess.Core.Data;
-using System.Reflection;
-using DataAccess.Core.Linq.Common.Mapping;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace DataAccess.Core.Linq.Mapping
@@ -151,7 +150,7 @@ namespace DataAccess.Core.Linq.Mapping
                 {
                     if (keys == null)
                         keys = [firstKey];
-                    
+
                     keys.Add(v.Getter(instance));
                 }
             }
@@ -294,7 +293,7 @@ namespace DataAccess.Core.Linq.Mapping
 
             if (expression is MethodCallExpression mc && (mc.Method.DeclaringType == typeof(Enumerable) || mc.Method.DeclaringType == typeof(Queryable)))
                 return false;
-            
+
             if (expression.NodeType == ExpressionType.Convert && expression.Type == typeof(object))
                 return true;
             return expression.NodeType != ExpressionType.Parameter && expression.NodeType != ExpressionType.Lambda;

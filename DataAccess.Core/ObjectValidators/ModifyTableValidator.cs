@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using DataAccess.Core.Data;
 using DataAccess.Core.Interfaces;
+using System;
+using System.Collections.Generic;
 using System.Data;
-using DataAccess.Core.Data;
-using DataAccess.Core.Events;
 using System.Data.Common;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DataAccess.Core.ObjectValidators
@@ -29,7 +27,7 @@ namespace DataAccess.Core.ObjectValidators
             else
                 await ValidateExistingTable(tparser, ti, table);
         }
-        
+
         public virtual async Task CreateNewTable(TypeParser tparser, DatabaseTypeInfo typeInfo)
         {
             await AddTable(tparser, typeInfo);

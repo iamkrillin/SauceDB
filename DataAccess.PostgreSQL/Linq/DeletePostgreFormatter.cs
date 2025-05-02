@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DataAccess.Core.Interfaces;
-using DataAccess.Core.Linq;
-using DataAccess.Core.Linq.Common;
-using System.Linq.Expressions;
+﻿using DataAccess.Core.Interfaces;
 using DataAccess.Core.Linq.Common.Expressions;
 using DataAccess.Core.Linq.Mapping;
+using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 #pragma warning disable 1591
 
 namespace DataAccess.Postgre.Linq

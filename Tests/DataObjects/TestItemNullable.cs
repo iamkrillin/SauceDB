@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DataAccess.Core.Attributes;
-
-namespace Tests.DataObjects
+﻿namespace Tests.DataObjects
 {
     public class TestItemNullable
     {

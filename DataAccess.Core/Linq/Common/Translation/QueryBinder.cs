@@ -2,18 +2,15 @@
 // This source code is made available under the terms of the Microsoft Public License (MS-PL)
 #pragma warning disable 1591
 
+using DataAccess.Core.Linq.Common.Expressions;
+using DataAccess.Core.Linq.Common.Mapping;
+using DataAccess.Core.Linq.Enums;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using DataAccess.Core.Linq.Common;
-using DataAccess.Core.Linq.Common.Expressions;
-using DataAccess.Core.Linq.Enums;
-using DataAccess.Core.Linq.Common.Mapping;
 
 namespace DataAccess.Core.Linq.Common.Translation
 {

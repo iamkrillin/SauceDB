@@ -1,9 +1,6 @@
-﻿using System;
+﻿using DataAccess.Core.Linq.Enums;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Collections.ObjectModel;
-using DataAccess.Core.Linq.Enums;
 
 namespace DataAccess.Core.Linq.Common.Expressions
 {

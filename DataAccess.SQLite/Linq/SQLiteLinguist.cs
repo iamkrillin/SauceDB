@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using DataAccess.Core.Linq.Common;
 using DataAccess.Core.Linq.Common.Language;
-using DataAccess.Core.Linq;
-using System.Linq.Expressions;
 using DataAccess.Core.Linq.Common.Translation;
-using DataAccess.Core.Linq.Common;
+using System.Linq.Expressions;
 
 namespace DataAccess.SQLite.Linq
 {

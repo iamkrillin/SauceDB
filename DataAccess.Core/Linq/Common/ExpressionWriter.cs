@@ -2,16 +2,15 @@
 // This source code is made available under the terms of the Microsoft Public License (MS-PL)
 // Original code created by Matt Warren: http://iqtoolkit.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=19725
 
+using DataAccess.Core.Linq.Enums;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Text;
-using System.IO;
-using DataAccess.Core.Linq.Enums;
 
 namespace DataAccess.Core.Linq.Common
 {

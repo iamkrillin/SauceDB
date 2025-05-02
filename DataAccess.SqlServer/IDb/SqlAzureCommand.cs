@@ -1,11 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace DataAccess.SqlAzure.IDb
 {
@@ -20,7 +14,7 @@ namespace DataAccess.SqlAzure.IDb
         protected override DbTransaction DbTransaction { get { return Command.Transaction; } set { Command.Transaction = (SqlTransaction)value; } }
         protected override DbParameterCollection DbParameterCollection { get { return Command.Parameters; } }
         public override System.Data.UpdateRowSource UpdatedRowSource { get { return Command.UpdatedRowSource; } set { Command.UpdatedRowSource = value; } }
-        
+
         public SqlAzureCommand(SqlCommand cmd)
         {
             Command = cmd;
@@ -30,7 +24,7 @@ namespace DataAccess.SqlAzure.IDb
         {
             Command.Cancel();
         }
-        
+
         protected override DbParameter CreateDbParameter()
         {
             return Command.CreateParameter();

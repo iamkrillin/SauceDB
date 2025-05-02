@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using DataAccess.Core;
 using DataAccess.Core.Interfaces;
 using DataAccess.SqlServer;
-using DataAccess.Core.Schema;
 using Microsoft.SqlServer.Types;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DataAccess.Core;
-using System.Threading.Tasks;
 using Tests.DataObjects;
 using Tests.Tests;
 

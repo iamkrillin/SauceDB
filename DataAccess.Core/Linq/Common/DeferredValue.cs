@@ -2,11 +2,9 @@
 // This source code is made available under the terms of the Microsoft Public License (MS-PL)
 // Original code created by Matt Warren: http://iqtoolkit.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=19725
 
-using System;
-using System.Collections;
+using DataAccess.Core.Linq.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
-using DataAccess.Core.Linq.Interfaces;
 
 namespace DataAccess.Core.Linq.Common
 {

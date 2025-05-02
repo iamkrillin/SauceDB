@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DataAccess.Core;
-using System.Collections;
+﻿using DataAccess.Core;
 using DataAccess.Core.ObjectFinders;
+using System.Collections;
 using System.Threading.Tasks;
 
 namespace DataAccess.SQLite

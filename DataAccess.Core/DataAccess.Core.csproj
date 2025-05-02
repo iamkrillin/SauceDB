@@ -1,43 +1,44 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <OutputType>Library</OutputType>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <DefineConstants>TRACE;MSNET</DefineConstants>
-    <Configurations>Debug;Release</Configurations>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\Publish</OutputPath>
-    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DefineConstants>TRACE;MSNET</DefineConstants>
-    <DocumentationFile>bin\Release\DataAccess.Core.XML</DocumentationFile>
-    <OutputPath>..\Publish</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>False</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyTitle>DataAccess.Core</AssemblyTitle>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="..\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
-    <Compile Include="..\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Linq\Common\Language\QueryType.cs" />
-    <Compile Remove="Linq\Common\Language\QueryTypeSystem.cs" />
-    <Compile Remove="Linq\DbQueryType.cs" />
-    <Compile Remove="Linq\DbTypeSystem.cs" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<OutputType>Library</OutputType>
+		<SccProjectName>SAK</SccProjectName>
+		<SccLocalPath>SAK</SccLocalPath>
+		<SccAuxPath>SAK</SccAuxPath>
+		<SccProvider>SAK</SccProvider>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<DefineConstants>TRACE;MSNET</DefineConstants>
+		<Configurations>Debug;Release</Configurations>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+		<OutputPath>..\Debug\</OutputPath>
+		<Optimize>False</Optimize>
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+		<DefineConstants>TRACE;MSNET</DefineConstants>
+		<DocumentationFile>bin\Release\DataAccess.Core.XML</DocumentationFile>
+		<OutputPath>..\Publish</OutputPath>
+	</PropertyGroup>
+	<PropertyGroup>
+		<SignAssembly>False</SignAssembly>
+	</PropertyGroup>
+	<PropertyGroup>
+		<AssemblyTitle>DataAccess.Core</AssemblyTitle>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Include="..\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
+		<Compile Include="..\SharedAssemblyInfo.cs">
+			<Link>Properties\SharedAssemblyInfo.cs</Link>
+		</Compile>
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Linq\Common\Language\QueryType.cs" />
+		<Compile Remove="Linq\Common\Language\QueryTypeSystem.cs" />
+		<Compile Remove="Linq\DbQueryType.cs" />
+		<Compile Remove="Linq\DbTypeSystem.cs" />
+	</ItemGroup>
 </Project>

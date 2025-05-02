@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DataAccess.Core.Data;
-using DataAccess.Core.Interfaces;
-using System.Data;
+﻿using DataAccess.Core.Data;
 using DataAccess.Core.Events;
+using DataAccess.Core.Interfaces;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DataAccess.Core.ObjectValidators
@@ -15,13 +12,13 @@ namespace DataAccess.Core.ObjectValidators
         public bool CanRemoveColumns { get; set; }
         public bool CanAddColumns { get; set; }
         public bool CanUpdateColumns { get; set; }
-        
+
         public event EventHandler<ObjectCreatedEventArgs> OnObjectCreated;
         public event EventHandler<ObjectModifiedEventArgs> OnObjectModified;
-        
+
         protected IDataStore _dstore = dStore;
         protected List<DBObject> Objects { get; set; } = new List<DBObject>();
-        
+
         public abstract Task ValidateObject(TypeParser tparser, DatabaseTypeInfo ti);
         public abstract IEnumerable<DBObject> GetObjects();
 
@@ -35,7 +32,7 @@ namespace DataAccess.Core.ObjectValidators
         {
             return _dstore.ObjectFinder.GetObject(GetObjects(), typeInfo);
         }
-        
+
         protected void FireCreated(DatabaseTypeInfo ti)
         {
             OnObjectCreated?.Invoke(this, new ObjectCreatedEventArgs(ti));

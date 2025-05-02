@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using DataAccess.Core.Data;
 using DataAccess.Core.Interfaces;
-using DataAccess.Core.Data;
-using System.Data;
-using DataAccess.SqlServer;
-using System.Threading.Tasks;
-using System.Data.Common;
-using MySql.Data.MySqlClient;
 using DataAccess.MySql;
+using DataAccess.SqlServer;
+using System.Data.Common;
 
 namespace Tests.Tests
 {
@@ -57,9 +50,9 @@ namespace Tests.Tests
 
             if (dstore.Connection.GetType() == typeof(SqlServerConnection))
                 toReturn = string.Concat(t.Schema, ".", t.Name);
-            else if(dstore.Connection.GetType() == typeof(MySqlServerConnection))
+            else if (dstore.Connection.GetType() == typeof(MySqlServerConnection))
                 toReturn = string.Concat("`", t.Name, "`");
-            
+
             return toReturn;
         }
     }

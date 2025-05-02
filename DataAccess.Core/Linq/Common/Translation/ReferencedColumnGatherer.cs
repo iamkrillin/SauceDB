@@ -2,12 +2,9 @@
 // This source code is made available under the terms of the Microsoft Public License (MS-PL)
 #pragma warning disable 1591
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using DataAccess.Core.Linq.Common.Expressions;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace DataAccess.Core.Linq.Common.Translation
 {

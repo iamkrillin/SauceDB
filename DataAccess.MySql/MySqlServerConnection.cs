@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DataAccess.Core.Interfaces;
-using System.Data;
-using MySql.Data.MySqlClient;
-using DataAccess.Core;
-using DataAccess.MySql.Linq;
-using System.Collections;
+﻿using DataAccess.Core;
 using DataAccess.Core.Data;
-using DataAccess.Core.Conversion;
 using DataAccess.Core.Data.Results;
+using DataAccess.Core.Interfaces;
+using DataAccess.MySql.Linq;
+using MySql.Data.MySqlClient;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DataAccess.MySql

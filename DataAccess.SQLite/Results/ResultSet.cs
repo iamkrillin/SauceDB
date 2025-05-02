@@ -1,8 +1,6 @@
 ﻿using DataAccess.Core.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace DataAccess.SQLite.Results
 {
@@ -27,7 +25,7 @@ namespace DataAccess.SQLite.Results
         public void AddRow(object[] row)
         {
             QueryRow qr = new QueryRow(this, row);
-            
+
             if (FirstRow == null)
             {
                 _firstRow = qr;
@@ -55,7 +53,7 @@ namespace DataAccess.SQLite.Results
         public void NextRow()
         {
             if (_currentRow == null)
-               _currentRow = _firstRow;
+                _currentRow = _firstRow;
             else
                 _currentRow = _currentRow.NextRow;
         }

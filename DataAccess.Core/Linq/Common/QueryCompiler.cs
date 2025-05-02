@@ -4,13 +4,10 @@
 #pragma warning disable 1591
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Reflection;
-using DataAccess.Core.Linq.Common;
 
 namespace DataAccess.Core.Linq.Common
 {

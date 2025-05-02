@@ -2,15 +2,11 @@
 // This source code is made available under the terms of the Microsoft Public License (MS-PL)
 // Original code created by Matt Warren: http://iqtoolkit.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=19725
 
+using DataAccess.Core.Linq.Common;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using DataAccess.Core.Linq.Common;
 #pragma warning disable 1591
 
 namespace DataAccess.Core.Linq

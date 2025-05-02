@@ -3,11 +3,7 @@ using DataAccess.Core.Conversion;
 using DataAccess.Core.Interfaces;
 using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
 
 namespace DataAccess.MySql
 {
@@ -47,10 +43,10 @@ namespace DataAccess.MySql
 
         public override string MapFieldType(FieldType type, Core.Data.DataFieldInfo dfi)
         {
-            if(dfi.FieldLength.HasValue && dfi.FieldLength.Value == Int32.MaxValue)
+            if (dfi.FieldLength.HasValue && dfi.FieldLength.Value == Int32.MaxValue)
             {//they want to store lots o' text, lets change the type to a text field here since mysql has a row limit
-                if(type == FieldType.String) return base.MapFieldType(FieldType.Text, dfi);
-                if(type == FieldType.UnicodeString) return base.MapFieldType(FieldType.UnicodeText, dfi);
+                if (type == FieldType.String) return base.MapFieldType(FieldType.Text, dfi);
+                if (type == FieldType.UnicodeString) return base.MapFieldType(FieldType.UnicodeText, dfi);
             }
 
             return base.MapFieldType(type, dfi);
@@ -60,7 +56,7 @@ namespace DataAccess.MySql
         {
             if (type.Namespace.Equals("MySql.Data.Types"))
                 return type.Name.Replace("MySql", "");
-            else            
+            else
                 return base.MapType(type, dfi);
         }
     }

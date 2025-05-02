@@ -3,11 +3,7 @@
 // Original code created by Matt Warren: http://iqtoolkit.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=19725
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using DataAccess.Core.Linq.Common;
 
 namespace DataAccess.Core.Linq.Common
 {

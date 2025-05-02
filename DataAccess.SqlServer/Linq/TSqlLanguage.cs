@@ -2,17 +2,11 @@
 // This source code is made available under the terms of the Microsoft Public License (MS-PL)
 // Original code created by Matt Warren: http://iqtoolkit.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=19725
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Linq.Expressions;
-using System.Reflection;
-using DataAccess.Core.Interfaces;
 using DataAccess.Core.Linq.Common;
-using DataAccess.Core.Linq;
 using DataAccess.Core.Linq.Common.Expressions;
 using DataAccess.Core.Linq.Common.Language;
+using System.Linq.Expressions;
+using System.Reflection;
 #pragma warning disable 1591
 
 namespace DataAccess.SqlServer.Linq

@@ -1,14 +1,12 @@
-﻿using System;
+﻿using DataAccess.Core;
+using DataAccess.Core.Data;
+using DataAccess.Core.Interfaces;
+using Npgsql;
+using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
-using DataAccess.Core;
-using System.Data;
-using DataAccess.Core.Data;
-using Npgsql;
-using System.Reflection;
-using DataAccess.Core.Interfaces;
-using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace DataAccess.PostgreSQL

@@ -3,17 +3,10 @@
 
 #pragma warning disable 1591
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using DataAccess.Core.Linq.Common;
 using DataAccess.Core.Linq.Common.Expressions;
 using DataAccess.Core.Linq.Common.Mapping;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace DataAccess.Core.Linq.Common.Translation
 {

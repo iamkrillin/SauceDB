@@ -1,25 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data;
-using DataAccess.Core.Data;
-using DataAccess.Core.Interfaces;
-using System.Collections;
+﻿using DataAccess.Core.Data;
 using DataAccess.Core.Events;
-using System.Reflection;
-using DataAccess.Core.Linq;
-using System.Linq.Expressions;
+using DataAccess.Core.Execute;
+using DataAccess.Core.Interfaces;
 using DataAccess.Core.Linq.Common;
 using DataAccess.Core.Linq.Mapping;
-using DataAccess.Core.Execute;
-using DataAccess.Core.Schema;
 using DataAccess.Core.ObjectFinders;
-using DataAccess.Core.Data.Results;
+using DataAccess.Core.Schema;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
-using System.ComponentModel;
-using Microsoft.VisualBasic;
 
 namespace DataAccess.Core
 {

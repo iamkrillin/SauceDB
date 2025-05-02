@@ -1,9 +1,6 @@
-﻿using System;
-using DataAccess.Core.Interfaces;
+﻿using DataAccess.Core.Interfaces;
 using DataAccess.SqlServer;
 using Microsoft.SqlServer.Types;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading.Tasks;
 using Tests.DataObjects;
 using Tests.Tests;
 

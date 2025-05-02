@@ -1,17 +1,9 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using DataAccess.Core.Interfaces;
+﻿using DataAccess.Core.Interfaces;
 using DataAccess.SqlServer;
-using DataAccess.Core.Data;
-using System.Data;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DataAccess.Core;
-using System.Data.Common;
 using Microsoft.Data.SqlClient;
-using Tests.Tests;
+using System.Data.Common;
 using Tests.DataObjects;
+using Tests.Tests;
 
 namespace Tests
 {

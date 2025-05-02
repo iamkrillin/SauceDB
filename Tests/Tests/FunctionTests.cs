@@ -1,14 +1,7 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using DataAccess.Core.Interfaces;
-using DataAccess.Core;
+﻿using DataAccess.Core;
 using DataAccess.Core.Data;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using DataAccess.Core.Interfaces;
 using System.Collections.Concurrent;
-using System.Threading;
-using System.Threading.Tasks;
 using Tests.DataObjects;
 
 namespace Tests.Tests
@@ -210,7 +203,7 @@ namespace Tests.Tests
         {
             var items = dstore.LoadEntireTable<TestItem>();
             Assert.IsTrue(items != null);
-            
+
             await foreach (TestItem o in items)
             {
                 Assert.IsTrue(o != null);

@@ -1,10 +1,7 @@
-﻿using System;
+﻿using DataAccess.Core.Linq.Common.Expressions;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Linq.Expressions;
-using DataAccess.Core.Linq.Common.Expressions;
-using DataAccess.Core.Linq.Common.Translation;
 
 namespace DataAccess.Core.Linq.Common
 {

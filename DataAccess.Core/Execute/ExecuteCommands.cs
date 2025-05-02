@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DataAccess.Core.Data;
-using System.Data;
-using DataAccess.Core.Interfaces;
+﻿using DataAccess.Core.Data;
 using DataAccess.Core.Events;
+using DataAccess.Core.Interfaces;
+using System;
+using System.Data;
 using System.Data.Common;
 using System.Threading.Tasks;
 
@@ -125,5 +122,5 @@ namespace DataAccess.Core.Execute
             command.Connection = conn;
             command.CommandTimeout = 10000;
         }
-}
+    }
 }

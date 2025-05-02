@@ -2,10 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace DataAccess.SqlAzure.IDb
 {
@@ -33,7 +30,7 @@ namespace DataAccess.SqlAzure.IDb
                 }
                 catch (SqlException sqlex)
                 {
-                    if(IsTransient(sqlex))
+                    if (IsTransient(sqlex))
                     {
                         if (agg == null)
                             agg = new List<SqlException>();

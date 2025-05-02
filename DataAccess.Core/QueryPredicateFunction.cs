@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using DataAccess.Core.Interfaces;
 using System.Reflection;
 
 namespace DataAccess.Core
@@ -39,7 +36,7 @@ namespace DataAccess.Core
 
             StaticMethod = MethodInfo.IsStatic;
             _mi = MethodInfo;
-            
+
         }
 
         public IQueryable<T> Invoke<T>(IQueryable<T> query)
@@ -47,7 +44,7 @@ namespace DataAccess.Core
             if (_mi.ContainsGenericParameters)
                 return (IQueryable<T>)_mi.MakeGenericMethod(typeof(T)).Invoke(null, new object[] { query });
             else
-                return (IQueryable<T>)_mi.Invoke(null, new object[] { query });            
+                return (IQueryable<T>)_mi.Invoke(null, new object[] { query });
         }
     }
 }

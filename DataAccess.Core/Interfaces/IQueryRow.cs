@@ -1,5 +1,4 @@
 ﻿using DataAccess.Core.Data.Results;
-using System;
 
 namespace DataAccess.Core.Interfaces
 {
@@ -67,7 +66,7 @@ namespace DataAccess.Core.Interfaces
         /// Makes all fields available for use
         /// </summary>
         void ResetUsed();
-        
+
         /// <summary>
         /// Sets the backing data
         /// </summary>

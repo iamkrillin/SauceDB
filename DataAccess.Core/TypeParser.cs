@@ -1,15 +1,12 @@
-﻿using System;
+﻿using DataAccess.Core.Attributes;
+using DataAccess.Core.Data;
+using DataAccess.Core.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using DataAccess.Core.Interfaces;
-using DataAccess.Core.Data;
-using DataAccess.Core.Attributes;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using DataAccess.Core.Events;
-using System.Linq.Expressions;
-using DataAccess.Core.Schema;
 using System.Threading.Tasks;
 
 namespace DataAccess.Core

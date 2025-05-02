@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace DataAccess.Core.Data
+﻿namespace DataAccess.Core.Data
 {
     /// <summary>
     /// The type of constraint to append to a query

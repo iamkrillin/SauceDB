@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DataAccess.Core.Linq.Common.Expressions;
+﻿using DataAccess.Core.Linq.Common.Expressions;
 using DataAccess.Core.Linq.Common.Mapping;
 using System.Linq.Expressions;
 

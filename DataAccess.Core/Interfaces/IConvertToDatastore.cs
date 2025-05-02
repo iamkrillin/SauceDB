@@ -1,10 +1,7 @@
 ﻿using DataAccess.Core.Attributes;
 using DataAccess.Core.Data;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 
 namespace DataAccess.Core.Interfaces
 {
@@ -15,7 +12,7 @@ namespace DataAccess.Core.Interfaces
     {
         void CoerceValue(IDbDataParameter value);
         object CoerceValue(object value);
-        
+
         /// <summary>
         /// Used when the user wishes to override the datafield type
         /// </summary>

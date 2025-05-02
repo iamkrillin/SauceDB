@@ -1,9 +1,6 @@
 ﻿using DataAccess.Core.Data.Results;
 using DataAccess.Core.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace DataAccess.SQLite.Results
 {
@@ -13,7 +10,7 @@ namespace DataAccess.SQLite.Results
         public QueryRow NextRow { get; set; }
         public FieldData[] FieldData { get; set; }
 
-        public QueryRow(ResultSet SetData, object [] data)
+        public QueryRow(ResultSet SetData, object[] data)
         {
             _result = SetData;
             FieldData = new FieldData[data.Length];
@@ -38,12 +35,12 @@ namespace DataAccess.SQLite.Results
                 //This here accounts for how LINQ works, its not very uncommon to get the same field in a result set more than once,
                 //if the field has been mapped once already for this row, try to find one that hasn't
                 var key = _result.QueryFields.Keys.Where(r => r.StartsWith(search + "_") && !FieldData[_result.QueryFields[r]].Used).FirstOrDefault();
-                if (key == null) 
+                if (key == null)
                 {//k, so that didn't work, just try to find something..
                     key = _result.QueryFields.Keys.Where(r => r.StartsWith(search + "_")).FirstOrDefault();
                 }
 
-                if(key != null)
+                if (key != null)
                     result = _result.QueryFields[key];
             }
 

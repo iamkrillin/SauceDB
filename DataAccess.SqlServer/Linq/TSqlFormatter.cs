@@ -3,17 +3,13 @@
 // Original code created by Matt Warren: http://iqtoolkit.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=19725
 #pragma warning disable 1591
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Linq.Expressions;
-using DataAccess.Core.Interfaces;
 using DataAccess.Core.Linq.Common;
-using DataAccess.Core.Linq;
 using DataAccess.Core.Linq.Common.Expressions;
 using DataAccess.Core.Linq.Common.Language;
 using DataAccess.Core.Linq.Enums;
+using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace DataAccess.SqlServer.Linq
 {

@@ -1,9 +1,4 @@
 ﻿using DataAccess.Core;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Tests.DataObjects;
 
 namespace Tests

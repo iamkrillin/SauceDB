@@ -1,7 +1,5 @@
 ﻿using DataAccess.Core.Interfaces;
 using DataAccess.SQLite;
-using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Tests.Tests;
 
 namespace Tests

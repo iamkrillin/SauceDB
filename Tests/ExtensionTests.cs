@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using DataAccess.Core.Extensions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using DataAccess.Core.Extensions;
 
 namespace Tests
 {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace DataAccess.Core.Data.Results
+﻿namespace DataAccess.Core.Data.Results
 {
     public class FieldData
     {

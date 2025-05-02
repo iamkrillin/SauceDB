@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Linq;
-using System.Text;
 
 namespace DataAccess.Core.Execute
 {
@@ -16,7 +13,7 @@ namespace DataAccess.Core.Execute
         /// Gets or sets the connection.
         /// </summary>        
         public DbConnection Connection { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the transaction.
         /// </summary>

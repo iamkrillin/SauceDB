@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using DataAccess.Core.Attributes;
+using DataAccess.Core.Data;
 using DataAccess.Core.Interfaces;
 using DataAccess.SQLite;
-using DataAccess.Core.Data;
 using System.Data.SQLite;
-using System.IO;
-using DataAccess.Core.Attributes;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading;
-using System.Threading.Tasks;
 using Tests.Tests;
-using Tests.DataObjects;
 
 namespace Tests
 {

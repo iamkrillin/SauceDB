@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Data;
+﻿using DataAccess.Core;
 using DataAccess.Core.Data;
-using DataAccess.Core.Interfaces;
-using DataAccess.Core;
-using System.Collections;
-using DataAccess.SqlServer.Linq;
-using System.Reflection;
 using DataAccess.Core.Extensions;
+using DataAccess.Core.Interfaces;
+using DataAccess.SqlServer.Linq;
 using Microsoft.Data.SqlClient;
-using System.Threading.Tasks;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace DataAccess.SqlServer
 {
@@ -288,7 +288,7 @@ namespace DataAccess.SqlServer
 
                 dt.Rows.Add(dr);
             }
-            
+
             await WriteToServer(dt, await this.CommandGenerator.ResolveTableName(dstore.TypeParser, t));
         }
 

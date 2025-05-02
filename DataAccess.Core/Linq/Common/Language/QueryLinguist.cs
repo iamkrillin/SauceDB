@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using DataAccess.Core.Linq.Common.Translation;
 using System.Linq.Expressions;
-using DataAccess.Core.Linq.Common.Translation;
 
 namespace DataAccess.Core.Linq.Common.Language
 {

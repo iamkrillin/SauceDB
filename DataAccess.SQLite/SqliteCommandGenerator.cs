@@ -1,13 +1,12 @@
-﻿using System;
+﻿using DataAccess.Core;
+using DataAccess.Core.Data;
+using DataAccess.Core.Interfaces;
+using System;
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Data.SQLite;
 using System.Linq;
 using System.Text;
-using DataAccess.Core;
-using System.Data;
-using DataAccess.Core.Data;
-using System.Data.SQLite;
-using DataAccess.Core.Interfaces;
-using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace DataAccess.SQLite

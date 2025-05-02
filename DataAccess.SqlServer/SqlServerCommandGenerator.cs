@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using DataAccess.Core;
-using DataAccess.Core.Interfaces;
-using System.Data;
+﻿using DataAccess.Core;
 using DataAccess.Core.Data;
-using System.Collections;
-using System.Reflection;
+using DataAccess.Core.Interfaces;
 using Microsoft.Data.SqlClient;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
+using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DataAccess.SqlServer
@@ -145,7 +144,7 @@ namespace DataAccess.SqlServer
             }
 
             return toReturn;
-        }        
+        }
 
         public override List<DbCommand> GetModifyColumnCommand(DatabaseTypeInfo type, DataFieldInfo dfi, string targetFieldType)
         {

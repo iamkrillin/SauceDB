@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Linq.Expressions;
-using DataAccess.Core.Linq.Common.Language;
 
 namespace DataAccess.Core.Linq.Common
 {
@@ -30,7 +26,7 @@ namespace DataAccess.Core.Linq.Common
         /// <param name="queryType">Type of the query.</param>
         public ColumnDeclaration(string name, Expression expression)
         {
-if (name == null)
+            if (name == null)
                 throw new ArgumentNullException("name");
             if (expression == null)
                 throw new ArgumentNullException("expression");

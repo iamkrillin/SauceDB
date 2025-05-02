@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DataAccess.Core.Execute;
+﻿using DataAccess.Core.Execute;
 using DataAccess.Core.Interfaces;
+using System;
 
 namespace DataAccess.Core
 {
