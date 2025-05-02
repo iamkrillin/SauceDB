@@ -188,7 +188,7 @@ namespace DataAccess.Core
         /// <returns></returns>
         public virtual async Task<bool> DeleteObject<T>(object pkey)
         {
-            object ToRemove = CreateObjectSetKey(typeof(T), pkey);
+            object ToRemove = await CreateObjectSetKey(typeof(T), pkey);
             return await DeleteObject(ToRemove);
         }
 

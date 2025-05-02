@@ -3,6 +3,7 @@ using DataAccess.Core.Data;
 using DataAccess.Core.Interfaces;
 using DataAccess.SQLite;
 using System.Data.SQLite;
+using Tests.DataObjects;
 using Tests.Tests;
 
 namespace Tests
