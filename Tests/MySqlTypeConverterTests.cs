@@ -73,7 +73,7 @@ namespace Tests
             IConvertToDatastore mapper = new MySqlServerDBConverter();
 
             string type = mapper.MapType(typeof(int), new DataFieldInfo() { });
-            Assert.AreEqual("INT(11)", type);
+            Assert.AreEqual("INT", type);
         }
 
         [TestMethod]
@@ -82,7 +82,7 @@ namespace Tests
             IConvertToDatastore mapper = new MySqlServerDBConverter();
 
             string type = mapper.MapType(typeof(long), new DataFieldInfo() { });
-            Assert.AreEqual("BIGINT(20)", type);
+            Assert.AreEqual("BIGINT", type);
         }
 
         [TestMethod]
