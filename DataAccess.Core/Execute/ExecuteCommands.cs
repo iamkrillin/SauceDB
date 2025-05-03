@@ -45,6 +45,8 @@ namespace DataAccess.Core.Execute
             {
                 await r.CloseAsync();
                 await r.DisposeAsync();
+
+                r = null;
             }
         }
 

@@ -51,10 +51,6 @@ namespace DataAccess.Core.Execute
             {
                 throw new QueryException(e, command);
             }
-            finally
-            {
-                command.Dispose();
-            }
 
             return toReturn;
         }

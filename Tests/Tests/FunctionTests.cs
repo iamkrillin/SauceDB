@@ -425,17 +425,25 @@ namespace Tests.Tests
         {
             await dstore.TypeParser.GetTypeInfo(typeof(TestItem));
             TestItem ti;
-            using (var context = dstore.StartTransaction())
+
+            try
             {
-                ti = new TestItem()
+                using (var context = dstore.StartTransaction())
                 {
-                    Something = "foo"
-                };
+                    ti = new TestItem()
+                    {
+                        Something = "foo"
+                    };
 
-                await context.Instance.InsertObject(ti);
-                context.Commit();
+                    await context.Instance.InsertObject(ti);
+                    context.Commit();
+                }
             }
-
+            catch (Exception ex)
+            {
+                Assert.IsTrue(false);
+            }
+            
             IEnumerable<TestItem> items = dstore.LoadEntireTable<TestItem>().ToBlockingEnumerable();
             Assert.IsTrue(items.Count() == 1);
         }
